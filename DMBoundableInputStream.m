@@ -55,7 +55,7 @@
     if (deliveredLength < headLength && sentLength < maxLength)
     {
         readLength = min(headLength - deliveredLength, maxLength - sentLength);
-        [headData getBytes:buffer length:readLength];
+        [headData getBytes:buffer range:NSMakeRange(deliveredLength, readLength)];
         sentLength += readLength;
         deliveredLength += sentLength;
     }
@@ -72,7 +72,7 @@
     if (sentLength < maxLength && deliveredLength - tailPosition < tailLength)
     {
         readLength = min(tailLength - (deliveredLength - tailPosition), maxLength - sentLength);
-        [tailData getBytes:buffer + sentLength length:readLength];
+        [tailData getBytes:buffer + sentLength range:NSMakeRange(deliveredLength - tailPosition, readLength)];
         sentLength += readLength;
         deliveredLength += readLength;
     }
