@@ -11,14 +11,10 @@
 #import "SBJsonParser.h"
 #import "SBJsonWriter.h"
 
-#define kDMAPIEndpointURL [NSURL URLWithString:@"http://api.local.dailymotion.com/json"]
-#define kDMOAuthAuthorizeEndpointURL [NSURL URLWithString:@"http://api.local.dailymotion.com/oauth/authorize"]
-#define kDMOAuthTokenEndpointURL [NSURL URLWithString:@"http://api.local.dailymotion.com/oauth/token"]
-/*
 #define kDMAPIEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/json"]
 #define kDMOAuthAuthorizeEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"]
 #define kDMOAuthTokenEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"]
-*/
+
 #define kDMRedirectURL [NSURL URLWithString:@"dailymotion://success"]
 static NSString *const kDMVersion = @"1.0";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
