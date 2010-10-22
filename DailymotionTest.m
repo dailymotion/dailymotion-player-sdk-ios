@@ -9,6 +9,16 @@
 #import "DailymotionTest.h"
 #import "DailymotionTestConfig.h"
 
+@implementation NSURLRequest (IgnoreSSL)
+
+// Workaround for strange SSL with SenTestCase invalid certificate bug
++ (BOOL)allowsAnyHTTPSCertificateForHost:(NSString *)host
+{
+    return YES;
+}
+
+@end
+
 @implementation DailymotionTest
 
 - (void)setUp
