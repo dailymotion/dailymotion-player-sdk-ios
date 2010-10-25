@@ -10,6 +10,7 @@
 #import "DMBoundableInputStream.h"
 #import "SBJsonParser.h"
 #import "SBJsonWriter.h"
+#import <CommonCrypto/CommonDigest.h>
 
 #define kDMAPIEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/json"]
 #define kDMOAuthAuthorizeEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"]
@@ -32,8 +33,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 @end
 
 @implementation Dailymotion
-@synthesize timeout;
-@dynamic version;
+@synthesize timeout, autoSaveSession;
+@dynamic version, session;
 
 #pragma mark Dailymotion (private)
 
@@ -464,8 +465,11 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         {
             [tmpSession setObject:[result valueForKey:@"scope"] forKey:@"scope"];
         }
-        [session release];
-        session = [tmpSession retain];
+        self.session = tmpSession;
+        if (autoSaveSession)
+        {
+            [self storeSession];
+        }
     }
     else
     {
@@ -530,6 +534,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         callNextId = 0;
         callQueue = [[NSMutableDictionary alloc] init];
         uploadFileQueue = [[NSMutableArray alloc] init];
+        sessionLoaded = NO;
+        autoSaveSession = YES;
     }
     return self;
 }
@@ -577,6 +583,21 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     [info setValue:apiKey forKey:@"key"];
     [info setValue:apiSecret forKey:@"secret"];
     [info setValue:(scope ? scope : @"") forKey:@"scope"];
+
+    // Compute a uniq hash key for the current grant type setup
+    NSMutableString *hashData = [NSMutableString stringWithFormat:@"type=%d", type];
+    NSEnumerator *enumerator = [[[info allKeys] sortedArrayUsingSelector:@selector(compare:)] objectEnumerator];
+    NSString *key;
+    while ((key = [enumerator nextObject]))
+    {
+        [hashData appendFormat:@"&%@=%@", key, [info objectForKey:key]];
+    }
+    const char *str = [hashData UTF8String];
+    unsigned char r[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(str, strlen(str), r);
+    [info setValue:[NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+                    r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]]
+            forKey:@"hash"];
 
     grantType = type;
     grantInfo = [info retain];
@@ -628,6 +649,67 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     [userInfo setValue:filePath forKey:@"file_path"];
     [userInfo setValue:delegate forKey:@"delegate"];
     [self callMethod:@"file.upload" withArguments:nil delegate:self userInfo:userInfo];
+}
+
+- (NSDictionary *)session
+{
+    if (!session && !sessionLoaded)
+    {
+        // Read the on-disk session if any
+        [self setSession:[self readSession]];
+        sessionLoaded = YES; // If read session returns nil, prevent session from trying each time
+    }
+
+    return [[session retain] autorelease];
+}
+
+- (void)setSession:(NSDictionary *)newSession
+{
+    if (newSession != session)
+    {
+        [session release];
+        session = [newSession retain];
+    }
+}
+
+- (NSString *)sessionStoreKey
+{
+    if (grantType == DailymotionNoGrant || ![grantInfo valueForKey:@"hash"])
+    {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"DMSession.%@", [grantInfo valueForKey:@"hash"]];
+}
+
+- (void)storeSession
+{
+    NSString *sessionStoreKey = [self sessionStoreKey];
+    if (!sessionStoreKey)
+    {
+        return;
+    }
+
+    if (session)
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:session forKey:sessionStoreKey];
+    }
+    else
+    {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:sessionStoreKey];
+    }
+
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSDictionary *)readSession
+{
+    NSString *sessionStoreKey = [self sessionStoreKey];
+    if (!sessionStoreKey)
+    {
+        return nil;
+    }
+
+    return [[NSUserDefaults standardUserDefaults] dictionaryForKey:sessionStoreKey];
 }
 
 - (void)dealloc

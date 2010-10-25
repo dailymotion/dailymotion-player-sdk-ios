@@ -173,6 +173,22 @@
     STAssertNotNil([[results lastObject] objectForKey:@"url"], @"Got an URL.");
 }
 
+- (void)testSessionStoreKey
+{
+    Dailymotion *api = [[Dailymotion alloc] init];
+    STAssertNil([api sessionStoreKey], @"Session store key is nil if no grant type");
+    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    NSString *sessionStoreKey = [api sessionStoreKey];
+    STAssertNotNil(sessionStoreKey, @"Session store key is not nil if grant type defined");
+    STAssertTrue([sessionStoreKey length] < 50, @"Session store key is not too long");
+    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write"];
+    STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when scope changes");
+    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:@"another secret" scope:@"read write delete"];
+    STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API secret changes");
+    [api setGrantType:DailymotionGrantTypeNone withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
+    STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API key changes");
+}
+
 - (void)dailymotion:(Dailymotion *)dailymotion didReturnResult:(id)result userInfo:(NSDictionary *)userInfo
 {
     [results addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"success", @"type", result, @"result", nil]];

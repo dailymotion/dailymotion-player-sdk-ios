@@ -107,11 +107,32 @@ extern NSString * const DailymotionApiErrorDomain;
     NSMutableDictionary *callQueue;
     NSMutableArray *uploadFileQueue;
     NSDictionary *session;
+    BOOL autoSaveSession, sessionLoaded;
     NSUInteger callNextId;
 }
 
 @property (nonatomic, assign) NSTimeInterval timeout;
 @property (nonatomic, readonly) NSString *version;
+
+/**
+ * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
+ * is normaly autmoatically generated using the provided API key/secret. Although, you can manualy set it if you got,
+ * for instance, an ``access_token`` from another source like your own backend.
+ *
+ * A session is an NSDictionary which can contain any of the following keys:
+ * - ``access_token``: a token which can be used to access the API
+ * - ``expires``: an ``NSDate`` which indicates until when the ``access_token`` remains valid
+ * - ``refresh_token``: a token used to request a new valid ``access_token`` without having to ask the end-user again and again
+ * - ``scope``: an indication on the permission scope granted by the end-user for this session
+ */
+@property (nonatomic, retain) NSDictionary *session;
+
+/**
+ * If this property is set to ``NO``, the session won't be stored automatically for latter use. When not stored, your
+ * application will have to ask end-user to authorize your API key each time you restart your application.
+ * By default this property is set to ``YES``.
+ */
+@property (nonatomic, assign) BOOL autoSaveSession;
 
 /**
  * Set the grant type to be used for API requests.
@@ -154,5 +175,25 @@ extern NSString * const DailymotionApiErrorDomain;
  * @param filePath The path to the file to upload
  */
 - (void)uploadFile:(NSString *)filePath delegate:(id<DailymotionDelegate>)delegate;
+
+
+/**
+ * Returns the key used to store the session. If this method returns nil, the session won't be stored.
+ */
+- (NSString *)sessionStoreKey;
+
+/**
+ * Store the current session on a local store for future use. By default, the session is stored in the NSUserDefaults.
+ *
+ * This method can be overloaded to handle different type of storage.
+ */
+- (void)storeSession;
+
+/**
+ * Read a previousely stored session from the local store.
+ *
+ * This method can be overloaded to handle different type of storage.
+ */
+- (NSDictionary *)readSession;
 
 @end
