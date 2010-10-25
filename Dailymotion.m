@@ -125,10 +125,10 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (NSString *)accessToken
 {
-    if (session)
+    if (self.session)
     {
-        NSString *accessToken = [session valueForKey:@"access_token"];
-        NSDate *expires = [session valueForKey:@"expires"];
+        NSString *accessToken = [self.session valueForKey:@"access_token"];
+        NSDate *expires = [self.session valueForKey:@"expires"];
         if (accessToken)
         {
             if (!expires || [expires timeIntervalSinceNow] > 0)
@@ -149,9 +149,9 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
                                  reason:@"Requested an access token with a running connection" userInfo:nil] raise];
     }
 
-    if (session)
+    if (self.session)
     {
-        NSString *refreshToken = [session valueForKey:@"refresh_token"];
+        NSString *refreshToken = [self.session valueForKey:@"refresh_token"];
         if (refreshToken)
         {
             currentState = DailymotionStateOAuthRequest;
@@ -689,9 +689,9 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         return;
     }
 
-    if (session)
+    if (self.session)
     {
-        [[NSUserDefaults standardUserDefaults] setObject:session forKey:sessionStoreKey];
+        [[NSUserDefaults standardUserDefaults] setObject:self.session forKey:sessionStoreKey];
     }
     else
     {
