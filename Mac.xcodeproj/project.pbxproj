@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		531F101B1268AD4E0089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F10181268AD4E0089FAE5 /* DMBoundableInputStream.h */; };
 		531F101C1268AD4E0089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F10191268AD4E0089FAE5 /* DMBoundableInputStream.m */; };
+		536ECF4B1276F65B0049782E /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536ECF4A1276F65B0049782E /* WebKit.framework */; };
+		53A0D1F812772AED00A56ACB /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536ECF4A1276F65B0049782E /* WebKit.framework */; };
 		53E275B2126673E600B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E275B0126673E600B541BE /* Dailymotion.h */; };
 		53E275B3126673E600B541BE /* Dailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E275B1126673E600B541BE /* Dailymotion.m */; };
 		53E275BD1266740C00B541BE /* SBJsonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E275B71266740C00B541BE /* SBJsonBase.h */; };
@@ -40,6 +42,7 @@
 		531F10171268AD4E0089FAE5 /* DailymotionTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTestConfig.h; sourceTree = "<group>"; };
 		531F10181268AD4E0089FAE5 /* DMBoundableInputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBoundableInputStream.h; sourceTree = "<group>"; };
 		531F10191268AD4E0089FAE5 /* DMBoundableInputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBoundableInputStream.m; sourceTree = "<group>"; };
+		536ECF4A1276F65B0049782E /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		53E275B0126673E600B541BE /* Dailymotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dailymotion.h; sourceTree = "<group>"; };
 		53E275B1126673E600B541BE /* Dailymotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Dailymotion.m; sourceTree = "<group>"; };
 		53E275B71266740C00B541BE /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SBJsonBase.h; path = JSON/SBJsonBase.h; sourceTree = "<group>"; };
@@ -61,6 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53E275ED1266753000B541BE /* libDailymotion.a in Frameworks */,
+				53A0D1F812772AED00A56ACB /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +73,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */,
+				536ECF4B1276F65B0049782E /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +125,7 @@
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				536ECF4A1276F65B0049782E /* WebKit.framework */,
 				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";

@@ -12,11 +12,11 @@
 #import "SBJsonWriter.h"
 #import <CommonCrypto/CommonDigest.h>
 
-#define kDMAPIEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/json"]
-#define kDMOAuthAuthorizeEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"]
-#define kDMOAuthTokenEndpointURL [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"]
+#define kDMAPIEndpointURL @"https://api.dailymotion.com/json"
+#define kDMOAuthAuthorizeEndpointURL @"https://api.dailymotion.com/oauth/authorize"
+#define kDMOAuthTokenEndpointURL @"https://api.dailymotion.com/oauth/token"
+#define kDMOAuthRedirectURI @"none://fake-callback"
 
-#define kDMRedirectURL [NSURL URLWithString:@"dailymotion://success"]
 static NSString *const kDMVersion = @"1.0";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
@@ -33,7 +33,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 @end
 
 @implementation Dailymotion
-@synthesize timeout, autoSaveSession;
+@synthesize timeout, autoSaveSession, UIDelegate;
 @dynamic version, session;
 
 #pragma mark Dailymotion (private)
@@ -110,7 +110,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (void)resetAPIConnection
 {
-    currentState = DailymotionStateNone;
+    apiConnectionState = DailymotionConnectionStateNone;
     [apiConnection release], apiConnection = nil;
     [apiResponseData release], apiResponseData = nil;
     [apiResponse release], apiResponse = nil;
@@ -143,7 +143,14 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (void)requestAccessToken
 {
-    if (apiConnection)
+    if (grantType == DailymotionNoGrant)
+    {
+        // Should never happen but who knows?
+        [[NSException exceptionWithName:@"InvalidStateException"
+                                 reason:@"Requested an access token with no grant" userInfo:nil] raise];
+    }
+
+    if (apiConnectionState != DailymotionConnectionStateNone)
     {
         [[NSException exceptionWithName:@"InvalidStateException"
                                  reason:@"Requested an access token with a running connection" userInfo:nil] raise];
@@ -154,47 +161,62 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         NSString *refreshToken = [self.session valueForKey:@"refresh_token"];
         if (refreshToken)
         {
-            currentState = DailymotionStateOAuthRequest;
+            apiConnectionState = DailymotionConnectionStateOAuthRequest;
             NSMutableDictionary *payload = [NSMutableDictionary dictionary];
             [payload setObject:@"refresh_token" forKey:@"grant_type"];
             [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
             [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
             [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
             [payload setObject:refreshToken forKey:@"refresh_token"];
-            apiConnection = [[self performRequestWithURL:kDMOAuthTokenEndpointURL payload:payload headers:nil] retain];
+            apiConnection = [[self performRequestWithURL:[NSURL URLWithString:kDMOAuthTokenEndpointURL] payload:payload headers:nil] retain];
+            return;
         }
     }
 
-    NSMutableDictionary *payload = [NSMutableDictionary dictionary];
-    [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
-    [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
-    [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
-
-    switch (grantType)
+    if (grantType == DailymotionGrantTypeToken)
     {
-        case DailymotionNoGrant:
-            // Should never happen
-            [[NSException exceptionWithName:@"InvalidStateException"
-                                     reason:@"Requested an access token with no grant" userInfo:nil] raise];
-            break;
+        // Perform authorization server request
+        apiConnectionState = DailymotionConnectionStateOAuthRequest;
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?response_type=code&client_id=%@&scope=%@&redirect_uri=%@",
+                                           kDMOAuthAuthorizeEndpointURL, [grantInfo valueForKey:@"key"],
+                                           [[grantInfo valueForKey:@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                                           [[NSString stringWithString:kDMOAuthRedirectURI] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
 
-        case DailymotionGrantTypeNone:
-            currentState = DailymotionStateOAuthRequest;
+#if TARGET_OS_IPHONE
+        UIWebView *webview = [[[UIWebView alloc] init] autorelease];
+        webview.delegate = self;
+        [webview loadRequest:request];
+#else
+        WebView *webview = [[[WebView alloc] init] autorelease];
+        webview.policyDelegate = self;
+        webview.resourceLoadDelegate = self;
+        [webview.mainFrame loadRequest:request];
+#endif
+
+        [UIDelegate dailymotion:self createModalDialogWithView:webview];
+    }
+    else
+    {
+        // Perform token server request
+        apiConnectionState = DailymotionConnectionStateOAuthRequest;
+        NSMutableDictionary *payload = [NSMutableDictionary dictionary];
+        [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
+        [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
+        [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
+
+        if (grantType == DailymotionGrantTypeNone)
+        {
             [payload setObject:@"none" forKey:@"grant_type"];
-            apiConnection = [[self performRequestWithURL:kDMOAuthTokenEndpointURL payload:payload headers:nil] retain];
-            break;
-
-        case DailymotionGrantTypePassword:
-            currentState = DailymotionStateOAuthRequest;
+            apiConnection = [[self performRequestWithURL:[NSURL URLWithString:kDMOAuthTokenEndpointURL] payload:payload headers:nil] retain];
+        }
+        else if (grantType == DailymotionGrantTypePassword)
+        {
             [payload setObject:@"password" forKey:@"grant_type"];
             [payload setObject:[grantInfo valueForKey:@"username"] forKey:@"username"];
             [payload setObject:[grantInfo valueForKey:@"password"] forKey:@"password"];
-            apiConnection = [[self performRequestWithURL:kDMOAuthTokenEndpointURL payload:payload headers:nil] retain];
-            break;
-
-        case DailymotionGrantTypeToken:
-            // TODO: call a delegate with an auth required message
-            break;
+            apiConnection = [[self performRequestWithURL:[NSURL URLWithString:kDMOAuthTokenEndpointURL] payload:payload headers:nil] retain];
+        }
     }
 }
 
@@ -202,7 +224,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 {
     @synchronized(self)
     {
-        if (apiConnection)
+        if (apiConnectionState != DailymotionConnectionStateNone)
         {
             // Another request is currently in progress, wait for its completion before to start a new one.
             // NOTE: the handleAPIResponse will reschedule a new performCalls once completed if there is some waiting calls
@@ -242,9 +264,9 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             [headers setValue:[NSString stringWithFormat:@"OAuth %@", accessToken] forKey:@"Authorization"];
         }
 
-        currentState = DailymotionStateAPIRequest;
+        apiConnectionState = DailymotionConnectionStateAPIRequest;
         SBJsonWriter *jsonWriter = [[[SBJsonWriter alloc] init] autorelease];
-        apiConnection = [[self performRequestWithURL:kDMAPIEndpointURL
+        apiConnection = [[self performRequestWithURL:[NSURL URLWithString:kDMAPIEndpointURL]
                                              payload:[jsonWriter stringWithObject:callsRequest]
                                              headers:headers] retain];
 
@@ -489,6 +511,48 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     }
 }
 
+- (void)handleOAuthAuthorizationResponseWithURL:(NSURL *)url
+{
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    NSEnumerator *enumerator = [[url.query componentsSeparatedByString:@"&"] objectEnumerator];
+    NSArray *pair;
+    while ((pair = [[enumerator nextObject] componentsSeparatedByString:@"="]))
+    {
+        if ([pair count] > 1)
+        {
+            [result setObject:[[pair objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
+                       forKey:[pair objectAtIndex:0]];
+        }
+    }
+
+    if ([result valueForKey:@"error"])
+    {
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:[result valueForKey:@"error"] forKey:@"error"];
+        if ([result valueForKey:@"error_description"])
+        {
+            [userInfo setObject:[result valueForKey:@"error_description"] forKey:NSLocalizedDescriptionKey];
+        }
+        [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0 userInfo:userInfo]];
+    }
+    else if ([result valueForKey:@"code"])
+    {
+        apiConnectionState = DailymotionConnectionStateOAuthRequest;
+        NSMutableDictionary *payload = [NSMutableDictionary dictionary];
+        [payload setObject:@"authorization_code" forKey:@"grant_type"];
+        [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
+        [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
+        [payload setObject:[result valueForKey:@"code"] forKey:@"code"];
+        [payload setObject:kDMOAuthRedirectURI forKey:@"redirect_uri"];
+        apiConnection = [[self performRequestWithURL:[NSURL URLWithString:kDMOAuthTokenEndpointURL] payload:payload headers:nil] retain];
+    }
+    else
+    {
+        [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0
+                                               userInfo:[NSDictionary dictionaryWithObject:@"No code parameter returned by authorization server." forKey:NSLocalizedDescriptionKey]]];
+    }
+
+}
+
 - (void)handleUploadResponse
 {
     if ([uploadFileQueue count] > 0)
@@ -621,7 +685,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         [call setValue:callId forKey:@"id"];
         [callQueue setValue:call forKey:callId];
         [call release];
-        if (!apiConnection)
+        if (apiConnectionState == DailymotionConnectionStateNone)
         {
             // Schedule the dequeuing of the calls for the end of the loop if a request is not currently in progress
             [[NSRunLoop mainRunLoop] performSelector:@selector(performCalls)
@@ -775,15 +839,15 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 {
     if (connection == apiConnection)
     {
-        switch (currentState)
+        switch (apiConnectionState)
         {
-            case DailymotionStateAPIRequest:
+            case DailymotionConnectionStateAPIRequest:
                 [self handleAPIResponse];
                 break;
-            case DailymotionStateOAuthRequest:
+            case DailymotionConnectionStateOAuthRequest:
                 [self handleOAuthResponse];
                 break;
-            case DailymotionStateNone:
+            case DailymotionConnectionStateNone:
                 [self resetAPIConnection];
                 [[NSException exceptionWithName:@"InvalidStateException"
                                          reason:@"Received response with state=none" userInfo:nil] raise];
@@ -859,5 +923,82 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         [delegate dailymotion:dailymotion didRequestAuthWithMessage:message userInfo:nil];
     }
 }
+
+// Authorization server workflow
+
+#if TARGET_OS_IPHONE
+
+#pragma mark UIWebViewDelegate
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    if ([request.URL.scheme isEqualToString:@"dailymotion"])
+    {
+        [self handleOAuthAuthorizationResponseWithURL:request.URL];
+        [UIDelegate dailymotionCloseModalDialog:self];
+        return NO;
+    }
+    else if (navigationType == UIWebViewNavigationTypeLinkClicked)
+    {
+        [UIDelegate dailymotionCloseModalDialog:self];
+        if ([UIDelegate respondsToSelector:@selector(dailymotion:shouldOpenURLInExternalBrowser:)])
+        {
+            if ([UIDelegate dailymotion:self shouldOpenURLInExternalBrowser:request.URL])
+            {
+                [[UIApplication sharedApplication] openURL:request.URL];
+            }
+        }
+        return NO;
+    }
+    else
+    {
+        return YES;
+    }
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    if ([error code] == 102) // Frame load interrupted by previous delegate method isn't an error
+    {
+        return;
+    }
+
+    [self raiseGlobalError:[NSError errorWithDomain:DailymotionTransportErrorDomain
+                                               code:[error code]
+                                           userInfo:[error userInfo]]];
+}
+
+#else
+
+#pragma mark WebView (delegate)
+
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+    if ([request.URL.scheme isEqualToString:@"dailymotion"])
+    {
+        [self handleOAuthAuthorizationResponseWithURL:request.URL];
+        [UIDelegate dailymotionCloseModalDialog:self];
+        [listener ignore];
+    }
+    // TODO: detect clicked links
+    else
+    {
+        [listener use];
+    }
+}
+
+- (void)webView:(WebView *)sender resource:(id)identifier didFailLoadingWithError:(NSError *)error fromDataSource:(WebDataSource *)dataSource
+{
+    if ([error code] == 102) // Frame load interrupted by previous delegate method isn't an error
+    {
+        return;
+    }
+
+    [self raiseGlobalError:[NSError errorWithDomain:DailymotionTransportErrorDomain
+                                               code:[error code]
+                                           userInfo:[error userInfo]]];    
+}
+
+#endif
 
 @end

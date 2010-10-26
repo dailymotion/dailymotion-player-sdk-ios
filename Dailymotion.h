@@ -6,11 +6,6 @@
 //  Copyright 2010 Dailymotion. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#if TARGET_OS_IPHONE
-    #import <CFNetwork/CFNetwork.h>
-#endif
-
 @class Dailymotion;
 
 @protocol DailymotionDelegate <NSObject>
@@ -75,6 +70,39 @@
 
 @end
 
+@protocol DailymotionUIDelegate <NSObject>
+
+/**
+ * This delegate method is called when the Dailymotion SDK needs to show a modal dialog window to the user in order to
+ * ask for end-user permission to connect your application with his account. You may implement this method only if you
+ * choose ``DailymotionGrantTypeToken`` grant type. In response to this delegate, your application have to present the
+ * given view to the end-user.
+ *
+ * The default implementation of this delegate method is to create a new window with the content of the view.
+ */
+#if TARGET_OS_IPHONE
+- (void)dailymotion:(Dailymotion *)dailymotion createModalDialogWithView:(UIView *)view;
+#else
+- (void)dailymotion:(Dailymotion *)dailymotion createModalDialogWithView:(NSView *)view;
+#endif
+
+/**
+ * This delegate method is called when the Dailymotion SDK authorization process is finished and instruct the reciever
+ * to close the previousely created modal dialog.
+ */
+- (void)dailymotionCloseModalDialog:(Dailymotion *)dailymotion;
+
+@optional
+
+/**
+ * When a link is clicked in the authorization dialog, like for instance to create an account or recover a lost password,
+ * the Dailymotion SDK asks the UI delegate if the link should be openned in an external browser or if the UI delegate
+ * want to handle the openned link by itself.
+ */
+- (BOOL)dailymotion:(Dailymotion *)dailymotion shouldOpenURLInExternalBrowser:(NSURL *)url;
+
+@end
+
 typedef enum
 {
     DailymotionNoGrant,
@@ -85,19 +113,26 @@ typedef enum
 
 typedef enum
 {
-    DailymotionStateNone,
-    DailymotionStateOAuthRequest,
-    DailymotionStateAPIRequest
-} DailymotionState;
+    DailymotionConnectionStateNone,
+    DailymotionConnectionStateOAuthRequest,
+    DailymotionConnectionStateAPIRequest
+} DailymotionConnectionState;
 
 extern NSString * const DailymotionTransportErrorDomain;
 extern NSString * const DailymotionAuthErrorDomain;
 extern NSString * const DailymotionApiErrorDomain;
 
-@interface Dailymotion : NSObject <DailymotionDelegate>
+#if TARGET_OS_IPHONE
+#define PLATFORM_DELEGATES , UIWebViewDelegate
+#else
+#define PLATFORM_DELEGATES
+#import <WebKit/WebKit.h>
+#endif
+
+@interface Dailymotion : NSObject <DailymotionDelegate PLATFORM_DELEGATES>
 {
     @private
-    DailymotionState currentState;
+    DailymotionConnectionState apiConnectionState;
     DailymotionGrantType grantType;
     NSDictionary *grantInfo;
     NSTimeInterval timeout;
@@ -109,10 +144,16 @@ extern NSString * const DailymotionApiErrorDomain;
     NSDictionary *session;
     BOOL autoSaveSession, sessionLoaded;
     NSUInteger callNextId;
+    id<DailymotionUIDelegate> UIDelegate;
 }
 
 @property (nonatomic, assign) NSTimeInterval timeout;
 @property (nonatomic, readonly) NSString *version;
+
+/**
+ * Set the user interface delegate that conforms to the ``DailymotionUIDelegate`` protocol.
+ */
+@property (nonatomic, assign) id<DailymotionUIDelegate> UIDelegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session

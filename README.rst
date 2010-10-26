@@ -23,11 +23,12 @@ This mode is the mode you should use in most cases. In this mode an ``UIWebView`
 Here is a usage example::
 
     dailymotion = [[Dailymotion alloc] init];
+    dailymotion.UIDelegate = self;
     [dailymotion setGrantType:DailymotionGrantTypeToken
                    withAPIKey:apiKey secret:apiSecret scope:@"read"];
     [dailymotion callMethod:method withArguments:arguments delegate:self];
 
-TODO
+You have to implement the DailymotionUIDelegate protocol in order to show user a modal dialog to the end-user asking for permission to link your application with his account. The ``dailymotion:createModalDialogWithView:`` method instructs the delegate to show the given view to the user. You have the choice to show this view in a separate window or as part of you application UI. The ``dailymotionCloseModalDialog:`` method is called when the modal dialog should be closed once the authentication has been completed.
 
 Password Grant Type
 ^^^^^^^^^^^^^^^^^^^
