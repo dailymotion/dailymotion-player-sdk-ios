@@ -15,8 +15,8 @@ Authenticate
 
 The Dailymotion API requires OAuth 2.0 authentication in order to be used. This library implements three granting methods of OAuth 2.0 for different kinds of usages.
 
-Token Grant Type
-^^^^^^^^^^^^^^^^
+Authorization Grant Type
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 This mode is the mode you should use in most cases. In this mode an ``UIWebView`` under iOS or a ``WebView`` on Mac OS X is opened with an authorization page presented to the end-user.
 
@@ -24,7 +24,7 @@ Here is a usage example::
 
     dailymotion = [[Dailymotion alloc] init];
     dailymotion.UIDelegate = self;
-    [dailymotion setGrantType:DailymotionGrantTypeToken
+    [dailymotion setGrantType:DailymotionGrantTypeAuthorization
                    withAPIKey:apiKey secret:apiSecret scope:@"read"];
     [dailymotion callMethod:method withArguments:arguments delegate:self];
 
@@ -33,17 +33,17 @@ You have to implement the DailymotionUIDelegate protocol in order to show user a
 Password Grant Type
 ^^^^^^^^^^^^^^^^^^^
 
-If the token grant type doesn't suits your application workflow, you can request end-user credentials and use the password grant type to authenticate requests. Note that you MUST NOT store end-user credentials.
+If the authorization grant type doesn't suits your application workflow, you can request end-user credentials and use the password grant type to authenticate requests. Note that you MUST NOT store end-user credentials.
 
 Here is a usage example::
 
     dailymotion = [[Dailymotion alloc] init];
-    NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:
-                          kDMUsername, @"username", kDMPassword, @"password", nil];
+    dailymotion.UIDelegate = self;
     [dailymotion setGrantType:DailymotionGrantTypePassword
-                   withAPIKey:apiKey secret:apiSecret scope:@"read"
-                         info:info];
+                   withAPIKey:apiKey secret:apiSecret scope:@"read"];
     [dailymotion callMethod:method withArguments:arguments delegate:self];
+
+You have to implement the DailymotionUIDelegate protocol in order to be asked by the API when to request end-user credentials via the ``dailymotionDidRequestUserCredentials:`` method. In response, you will call the ``setUsername:password:`` method with user credentials once you got them.
 
 None Grant Type
 ^^^^^^^^^^^^^^^

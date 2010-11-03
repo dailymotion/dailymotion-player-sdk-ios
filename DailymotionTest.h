@@ -13,9 +13,10 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import "Dailymotion.h"
 
-@interface DailymotionTest : SenTestCase <DailymotionDelegate>
+@interface DailymotionTest : SenTestCase <DailymotionDelegate, DailymotionUIDelegate>
 {
     NSMutableArray *results;
+    NSString *username, *password;
 }
 
 @end

@@ -21,14 +21,18 @@
 
 @implementation DailymotionTest
 
-- (void)setUp
+- (void)tearDown
 {
     [results release], results = nil;
-    results = [[NSMutableArray alloc] init];
+    [username release], username = nil;
+    [password release], password = nil;
 }
 
 - (void)waitResponseWithTimeout:(NSTimeInterval)timeout
 {
+    [results release], results = nil;
+    results = [[NSMutableArray alloc] init];
+
     NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:timeout];
     while ([results count] == 0 && [expires timeIntervalSinceNow] > 0)
     {
@@ -46,6 +50,8 @@
     STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"test", @"Is valid result.");
+
+    [api release];
 }
 
 - (void)testMultiCall
@@ -62,6 +68,8 @@
     STAssertEqualObjects([[[results objectAtIndex:0] objectForKey:@"result"] objectForKey:@"message"], @"test", @"First result is valid.");
     STAssertEqualObjects([[results objectAtIndex:1] valueForKey:@"type"], @"error", @"Second result is error.");
     STAssertEqualObjects([[results objectAtIndex:2] valueForKey:@"type"], @"auth_required", @"Third result is auth_required.");
+
+    [api release];
 }
 
 - (void)testMultiCallIntermix
@@ -80,12 +88,12 @@
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call1", @"Is first call.");
 
     // Reinit the result queue
-    [results release], results = nil;
-    results = [[NSMutableArray alloc] init];
     [self waitResponseWithTimeout:5];
 
     STAssertEquals([results count], (NSUInteger)1, @"There's is 1 results.");
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call2", @"Is first call.");
+
+    [api release];
 }
 
 - (void)testMultiCallLimit
@@ -109,18 +117,19 @@
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call10", @"The last result is the 10th.");
 
     // Reinit the result queue
-    [results release], results = nil;
-    results = [[NSMutableArray alloc] init];
     [self waitResponseWithTimeout:5];
 
     STAssertEquals([results count], (NSUInteger)1, @"The 11th result made its way on a second request.");
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call11", @"It's the 11th one.");
+
+    [api release];
 }
 
 - (void)testGrantTypeNone
 {
     Dailymotion *api = [[Dailymotion alloc] init];
     [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api clearSession];
     [api callMethod:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
@@ -131,16 +140,34 @@
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
+
+    [api release];
+}
+
+- (void)testGrantTypeWrongPassword
+{
+    Dailymotion *api = [[Dailymotion alloc] init];
+    api.UIDelegate = self;
+    username = @"username";
+    password = @"wrong_password";
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api clearSession];
+    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+
+    [self waitResponseWithTimeout:5];
+
+    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
+    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"error", @"Is error response");
 }
 
 - (void)testGrantTypePassword
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:
-                          kDMUsername, @"username",
-                          kDMPassword, @"password",
-                          nil];
-    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete" info:info];
+    api.UIDelegate = self;
+    username = kDMUsername;
+    password = kDMPassword;
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api clearSession];
     [api callMethod:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
@@ -153,17 +180,34 @@
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
 
+    [api release];
+    [username release], username = nil;
+    [password release], password = nil;
+    api = [[Dailymotion alloc] init];
+    api.UIDelegate = self;
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+
+    [self waitResponseWithTimeout:5];
+
+    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
+    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
+    result = [[results lastObject] objectForKey:@"result"];
+    STAssertEqualObjects([result objectForKey:@"username"], kDMUsername, @"Is valid username.");
+
+    [api release];
 }
 
-- (void)testGrantTypeToken
+- (void)testGrantTypeAuthorization
 {
-    // TODO: implement token grant type
+    // TODO: implement authorization grant type test
 }
 
 - (void)testUploadFile
 {
     Dailymotion *api = [[Dailymotion alloc] init];
     [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api clearSession];
     [api uploadFile:kDMTestFilePath delegate:self];
 
     [self waitResponseWithTimeout:100];
@@ -171,6 +215,8 @@
     STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"file_upload", @"Is file_upload response");
     STAssertNotNil([[results lastObject] objectForKey:@"url"], @"Got an URL.");
+
+    [api release];
 }
 
 - (void)testSessionStoreKey
@@ -181,12 +227,25 @@
     NSString *sessionStoreKey = [api sessionStoreKey];
     STAssertNotNil(sessionStoreKey, @"Session store key is not nil if grant type defined");
     STAssertTrue([sessionStoreKey length] < 50, @"Session store key is not too long");
-    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write"];
-    STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when scope changes");
     [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:@"another secret" scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API secret changes");
     [api setGrantType:DailymotionGrantTypeNone withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API key changes");
+
+    [api release];
+}
+
+- (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion
+{
+    NSLog(@"call delegate cred");
+    if (username)
+    {
+        [dailymotion setUsername:username password:password];
+    }
+    else
+    {
+        STAssertTrue(NO, @"API unexpectedly asked for end-user credentials");
+    }
 }
 
 - (void)dailymotion:(Dailymotion *)dailymotion didReturnResult:(id)result userInfo:(NSDictionary *)userInfo
