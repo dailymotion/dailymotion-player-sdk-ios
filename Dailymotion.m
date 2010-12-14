@@ -136,7 +136,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         {
             case DailymotionGrantTypePassword: currentGrantType = @"DailymotionGrantTypePassword"; break;
             case DailymotionGrantTypeAuthorization: currentGrantType = @"DailymotionGrantTypeAuthorization"; break;
-            case DailymotionGrantTypeNone: currentGrantType = @"DailymotionGrantTypeNone"; break;
+            case DailymotionGrantTypeClientCredentials: currentGrantType = @"DailymotionGrantTypeClientCredentials"; break;
             case DailymotionNoGrant: currentGrantType = @"DailymotionNoGrant"; break;
         }
         if (UIDelegate)
@@ -234,7 +234,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         // Perform token server request
         apiConnectionState = DailymotionConnectionStateOAuthRequest;
         NSMutableDictionary *payload = [NSMutableDictionary dictionary];
-        [payload setObject:@"none" forKey:@"grant_type"];
+        [payload setObject:@"client_credentials" forKey:@"grant_type"];
         [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
         [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
         [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
@@ -283,7 +283,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         NSMutableDictionary *headers = [NSMutableDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
         if (accessToken)
         {
-            [headers setValue:[NSString stringWithFormat:@"OAuth %@", accessToken] forKey:@"Authorization"];
+            [headers setValue:[NSString stringWithFormat:@"OAuth2 %@", accessToken] forKey:@"Authorization"];
         }
 
         apiConnectionState = DailymotionConnectionStateAPIRequest;
@@ -359,7 +359,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             }
         }
 
-        if ([error isEqualToString:@"expired_token"])
+        if ([error isEqualToString:@"invalid_token"])
         {
             @synchronized(self) // connection should not be seen nil by other threads before the access_token request
             {
@@ -1031,7 +1031,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
     [self raiseGlobalError:[NSError errorWithDomain:DailymotionTransportErrorDomain
                                                code:[error code]
-                                           userInfo:[error userInfo]]];    
+                                           userInfo:[error userInfo]]];
 }
 
 #endif

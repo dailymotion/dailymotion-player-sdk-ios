@@ -45,17 +45,17 @@ Here is a usage example::
 
 You have to implement the DailymotionUIDelegate protocol in order to be asked by the API when to request end-user credentials via the ``dailymotionDidRequestUserCredentials:`` method. In response, you will call the ``setUsername:password:`` method with user credentials once you got them.
 
-None Grant Type
-^^^^^^^^^^^^^^^
+Client Credentials Grant Type
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you don't need to access the Dailymotion API on behalf of a user because, for instance, you plan to
-only access public data, you can use the NONE grant type. With this grant type, you will only have
+only access public data, you can use the client credentials grant type. With this grant type, you will only have
 access to public data or private date of the user owning the API key.
 
 Here is a usage example::
 
     dailymotion = [[Dailymotion alloc] init];
-    [dailymotion setGrantType:DailymotionGrantTypeNone
+    [dailymotion setGrantType:DailymotionGrantTypeClientCredentials
                    withAPIKey:apiKey secret:apiSecret scope:@"read"];
     [dailymotion callMethod:method withArguments:arguments delegate:self];
 

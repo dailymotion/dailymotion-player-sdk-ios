@@ -125,10 +125,10 @@
     [api release];
 }
 
-- (void)testGrantTypeNone
+- (void)testGrantTypeClientCredentials
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
     [api callMethod:@"auth.info" withArguments:nil delegate:self];
 
@@ -206,7 +206,7 @@
 - (void)testUploadFile
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
     [api uploadFile:kDMTestFilePath delegate:self];
 
@@ -223,13 +223,13 @@
 {
     Dailymotion *api = [[Dailymotion alloc] init];
     STAssertNil([api sessionStoreKey], @"Session store key is nil if no grant type");
-    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     NSString *sessionStoreKey = [api sessionStoreKey];
     STAssertNotNil(sessionStoreKey, @"Session store key is not nil if grant type defined");
     STAssertTrue([sessionStoreKey length] < 50, @"Session store key is not too long");
-    [api setGrantType:DailymotionGrantTypeNone withAPIKey:kDMAPIKey secret:@"another secret" scope:@"read write delete"];
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:@"another secret" scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API secret changes");
-    [api setGrantType:DailymotionGrantTypeNone withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API key changes");
 
     [api release];

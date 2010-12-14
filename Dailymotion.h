@@ -121,7 +121,7 @@ typedef enum
 {
     DailymotionNoGrant,
     DailymotionGrantTypeAuthorization,
-    DailymotionGrantTypeNone,
+    DailymotionGrantTypeClientCredentials,
     DailymotionGrantTypePassword
 } DailymotionGrantType;
 
@@ -194,7 +194,7 @@ extern NSString * const DailymotionApiErrorDomain;
  *
  * To create an API key/secret pair, go to: http://www.dailymotion.com/profile/developer
  *
- * @param grantType Can be one of ``DailymotionGrantTypeAuthorization``, ``DailymotionGrantTypeNone`` or ``DailymotionGrantTypePassword```.
+ * @param grantType Can be one of ``DailymotionGrantTypeAuthorization``, ``DailymotionGrantTypeClientCredentials`` or ``DailymotionGrantTypePassword```.
  * @param apiKey The API key
  * @param apiSecret The API secret
  * @param scope The permission scope requested (can be none of any of ``read``, ``write`` or ``delete``).
