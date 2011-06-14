@@ -494,18 +494,18 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         }
         [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0 userInfo:userInfo]];
     }
-    else if ([result valueForKey:@"access_token"])
+    else if ([result valueForKey:@"access_token"] && ![[result valueForKey:@"access_token"] isKindOfClass:[NSNull class]])
     {
         NSMutableDictionary *tmpSession = [NSMutableDictionary dictionaryWithObjectsAndKeys:[result valueForKey:@"access_token"], @"access_token", nil];
-        if ([result valueForKey:@"expires_in"])
+        if ([result valueForKey:@"expires_in"] && ![[result valueForKey:@"expires_in"] isKindOfClass:[NSNull class]])
         {
             [tmpSession setObject:[NSDate dateWithTimeIntervalSinceNow:[[result valueForKey:@"expires_in"] doubleValue]] forKey:@"expires"];
         }
-        if ([result valueForKey:@"refresh_token"])
+        if ([result valueForKey:@"refresh_token"] && ![[result valueForKey:@"refresh_token"] isKindOfClass:[NSNull class]])
         {
             [tmpSession setObject:[result valueForKey:@"refresh_token"] forKey:@"refresh_token"];
         }
-        if ([result valueForKey:@"scope"])
+        if ([result valueForKey:@"scope"] && ![[result valueForKey:@"scope"] isKindOfClass:[NSNull class]])
         {
             [tmpSession setObject:[result valueForKey:@"scope"] forKey:@"scope"];
         }
