@@ -299,6 +299,7 @@
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = Dailymotion;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -397,7 +398,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Tests;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
