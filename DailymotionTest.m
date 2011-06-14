@@ -144,6 +144,36 @@
     [api release];
 }
 
+- (void)testGrantTypeClientCredentialsRefreshToken
+{
+    Dailymotion *api = [[Dailymotion alloc] init];
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
+    [api clearSession];
+    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+
+    [self waitResponseWithTimeout:5];
+
+    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
+    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
+
+    NSString *accessToken = [api.session objectForKey:@"access_token"];
+    NSMutableDictionary *session = [api.session mutableCopy];
+    [session setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:@"expires"];
+    [session removeObjectForKey:@"refresh_token"];
+    api.session = session;
+
+    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+
+    [self waitResponseWithTimeout:5];
+
+    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
+    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
+    STAssertFalse([accessToken isEqual:[api.session objectForKey:@"access_token"]], @"Access token refreshed with not refresh_token");
+
+    [api release];
+}
+
+
 - (void)testGrantTypeWrongPassword
 {
     Dailymotion *api = [[Dailymotion alloc] init];
