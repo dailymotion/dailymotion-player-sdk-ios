@@ -407,7 +407,12 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         NSDictionary *result;
         for (result in results)
         {
-            NSString *callId = [result objectForKey:@"id"];
+            NSString *callId = nil;
+
+            if ([result isKindOfClass:[NSDictionary class]])
+            {
+                callId = [result objectForKey:@"id"];
+            }
 
             if (!callId)
             {

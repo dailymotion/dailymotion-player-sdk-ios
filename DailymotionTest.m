@@ -125,6 +125,19 @@
     [api release];
 }
 
+- (void)testCallInvalidMethod
+{
+    Dailymotion *api = [[Dailymotion alloc] init];
+    [api callMethod:@"invalid.method" withArguments:nil delegate:self];
+
+    [self waitResponseWithTimeout:5];
+
+    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
+    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"error", @"Is error response");
+
+    [api release];
+}
+
 - (void)testGrantTypeClientCredentials
 {
     Dailymotion *api = [[Dailymotion alloc] init];
@@ -172,7 +185,6 @@
 
     [api release];
 }
-
 
 - (void)testGrantTypeWrongPassword
 {
