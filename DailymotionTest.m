@@ -59,7 +59,7 @@
     Dailymotion *api = [[Dailymotion alloc] init];
     [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
     [api callMethod:@"test.echo" withArguments:nil delegate:self];
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api callMethod:@"video.subscriptions" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -150,9 +150,9 @@
     STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
     NSDictionary *result = [[results lastObject] objectForKey:@"result"];
-    STAssertTrue([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
-    STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
-    STAssertTrue([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
+    STAssertFalse([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
+    STAssertFalse([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
+    STAssertFalse([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
 
     [api release];
 }
@@ -248,7 +248,10 @@
 - (void)testUploadFile
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    api.UIDelegate = self;
+    username = kDMUsername;
+    password = kDMPassword;
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
     [api uploadFile:kDMTestFilePath delegate:self];
 
