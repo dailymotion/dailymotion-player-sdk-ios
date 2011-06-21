@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
-		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; };
+		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E270FE126369C100B541BE /* Dailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* Dailymotion.m */; };
 		53E271BD1263F56A00B541BE /* SBJsonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E271B01263F56A00B541BE /* SBJsonBase.h */; };
 		53E271BE1263F56A00B541BE /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E271B11263F56A00B541BE /* SBJsonBase.m */; };
@@ -297,9 +297,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
-				INSTALL_PATH = /usr/local/lib;
+				INSTALL_PATH = "“$(BUILT_PRODUCTS_DIR)”";
 				PRODUCT_NAME = Dailymotion;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "“$(TARGET_NAME)”";
 			};
 			name = Debug;
 		};
@@ -312,9 +314,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
-				INSTALL_PATH = /usr/local/lib;
+				INSTALL_PATH = "“$(BUILT_PRODUCTS_DIR)”";
 				PRODUCT_NAME = dailymotion_sdk_objc;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "“$(TARGET_NAME)”";
 			};
 			name = Release;
 		};
