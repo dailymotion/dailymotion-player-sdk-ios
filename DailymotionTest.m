@@ -43,7 +43,7 @@
 - (void)testSingleCall
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -57,9 +57,9 @@
 - (void)testMultiCall
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:nil delegate:self];
-    [api callMethod:@"video.subscriptions" withArguments:nil delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" delegate:self];
+    [api request:@"video.subscriptions" delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -75,12 +75,12 @@
 - (void)testMultiCallIntermix
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call1" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call1" forKey:@"message"] delegate:self];
 
     // Roll the runloop once in order send the request
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call2" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call2" forKey:@"message"] delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -99,17 +99,17 @@
 - (void)testMultiCallLimit
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call1" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call2" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call3" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call4" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call5" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call6" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call7" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call8" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call9" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call10" forKey:@"message"] delegate:self];
-    [api callMethod:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call11" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call1" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call2" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call3" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call4" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call5" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call6" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call7" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call8" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call9" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call10" forKey:@"message"] delegate:self];
+    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call11" forKey:@"message"] delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -128,7 +128,7 @@
 - (void)testCallInvalidMethod
 {
     Dailymotion *api = [[Dailymotion alloc] init];
-    [api callMethod:@"invalid.method" withArguments:nil delegate:self];
+    [api request:@"invalid.method" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -143,7 +143,7 @@
     Dailymotion *api = [[Dailymotion alloc] init];
     [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api request:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -162,7 +162,7 @@
     Dailymotion *api = [[Dailymotion alloc] init];
     [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
     [api clearSession];
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api request:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -175,7 +175,7 @@
     [session removeObjectForKey:@"refresh_token"];
     api.session = session;
 
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api request:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -194,7 +194,7 @@
     password = @"wrong_password";
     [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api request:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -210,7 +210,7 @@
     password = kDMPassword;
     [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api request:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 
@@ -228,7 +228,7 @@
     api = [[Dailymotion alloc] init];
     api.UIDelegate = self;
     [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
-    [api callMethod:@"auth.info" withArguments:nil delegate:self];
+    [api request:@"auth.info" withArguments:nil delegate:self];
 
     [self waitResponseWithTimeout:5];
 

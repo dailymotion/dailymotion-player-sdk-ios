@@ -272,7 +272,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             NSDictionary *callInfo = [callQueue objectForKey:callId];
             NSDictionary *call = [NSMutableDictionary dictionary];
             [call setValue:[callInfo valueForKey:@"id"] forKey:@"id"];
-            [call setValue:[callInfo valueForKey:@"method"] forKey:@"call"];
+            [call setValue:[callInfo valueForKey:@"path"] forKey:@"call"];
             if ([callInfo valueForKey:@"args"])
             {
                 [call setValue:[callInfo valueForKey:@"args"] forKey:@"args"];
@@ -690,21 +690,28 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (void)logout
 {
-    [self callMethod:@"auth.logout" withArguments:nil delegate:self];
+    [self request:@"auth.logout" delegate:self];
 }
 
-- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate
+- (void)request:(NSString *)path delegate:(id<DailymotionDelegate>)delegate
 {
-    [self callMethod:methodName withArguments:arguments delegate:delegate userInfo:nil];
+    [self request:path withArguments:nil delegate:delegate userInfo:nil];
 }
-
-- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo
+- (void)request:(NSString *)path delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo
+{
+    [self request:path withArguments:nil delegate:delegate userInfo:userInfo];
+}
+- (void)request:(NSString *)path withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate
+{
+    [self request:path withArguments:arguments delegate:delegate userInfo:nil];
+}
+- (void)request:(NSString *)path withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo
 {
     @synchronized(self)
     {
         NSString *callId = [NSString stringWithFormat:@"%d", callNextId++];
         NSMutableDictionary *call = [[NSMutableDictionary alloc] init];
-        [call setValue:methodName forKey:@"method"];
+        [call setValue:path forKey:@"path"];
         [call setValue:arguments forKey:@"args"];
         [call setValue:delegate forKey:@"delegate"];
         [call setValue:userInfo forKey:@"userInfo"];
@@ -723,6 +730,16 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     }
 }
 
+- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate
+{
+    [self request:methodName withArguments:arguments delegate:delegate userInfo:nil];
+}
+
+- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo
+{
+    [self request:methodName withArguments:arguments delegate:delegate userInfo:userInfo];
+}
+
 - (void)uploadFile:(NSString *)filePath delegate:(id<DailymotionDelegate>)delegate
 {
     if (![[NSFileManager defaultManager] fileExistsAtPath:filePath])
@@ -738,7 +755,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
     [userInfo setValue:filePath forKey:@"file_path"];
     [userInfo setValue:delegate forKey:@"delegate"];
-    [self callMethod:@"file.upload" withArguments:nil delegate:self userInfo:userInfo];
+    [self request:@"file.upload" delegate:self userInfo:userInfo];
 }
 
 - (void)clearSession

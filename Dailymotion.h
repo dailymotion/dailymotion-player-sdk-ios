@@ -16,9 +16,9 @@
  * Called when an API request returned a successful response.
  *
  * @param dailymotion The dailymotion instance sending the message.
- * @param result The result of the method call returned by the API. It may be a ``NSDictionnary`` or an
+ * @param result The result returned by the API. It may be a ``NSDictionnary`` or an
  *               ``NSArray`` of ``NSDictionnary``s depending on the format of the API response.
- * @param userInfo The dictionnary provided to the ``callMethod:withArguments:delegate:userInfo:`` method.
+ * @param userInfo The dictionnary provided to the ``request:withArguments:delegate:userInfo:`` method.
  */
 - (void)dailymotion:(Dailymotion *)dailymotion didReturnResult:(id)result userInfo:(NSDictionary *)userInfo;
 
@@ -30,19 +30,19 @@
  *              - DailymotionTransportErrorDomain: when the error is at transport level (network error, server error, protocol error)
  *              - DailymotionAuthErrorDomain: when the error is at the OAuth level (invalid key, unsufficient permission, etc.)
  *              - DailymotionApiErrorDomain: the the error is at the API level (see `API reference for more info
- *                <http://www.dailymotion.com/doc/api/advanced-api-reference.html>`_)
- * @param userInfo The dictionnary provided to the ``callMethod:withArguments:delegate:userInfo:`` method.
+ *                <http://www.dailymotion.com/doc/api/reference.html>`_)
+ * @param userInfo The dictionnary provided to the ``request:withArguments:delegate:userInfo:`` method.
  */
 - (void)dailymotion:(Dailymotion *)dailymotion didReturnError:(NSError *)error userInfo:(NSDictionary *)userInfo;
 
 /**
- * Called when a method call resulted in a ``403`` error. This can happen when a method requesting an authentication has
- * been call with no authentication or if the authorization doesn't have sufficient scope or if the used API key is
- * missing a required role.
+ * Called when an API request call resulted in a ``403`` error. This can happen when an API request requiring an authentication has
+ * been call with no previous authentication or if the authorization doesn't have sufficient scope or if the used API key is
+ * missing a requires role.
  *
  * @param dailymotion The dailymotion instance sending the message.
  * @param message The message comming from the server asking for authentication
- * @param userInfo The dictionnary provided to the ``callMethod:withArguments:delegate:userInfo:`` method.
+ * @param userInfo The dictionnary provided to the ``request:withArguments:delegate:userInfo:`` method.
  */
 - (void)dailymotion:(Dailymotion *)dailymotion didRequestAuthWithMessage:(NSString *)message userInfo:(NSDictionary *)userInfo;
 
@@ -216,21 +216,27 @@ extern NSString * const DailymotionApiErrorDomain;
 /**
  * Make a request to Dailymotion's API with the given method name and arguments.
  *
- * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/advanced-api-reference.html>`_
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
- * @param methodName A valid method name
+ * @param path An API URI path
  * @param arguments An NSDictionnary with key-value pairs containing arguments
  * @param delegate An object implementing ``DailymotionDelegate`` protocol for notifying the calling application
  *                 when the request has received response
  * @param userInfo A dictionary containing user-defined information which will be passed back with each delegate methods
  */
-- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo;
-- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate;
-
+- (void)request:(NSString *)path delegate:(id<DailymotionDelegate>)delegate;
+- (void)request:(NSString *)path delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo;
+- (void)request:(NSString *)path withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate;
+- (void)request:(NSString *)path withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo;
 
 /**
- * Upload a file to Dailymotion and generate an URL to be used by methods requiring a file URL like ``video.create``
- * for instance.
+ * @deprecated
+ */
+- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo __attribute__ ((deprecated));
+- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate __attribute__ ((deprecated));
+
+/**
+ * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
  *
  * @param filePath The path to the file to upload
  */
