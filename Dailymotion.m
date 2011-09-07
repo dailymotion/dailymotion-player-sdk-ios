@@ -12,7 +12,7 @@
 #import "SBJsonWriter.h"
 #import <CommonCrypto/CommonDigest.h>
 
-#define kDMAPIEndpointURL @"https://api.dailymotion.com/json"
+#define kDMAPIEndpointURL @"https://api.dailymotion.com"
 #define kDMOAuthAuthorizeEndpointURL @"https://api.dailymotion.com/oauth/authorize"
 #define kDMOAuthTokenEndpointURL @"https://api.dailymotion.com/oauth/token"
 #define kDMOAuthRedirectURI @"none://fake-callback"
