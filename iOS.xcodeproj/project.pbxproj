@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 531138761430D68400ED3153 /* DailymotionPlayerViewController.h */; };
+		531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 531138771430D68400ED3153 /* DailymotionPlayerViewController.m */; };
 		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
 		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -34,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		531138761430D68400ED3153 /* DailymotionPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionPlayerViewController.h; sourceTree = "<group>"; };
+		531138771430D68400ED3153 /* DailymotionPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DailymotionPlayerViewController.m; sourceTree = "<group>"; };
 		531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBoundableInputStream.h; sourceTree = "<group>"; };
 		531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBoundableInputStream.m; sourceTree = "<group>"; };
 		533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTestConfig.h; sourceTree = "<group>"; };
@@ -107,6 +111,8 @@
 			children = (
 				53E270FB126369C100B541BE /* Dailymotion.h */,
 				53E270FC126369C100B541BE /* Dailymotion.m */,
+				531138761430D68400ED3153 /* DailymotionPlayerViewController.h */,
+				531138771430D68400ED3153 /* DailymotionPlayerViewController.m */,
 				531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */,
 				531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */,
 				53E271A81263F56A00B541BE /* JSON */,
@@ -158,6 +164,7 @@
 				53E271BF1263F56A00B541BE /* SBJsonParser.h in Headers */,
 				53E271C11263F56A00B541BE /* SBJsonWriter.h in Headers */,
 				531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */,
+				531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +280,7 @@
 				53E271C01263F56A00B541BE /* SBJsonParser.m in Sources */,
 				53E271C21263F56A00B541BE /* SBJsonWriter.m in Sources */,
 				531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */,
+				531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

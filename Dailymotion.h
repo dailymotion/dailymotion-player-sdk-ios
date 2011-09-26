@@ -6,6 +6,10 @@
 //  Copyright 2010 Dailymotion. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
+#import "DailymotionPlayerViewController.h"
+#endif
+
 @class Dailymotion;
 
 @protocol DailymotionDelegate <NSObject>
@@ -189,6 +193,19 @@ extern NSString * const DailymotionApiErrorDomain;
  */
 @property (nonatomic, assign) BOOL autoSaveSession;
 
+
++ (void)setWebEndpoint:(NSString *)url;
++ (NSString *)WebEndpoint;
+
++ (void)setAPIEndpoint:(NSString *)url;
++ (NSString *)APIEndpoint;
+
++ (void)setOAuthAuthorizeEndpoint:(NSString *)url;
++ (NSString *)OAuthAuthorizeEndpoint;
+
++ (void)setOAuthTokenEndpoint:(NSString *)url;
++ (NSString *)OAuthTokenEndpoint;
+
 /**
  * Set the grant type to be used for API requests.
  *
@@ -241,6 +258,19 @@ extern NSString * const DailymotionApiErrorDomain;
  * @param filePath The path to the file to upload
  */
 - (void)uploadFile:(NSString *)filePath delegate:(id<DailymotionDelegate>)delegate;
+
+
+/**
+ * Create a DailymtionPlayer object initialized with the specified video ID.
+ *
+ * @param video The Dailymotion video ID that identifies the video that the player will load.
+ * @param params A dictionary containing `player parameters <http://www.dailymotion.com/doc/api/player.html#player-params>`_
+ *               that can be used to customize the player.
+ */
+#if TARGET_OS_IPHONE
+- (DailymotionPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
+- (DailymotionPlayerViewController *)player:(NSString *)video;
+#endif
 
 /**
  * Clears the session for the current grant type.
