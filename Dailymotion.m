@@ -16,7 +16,7 @@
 
 static NSString *WebEndpoint, *APIEndpoint, *OAuthAuthorizeEndpoint, *OAuthTokenEndpoint;
 
-static NSString *const kDMVersion = @"1.3";
+static NSString *const kDMVersion = @"1.4";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
 
