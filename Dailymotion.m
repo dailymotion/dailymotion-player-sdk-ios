@@ -548,12 +548,25 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     }
     else if ([result valueForKey:@"error"])
     {
-        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:[result valueForKey:@"error"] forKey:@"error"];
-        if ([result valueForKey:@"error_description"])
+        if (self.session && [[result valueForKey:@"error"] isEqualToString:@"invalid_grant"])
         {
-            [userInfo setObject:[result valueForKey:@"error_description"] forKey:NSLocalizedDescriptionKey];
+            // If we already have a session and get an invalid_grant, it's certainly because the refresh_token as expired or have been revoked
+            // In such case, we restart the authentication by reseting the session
+            self.session = nil;
+            [self resetAPIConnection];
+            [self requestAccessToken];
+            return;
         }
-        [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0 userInfo:userInfo]];
+        else
+        {
+            NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:[result valueForKey:@"error"] forKey:@"error"];
+            if ([result valueForKey:@"error_description"])
+            {
+                [userInfo setObject:[result valueForKey:@"error_description"] forKey:NSLocalizedDescriptionKey];
+            }
+            [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0 userInfo:userInfo]];
+            self.session = nil;
+        }
     }
     else if ([result valueForKey:@"access_token"] && ![[result valueForKey:@"access_token"] isKindOfClass:[NSNull class]])
     {
