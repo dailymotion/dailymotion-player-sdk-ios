@@ -907,6 +907,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (void)dealloc
 {
+    [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
+
     [apiConnection cancel];
     [apiConnection release];
     [apiResponseData release];
