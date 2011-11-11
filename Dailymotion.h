@@ -220,6 +220,11 @@ extern NSString * const DailymotionApiErrorDomain;
 - (void)setGrantType:(DailymotionGrantType)grantType withAPIKey:(NSString *)apiKey secret:(NSString *)apiSecret scope:(NSString *)scope;
 
 /**
+ * Get the grantType currently in use for API requests
+ */
+@property (nonatomic, readonly) DailymotionGrantType grantType;
+
+/**
  * Call this method when the API asked for credentials thru the ``dailymotionDidRequestUserCredentials:`` UIDelegate
  * method. DO NOT call this method BEFORE the API asked for it as it won't work.
  */
