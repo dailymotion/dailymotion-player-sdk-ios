@@ -406,11 +406,16 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         if (authenticateHeader)
         {
             NSScanner *scanner = [NSScanner scannerWithString:authenticateHeader];
-            [scanner scanString:@"error=\"" intoString:nil];
-            [scanner scanString:@"\"" intoString:&error];
-            if ([scanner scanString:@" error_description=\"" intoString:nil])
+            if ([scanner scanUpToString:@"error=\"" intoString:nil])
             {
-                [scanner scanString:@"\"" intoString:&message];
+                [scanner scanString:@"error=\"" intoString:nil];
+                [scanner scanUpToString:@"\"" intoString:&error];
+            }
+            [scanner setScanLocation:0];
+            if ([scanner scanUpToString:@"error_description=\"" intoString:nil])
+            {
+                [scanner scanString:@"error_description=\"" intoString:nil];
+                [scanner scanUpToString:@"\"" intoString:&message];
             }
         }
 
