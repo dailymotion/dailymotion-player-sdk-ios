@@ -712,36 +712,40 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (void)setGrantType:(DailymotionGrantType)type withAPIKey:(NSString *)apiKey secret:(NSString *)apiSecret scope:(NSString *)scope
 {
+    NSMutableDictionary *info = nil;
+
     if (type == DailymotionNoGrant)
     {
-        grantType = DailymotionNoGrant;
-        [grantInfo release], grantInfo = nil;
-        return;
+        info = nil;
     }
-
-    if (!apiKey || !apiSecret)
+    else
     {
-        [[NSException exceptionWithName:NSInvalidArgumentException
-                                 reason:@"Missing API key/secret."
-                               userInfo:nil] raise];
+        if (!apiKey || !apiSecret)
+        {
+            [[NSException exceptionWithName:NSInvalidArgumentException
+                                     reason:@"Missing API key/secret."
+                                   userInfo:nil] raise];
+        }
+
+        info = [[NSMutableDictionary alloc] init];
+
+        [info setValue:apiKey forKey:@"key"];
+        [info setValue:apiSecret forKey:@"secret"];
+        [info setValue:(scope ? scope : @"") forKey:@"scope"];
+
+        // Compute a uniq hash key for the current grant type setup
+        const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@", type, apiKey, apiSecret] UTF8String];
+        unsigned char r[CC_MD5_DIGEST_LENGTH];
+        CC_MD5(str, (CC_LONG)strlen(str), r);
+        [info setValue:[NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+                        r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]]
+                forKey:@"hash"];
     }
-
-    NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
-
-    [info setValue:apiKey forKey:@"key"];
-    [info setValue:apiSecret forKey:@"secret"];
-    [info setValue:(scope ? scope : @"") forKey:@"scope"];
-
-    // Compute a uniq hash key for the current grant type setup
-    const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@", type, apiKey, apiSecret] UTF8String];
-    unsigned char r[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(str, (CC_LONG)strlen(str), r);
-    [info setValue:[NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-                    r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]]
-            forKey:@"hash"];
 
     grantType = type;
-    grantInfo = info;
+    [grantInfo release];
+    grantInfo = [info copy];
+    [info release];
 }
 
 - (void)setUsername:(NSString *)username password:(NSString *)password
