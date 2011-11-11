@@ -100,15 +100,15 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     {
 #if TARGET_OS_IPHONE
         UIDevice *device = [UIDevice currentDevice];
-        userAgent = [[NSString stringWithFormat:@"Dailymotion-ObjC/%@ (%@ %@; %@)",
-                      kDMVersion, device.systemName, device.systemVersion, device.model] retain];
+        userAgent = [[NSString alloc] initWithFormat:@"Dailymotion-ObjC/%@ (%@ %@; %@)",
+                     kDMVersion, device.systemName, device.systemVersion, device.model];
 #else
         SInt32 versionMajor, versionMinor, versionBugFix;
         if (Gestalt(gestaltSystemVersionMajor, &versionMajor) != noErr) versionMajor = 0;
         if (Gestalt(gestaltSystemVersionMinor, &versionMinor) != noErr) versionMajor = 0;
         if (Gestalt(gestaltSystemVersionBugFix, &versionBugFix) != noErr) versionBugFix = 0;
-        userAgent = [[NSString stringWithFormat:@"Dailymotion-ObjC/%@ (Mac OS X %u.%u.%u; Machintosh)",
-                      kDMVersion, versionMajor, versionMinor, versionBugFix] retain];
+        userAgent = [[NSString alloc] stringWithFormat:@"Dailymotion-ObjC/%@ (Mac OS X %u.%u.%u; Machintosh)",
+                     kDMVersion, versionMajor, versionMinor, versionBugFix];
 #endif
     }
     return userAgent;
