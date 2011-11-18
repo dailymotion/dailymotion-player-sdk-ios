@@ -395,6 +395,30 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     }
 }
 
+- (void)raiseGlobalHTTPErrorMessage:(NSString *)message domain:(NSString *)domain type:(NSString *)type
+{
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    if (type)
+    {
+        [userInfo setObject:type forKey:@"error"];
+    }
+    if (message)
+    {
+        [userInfo setObject:message forKey:NSLocalizedDescriptionKey];
+    }
+    if (apiResponse)
+    {
+        [userInfo setObject:[NSNumber numberWithInt:apiResponse.statusCode] forKey:@"status-code"];
+
+        if ([apiResponse.allHeaderFields valueForKey:@"Content-Type"])
+        {
+            [userInfo setObject:[apiResponse.allHeaderFields valueForKey:@"Content-Type"] forKey:@"content-type"];
+        }
+    }
+
+    [self raiseGlobalError:[NSError errorWithDomain:domain code:0 userInfo:userInfo]];
+}
+
 - (void)handleAPIResponse
 {
     if ([apiResponse statusCode] == 400 || [apiResponse statusCode] == 401 || [apiResponse statusCode] == 403)
@@ -431,12 +455,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         }
         else
         {
-            NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:error forKey:@"error"];
-            if (message)
-            {
-                [userInfo setObject:message forKey:NSLocalizedDescriptionKey];
-            }
-            [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0 userInfo:userInfo]];
+            [self raiseGlobalHTTPErrorMessage:message domain:DailymotionAuthErrorDomain type:nil];
             return;
         }
     }
@@ -447,20 +466,15 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         NSArray *results = [jsonParser objectWithString:[[[NSString alloc] initWithData:apiResponseData encoding:NSUTF8StringEncoding] autorelease]];
         if (!results)
         {
-            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid API server response."
-                                                                 forKey:NSLocalizedDescriptionKey];
-            [self raiseGlobalError:[NSError errorWithDomain:DailymotionApiErrorDomain
-                                                       code:0
-                                                   userInfo:userInfo]];
+            [self raiseGlobalHTTPErrorMessage:@"Invalid API server response." domain:DailymotionApiErrorDomain type:nil];
             return;
         }
         else if ([apiResponse statusCode] != 200)
         {
-            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unknown error: %d.", [apiResponse statusCode]]
-                                                                 forKey:NSLocalizedDescriptionKey];
-            [self raiseGlobalError:[NSError errorWithDomain:DailymotionApiErrorDomain
-                                                       code:[apiResponse statusCode]
-                                                   userInfo:userInfo]];
+            [self raiseGlobalHTTPErrorMessage:[NSString stringWithFormat:@"Unknown error: %d.", [apiResponse statusCode]]
+                                       domain:DailymotionApiErrorDomain
+                                         type:nil];
+
             return;
         }
 
@@ -476,9 +490,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
             if (!callId)
             {
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid server response: missing `id' key."
-                                                                     forKey:NSLocalizedDescriptionKey];
-                [self raiseGlobalError:[NSError errorWithDomain:DailymotionApiErrorDomain code:0 userInfo:userInfo]];
+                [self raiseGlobalHTTPErrorMessage:@"Invalid server response: missing `id' key." domain:DailymotionApiErrorDomain type:nil];
                 return; // Stops there, we sent error to all delegates, this kind error should never happen but who knows...
             }
 
@@ -546,10 +558,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
     if (!result)
     {
-        [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain
-                                                   code:0
-                                               userInfo:[NSDictionary dictionaryWithObject:@"Invalid OAuth token server response."
-                                                                                    forKey:NSLocalizedDescriptionKey]]];
+        [self raiseGlobalHTTPErrorMessage:@"Invalid OAuth token server response." domain:DailymotionAuthErrorDomain type:nil];
     }
     else if ([result valueForKey:@"error"])
     {
@@ -564,12 +573,9 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         }
         else
         {
-            NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:[result valueForKey:@"error"] forKey:@"error"];
-            if ([result valueForKey:@"error_description"])
-            {
-                [userInfo setObject:[result valueForKey:@"error_description"] forKey:NSLocalizedDescriptionKey];
-            }
-            [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0 userInfo:userInfo]];
+            [self raiseGlobalHTTPErrorMessage:[result valueForKey:@"error_description"]
+                                       domain:DailymotionAuthErrorDomain
+                                         type:[result valueForKey:@"error"]];
             self.session = nil;
         }
     }
@@ -596,9 +602,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     }
     else
     {
-        [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0
-                                               userInfo:[NSDictionary dictionaryWithObject:@"No access token found in the token server response."
-                                                                                    forKey:NSLocalizedDescriptionKey]]];
+        [self raiseGlobalHTTPErrorMessage:@"No access token found in the token server response." domain:DailymotionAuthErrorDomain type:nil];
     }
 
     @synchronized(self)
@@ -651,7 +655,6 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         [self raiseGlobalError:[NSError errorWithDomain:DailymotionAuthErrorDomain code:0
                                                userInfo:[NSDictionary dictionaryWithObject:@"No code parameter returned by authorization server." forKey:NSLocalizedDescriptionKey]]];
     }
-
 }
 
 - (void)handleUploadResponse
