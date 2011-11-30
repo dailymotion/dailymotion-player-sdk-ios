@@ -415,6 +415,10 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             [userInfo setObject:[apiResponse.allHeaderFields valueForKey:@"Content-Type"] forKey:@"content-type"];
         }
     }
+    if (apiResponseData)
+    {
+        [userInfo setObject:[apiResponseData copy] forKey:@"content-data"];
+    }
 
     [self raiseGlobalError:[NSError errorWithDomain:domain code:0 userInfo:userInfo]];
 }
