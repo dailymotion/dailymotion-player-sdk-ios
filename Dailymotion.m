@@ -935,10 +935,10 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     [uploadResponseData release];
     [uploadResponse release];
 
-    [grantInfo release];
-    [callQueue release];
-    [uploadFileQueue release];
-    [session release];
+    [grantInfo release], grantInfo = nil;
+    [callQueue release], callQueue = nil;
+    [uploadFileQueue release], uploadFileQueue = nil;
+    [session release], session = nil;
     [super dealloc];
 }
 
