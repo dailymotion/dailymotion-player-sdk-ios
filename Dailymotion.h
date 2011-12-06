@@ -158,7 +158,7 @@ extern NSString * const DailymotionApiErrorDomain;
     NSHTTPURLResponse *uploadResponse, *apiResponse;
     NSMutableData *uploadResponseData, *apiResponseData;
     NSMutableDictionary *callQueue;
-    NSMutableArray *uploadFileQueue;
+    NSMutableArray *uploadFileQueue, *queuedCalls, *pendingCalls;
     NSDictionary *session;
     BOOL autoSaveSession, sessionLoaded;
     NSUInteger callNextId;

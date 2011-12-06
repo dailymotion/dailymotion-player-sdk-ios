@@ -13,6 +13,7 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #define kDMOAuthRedirectURI @"none://fake-callback"
+#define kDMMaxCallsPerRequest 10
 
 static NSString *WebEndpoint, *APIEndpoint, *OAuthAuthorizeEndpoint, *OAuthTokenEndpoint;
 
@@ -24,12 +25,6 @@ NSString * const DailymotionTransportErrorDomain = @"DailymotionTransportErrorDo
 NSString * const DailymotionAuthErrorDomain = @"DailymotionAuthErrorDomain";
 NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
-@implementation NSString (numericCompare)
-- (NSComparisonResult)numericCompare:(NSString *)aString
-{
-    return [self compare:aString options:NSNumericSearch];
-}
-@end
 
 @implementation Dailymotion
 @synthesize timeout, autoSaveSession, UIDelegate, grantType;
@@ -165,6 +160,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
 - (void)resetAPIConnection
 {
+    [pendingCalls removeAllObjects];
     apiConnectionState = DailymotionConnectionStateNone;
     [apiConnection release], apiConnection = nil;
     [apiResponseData release], apiResponseData = nil;
@@ -319,10 +315,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
         NSMutableArray *callsRequest = [[NSMutableArray alloc] init];
         // Process calls in FIFO order
-        NSEnumerator *enumerator = [[[callQueue allKeys] sortedArrayUsingSelector:@selector(numericCompare:)] objectEnumerator];
-        NSString *callId;
-        int_fast8_t slots = 10; // A maximum of 10 calls per request is allowed
-        while ((callId = [enumerator nextObject]) && slots-- > 0)
+        int_fast8_t total = 0;
+        for (NSString *callId in queuedCalls)
         {
             NSDictionary *callInfo = [callQueue objectForKey:callId];
             NSDictionary *call = [NSMutableDictionary dictionary];
@@ -333,7 +327,10 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
                 [call setValue:[callInfo valueForKey:@"args"] forKey:@"args"];
             }
             [callsRequest addObject:call];
+            [pendingCalls addObject:callId];
+            if (total++ == kDMMaxCallsPerRequest) break;
         }
+        [queuedCalls removeObjectsInRange:NSMakeRange(0, total)];
 
         NSMutableDictionary *headers = [NSMutableDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
         if (accessToken)
@@ -379,9 +376,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 {
     @synchronized(self)
     {
-        NSEnumerator *enumerator = [[[callQueue allKeys] sortedArrayUsingSelector:@selector(numericCompare:)] objectEnumerator];
-        NSString *callId;
-        while ((callId = [enumerator nextObject]))
+        for (NSString *callId in pendingCalls)
         {
             NSDictionary *call = [callQueue objectForKey:callId];
             id<DailymotionDelegate> delegate = [call objectForKey:@"delegate"];
@@ -546,8 +541,29 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             [callQueue removeObjectForKey:callId];
         }
 
+        // Search for pending calls that wouldn't have been answered by this response and inform delegate(s) about the error
+        for (NSString *callId in pendingCalls)
+        {
+            NSDictionary *call = [callQueue objectForKey:callId];
+            if (call)
+            {
+                id delegate = [call objectForKey:@"delegate"];
+                NSDictionary *userInfo = [call valueForKey:@"userInfo"];
+                NSDictionary *info = [NSDictionary dictionaryWithObject:@"Invalid API server response: no result."
+                                                                 forKey:NSLocalizedDescriptionKey];
+                NSError *error = [NSError errorWithDomain:DailymotionApiErrorDomain code:0 userInfo:info];
+                if ([delegate respondsToSelector:@selector(dailymotion:didReturnError:userInfo:)])
+                {
+                    [delegate dailymotion:self didReturnError:error userInfo:userInfo];
+                }
+
+                [callQueue removeObjectForKey:callId];
+            }
+        }
+
         [self resetAPIConnection];
-        if ([callQueue count] > 0)
+
+        if ([queuedCalls count] > 0)
         {
             // Some new calls are waiting to be performed
             [self performCalls];
@@ -612,7 +628,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     @synchronized(self)
     {
         [self resetAPIConnection];
-        if ([callQueue count] > 0)
+        if ([queuedCalls count] > 0)
         {
             // Some new calls are waiting to be performed
             [self performCalls];
@@ -705,6 +721,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         self.timeout = 15;
         callNextId = 0;
         callQueue = [[NSMutableDictionary alloc] init];
+        queuedCalls = [[NSMutableArray alloc] init];
+        pendingCalls = [[NSMutableArray alloc] init];
         uploadFileQueue = [[NSMutableArray alloc] init];
         sessionLoaded = NO;
         autoSaveSession = YES;
@@ -801,6 +819,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         [call setValue:userInfo forKey:@"userInfo"];
         [call setValue:callId forKey:@"id"];
         [callQueue setValue:call forKey:callId];
+        [queuedCalls addObject:callId];
         [call release];
         if (apiConnectionState == DailymotionConnectionStateNone)
         {
@@ -937,6 +956,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
     [grantInfo release], grantInfo = nil;
     [callQueue release], callQueue = nil;
+    [queuedCalls release], queuedCalls = nil;
+    [pendingCalls release], pendingCalls = nil;
     [uploadFileQueue release], uploadFileQueue = nil;
     [session release], session = nil;
     [super dealloc];
