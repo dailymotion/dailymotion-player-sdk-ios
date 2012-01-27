@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 531138761430D68400ED3153 /* DailymotionPlayerViewController.h */; };
+		531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 531138761430D68400ED3153 /* DailymotionPlayerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 531138771430D68400ED3153 /* DailymotionPlayerViewController.m */; };
 		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
-		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (); }; };
+		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E270FE126369C100B541BE /* Dailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* Dailymotion.m */; };
 		53E271BD1263F56A00B541BE /* SBJsonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E271B01263F56A00B541BE /* SBJsonBase.h */; };
 		53E271BE1263F56A00B541BE /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E271B11263F56A00B541BE /* SBJsonBase.m */; };
@@ -310,6 +310,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "“$(BUILT_PRODUCTS_DIR)”";
 				PRODUCT_NAME = Dailymotion;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "“$(TARGET_NAME)”";
@@ -328,6 +329,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "“$(BUILT_PRODUCTS_DIR)”";
 				PRODUCT_NAME = Dailymotion;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "“$(TARGET_NAME)”";
