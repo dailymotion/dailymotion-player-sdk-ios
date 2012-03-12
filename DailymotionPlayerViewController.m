@@ -53,6 +53,10 @@
     if ([webview respondsToSelector:@selector(setMediaPlaybackRequiresUserAction:)])
         webview.mediaPlaybackRequiresUserAction = NO;
 
+    // Autoresize by default
+    webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+
     // Hack: prevent vertical bouncing
     for (id subview in webview.subviews)
     {
