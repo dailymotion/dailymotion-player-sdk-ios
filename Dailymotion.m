@@ -328,7 +328,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             }
             [callsRequest addObject:call];
             [pendingCalls addObject:callId];
-            if (total++ == kDMMaxCallsPerRequest) break;
+            if (++total == kDMMaxCallsPerRequest) break;
         }
         [queuedCalls removeObjectsInRange:NSMakeRange(0, total)];
 
