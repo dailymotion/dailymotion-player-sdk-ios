@@ -494,7 +494,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
                 return; // Stops there, we sent error to all delegates, this kind error should never happen but who knows...
             }
 
-            NSDictionary *call = [callQueue objectForKey:callId];
+            NSDictionary *call = [[[callQueue objectForKey:callId] retain] autorelease];
             id delegate = [call objectForKey:@"delegate"];
             NSDictionary *userInfo = [call valueForKey:@"userInfo"];
             [callQueue removeObjectForKey:callId];
