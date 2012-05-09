@@ -376,7 +376,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 {
     @synchronized(self)
     {
-        for (NSString *callId in pendingCalls)
+        for (NSString *callId in callQueue)
         {
             NSDictionary *call = [callQueue objectForKey:callId];
             id<DailymotionDelegate> delegate = [call objectForKey:@"delegate"];
@@ -384,8 +384,9 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
             {
                 [delegate dailymotion:self didReturnError:error userInfo:[call valueForKey:@"userInfo"]];
             }
-            [callQueue removeObjectForKey:callId];
         }
+        [queuedCalls removeAllObjects];
+        [callQueue removeAllObjects];
         [self resetAPIConnection];
     }
 }
