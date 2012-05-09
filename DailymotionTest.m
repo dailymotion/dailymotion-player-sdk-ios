@@ -282,7 +282,6 @@
 
 - (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion
 {
-    NSLog(@"call delegate cred");
     if (username)
     {
         [dailymotion setUsername:username password:password];
