@@ -597,6 +597,8 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
                                        domain:DailymotionAuthErrorDomain
                                          type:[result valueForKey:@"error"]];
             self.session = nil;
+            [self resetAPIConnection];
+            return;
         }
     }
     else if ([result valueForKey:@"access_token"] && ![[result valueForKey:@"access_token"] isKindOfClass:[NSNull class]])
