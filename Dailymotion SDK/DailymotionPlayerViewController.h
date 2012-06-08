@@ -25,19 +25,8 @@
 @end
 
 @interface DailymotionPlayerViewController : UIViewController <UIWebViewDelegate>
-{
-    @private
-    NSString *video;
-    NSDictionary *params;
-    id<DailymotionPlayerDelegate>delegate;
 
-    // Player properties
-    BOOL autoplay, seeking, paused, ended, muted, fullscreen;
-    float currentTime, bufferedTime, duration, volume;
-    NSError *error;
-}
-
-@property (nonatomic, assign) id<DailymotionPlayerDelegate>delegate;
+@property (nonatomic, unsafe_unretained) id<DailymotionPlayerDelegate>delegate;
 
 /**
  * Determines whether the media resource plays automatically when available (read-only).
@@ -70,15 +59,15 @@
 /**
  * Determines whether the audio content should be muted. Set this value to mute/unmute the sound.
  */
-@property (nonatomic, assign) BOOL muted;
+@property (assign) BOOL muted;
 /**
  * The volume of the video between 0 and 1.
  */
-@property (nonatomic, assign) float volume;
+@property (assign) float volume;
 /**
  * Indicates whether the video is displayed fullscreen.
  */
-@property (nonatomic, assign) BOOL fullscreen;
+@property (assign) BOOL fullscreen;
 /**
  * The last error that occurend for this player.
  */

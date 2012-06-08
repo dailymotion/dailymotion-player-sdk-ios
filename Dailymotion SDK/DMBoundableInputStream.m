@@ -18,30 +18,28 @@
 {
     if (headData != newHeadData)
     {
-        [headData release];
-        headData = [newHeadData retain];
+        headData = newHeadData;
         headLength = [headData length];
     }
 }
 
 - (NSData *)headData
 {
-    return [[headData retain] autorelease];
+    return headData;
 }
 
 - (void)setTailData:(NSData *)newTailData
 {
     if (tailData != newTailData)
     {
-        [tailData release];
-        tailData = [newTailData retain];
+        tailData = newTailData;
         tailLength = [tailData length];
     }
 }
 
 - (NSData *)tailData
 {
-    return [[tailData retain] autorelease];
+    return tailData;
 }
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength
@@ -149,13 +147,6 @@
     return [middleStream streamError];
 }
 
-- (void)dealloc
-{
-    [headData release];
-    [tailData release];
-    [middleStream release];
-    [super dealloc];
-}
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
 {

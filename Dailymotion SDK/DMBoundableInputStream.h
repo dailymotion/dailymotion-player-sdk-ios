@@ -16,8 +16,8 @@
     NSInputStream *middleStream;
 }
 
-@property (nonatomic, retain) NSData *headData, *tailData;
-@property (nonatomic, retain) NSInputStream *middleStream;
+@property (nonatomic) NSData *headData, *tailData;
+@property (nonatomic) NSInputStream *middleStream;
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
 - (BOOL)hasBytesAvailable;

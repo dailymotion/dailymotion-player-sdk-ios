@@ -16,4 +16,4 @@ profile
 *.pyc
 *~.nib/
 
-DailymotionTestConfig.h
+Dailymotion SDK/DailymotionTestConfig.h

@@ -148,22 +148,6 @@ extern NSString * const DailymotionApiErrorDomain;
 #endif
 
 @interface Dailymotion : NSObject <DailymotionDelegate PLATFORM_DELEGATES>
-{
-    @private
-    DailymotionConnectionState apiConnectionState;
-    DailymotionGrantType grantType;
-    NSDictionary *grantInfo;
-    NSTimeInterval timeout;
-    NSURLConnection *apiConnection, *uploadConnection;
-    NSHTTPURLResponse *uploadResponse, *apiResponse;
-    NSMutableData *uploadResponseData, *apiResponseData;
-    NSMutableDictionary *callQueue;
-    NSMutableArray *uploadFileQueue, *queuedCalls, *pendingCalls;
-    NSDictionary *session;
-    BOOL autoSaveSession, sessionLoaded;
-    NSUInteger callNextId;
-    id<DailymotionUIDelegate> UIDelegate;
-}
 
 @property (nonatomic, assign) NSTimeInterval timeout;
 @property (nonatomic, readonly) NSString *version;
@@ -171,7 +155,7 @@ extern NSString * const DailymotionApiErrorDomain;
 /**
  * Set the user interface delegate that conforms to the ``DailymotionUIDelegate`` protocol.
  */
-@property (nonatomic, assign) id<DailymotionUIDelegate> UIDelegate;
+@property (nonatomic, unsafe_unretained) id<DailymotionUIDelegate> UIDelegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
@@ -184,7 +168,7 @@ extern NSString * const DailymotionApiErrorDomain;
  * - ``refresh_token``: a token used to request a new valid ``access_token`` without having to ask the end-user again and again
  * - ``scope``: an indication on the permission scope granted by the end-user for this session
  */
-@property (nonatomic, retain) NSDictionary *session;
+@property (nonatomic) NSDictionary *session;
 
 /**
  * If this property is set to ``NO``, the session won't be stored automatically for latter use. When not stored, your

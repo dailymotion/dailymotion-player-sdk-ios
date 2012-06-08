@@ -9,9 +9,36 @@
 #import "Dailymotion.h"
 #import "DailymotionPlayerViewController.h"
 
+@interface DailymotionPlayerViewController ()
+@property (nonatomic, readwrite) BOOL autoplay;
+@property (nonatomic, readwrite) float bufferedTime;
+@property (nonatomic, readwrite) float duration;
+@property (nonatomic, readwrite) BOOL seeking;
+@property (nonatomic, readwrite) BOOL paused;
+@property (nonatomic, readwrite) BOOL ended;
+@property (nonatomic, readwrite) NSError *error;
+@end
+
 @implementation DailymotionPlayerViewController
-@synthesize delegate, autoplay, bufferedTime, duration, seeking, paused, ended, error;
-@dynamic muted, fullscreen, currentTime, volume;
+{
+    NSString *video;
+    NSDictionary *params;
+    BOOL _fullscreen;
+    float _currentTime;
+}
+
+@synthesize delegate = _delegate;
+@synthesize autoplay = _autoplay;
+@synthesize bufferedTime = _bufferedTime;
+@synthesize duration = _duration;
+@synthesize seeking = _seeking;
+@synthesize paused = _paused;
+@synthesize ended = _ended;
+@synthesize error = _error;
+@synthesize muted = _muted;
+@dynamic fullscreen;
+@dynamic currentTime;
+@synthesize volume = _volume;
 
 - (id)initWithVideo:(NSString *)aVideo params:(NSDictionary *)someParams
 {
@@ -20,17 +47,17 @@
         video = aVideo;
         params = someParams;
 
-        autoplay = [[params objectForKey:@"autoplay"] boolValue] == YES;
-        currentTime = 0;
-        bufferedTime = 0;
-        duration = NAN;
-        seeking = false;
-        error = nil;
-        ended = false;
-        muted = false;
-        volume = 1;
-        paused = true;
-        fullscreen = false;
+        self.autoplay = [[params objectForKey:@"autoplay"] boolValue] == YES;
+        self.currentTime = 0;
+        self.bufferedTime = 0;
+        self.duration = NAN;
+        self.seeking = false;
+        self.error = nil;
+        self.ended = false;
+        self.muted = false;
+        self.volume = 1;
+        self.paused = true;
+        self.fullscreen = false;
     }
     return self;
 }
@@ -119,61 +146,61 @@
         {
             if ([eventName isEqualToString:@"timeupdate"])
             {
-                currentTime = [[data objectForKey:@"time"] floatValue];
+                self.currentTime = [[data objectForKey:@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"progress"])
             {
-                bufferedTime = [[data objectForKey:@"time"] floatValue];
+                self.bufferedTime = [[data objectForKey:@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"durationchange"])
             {
-                duration = [[data objectForKey:@"duration"] floatValue];
+                self.duration = [[data objectForKey:@"duration"] floatValue];
             }
             else if ([eventName isEqualToString:@"fullscreenchange"])
             {
-                fullscreen = [[data objectForKey:@"fullscreen"] boolValue];
+                self.fullscreen = [[data objectForKey:@"fullscreen"] boolValue];
             }
             else if ([eventName isEqualToString:@"volumechange"])
             {
-                volume = [[data objectForKey:@"volume"] floatValue];
+                self.volume = [[data objectForKey:@"volume"] floatValue];
             }
             else if ([eventName isEqualToString:@"play"] || [eventName isEqualToString:@"playing"])
             {
-                paused = NO;
+                self.paused = NO;
             }
             else if ([eventName isEqualToString:@"ended"])
             {
-                ended = YES;
+                self.ended = YES;
             }
             else if ([eventName isEqualToString:@"ended"] || [eventName isEqualToString:@"pause"])
             {
-                paused = YES;
+                self.paused = YES;
             }
             else if ([eventName isEqualToString:@"seeking"])
             {
-                seeking = YES;
-                currentTime = [[data objectForKey:@"time"] floatValue];
+                self.seeking = YES;
+                self.currentTime = [[data objectForKey:@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"seeked"])
             {
-                seeking = NO;
-                currentTime = [[data objectForKey:@"time"] floatValue];
+                self.seeking = NO;
+                self.currentTime = [[data objectForKey:@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"error"])
             {
-                error = [NSError errorWithDomain:@"DailymotionPlayer"
-                                            code:[[data objectForKey:@"code"] integerValue]
-                                        userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                  [data objectForKey:@"code"], @"code",
-                                                  [data objectForKey:@"title"], @"title",
-                                                  [data objectForKey:@"message"], @"message",
-                                                  [data objectForKey:@"message"], NSLocalizedDescriptionKey,
-                                                  nil]];
+                self.error = [NSError errorWithDomain:@"DailymotionPlayer"
+                                                 code:[[data objectForKey:@"code"] integerValue]
+                                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [data objectForKey:@"code"], @"code",
+                                                       [data objectForKey:@"title"], @"title",
+                                                       [data objectForKey:@"message"], @"message",
+                                                       [data objectForKey:@"message"], NSLocalizedDescriptionKey,
+                                                       nil]];
             }
 
-            if ([delegate respondsToSelector:@selector(dailymotionPlayer:didReceiveEvent:)])
+            if ([self.delegate respondsToSelector:@selector(dailymotionPlayer:didReceiveEvent:)])
             {
-                [delegate dailymotionPlayer:self didReceiveEvent:eventName];
+                [self.delegate dailymotionPlayer:self didReceiveEvent:eventName];
             }
         }
 
@@ -184,42 +211,22 @@
 
 - (BOOL)fullscreen
 {
-    return fullscreen;
+    return _fullscreen;
 }
 - (void)setFullscreen:(BOOL)newFullscreen
 {
     [self api:@"fullscreen" arg:newFullscreen ? @"1" : @"0"];
-    fullscreen = newFullscreen;
+    _fullscreen = newFullscreen;
 }
 
 - (float)currentTime
 {
-    return currentTime;
+    return _currentTime;
 }
 - (void)setCurrentTime:(float)newTime
 {
     [self api:@"seek" arg:[NSString stringWithFormat:@"%f", newTime]];
-    currentTime = newTime;
-}
-
-- (BOOL)muted
-{
-    return muted;
-}
-- (void)setMuted:(BOOL)newMuted
-{
-    // TODO: handle locally
-    muted = newMuted;
-}
-
-- (float)volume
-{
-    return volume;
-}
-- (void)setVolume:(float)newVolume
-{
-    // TODO: handle locally
-    volume = newVolume;
+    _currentTime = newTime;
 }
 
 - (void)play
@@ -263,11 +270,5 @@
     return YES;
 }
 
-- (void)dealloc
-{
-    [video release];
-    [params release];
-    [super dealloc];
-}
 
 @end

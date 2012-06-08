@@ -23,14 +23,14 @@
 
 - (void)tearDown
 {
-    [results release], results = nil;
-    [username release], username = nil;
-    [password release], password = nil;
+    results = nil;
+    username = nil;
+    password = nil;
 }
 
 - (void)waitResponseWithTimeout:(NSTimeInterval)timeout
 {
-    [results release], results = nil;
+    results = nil;
     results = [[NSMutableArray alloc] init];
 
     NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:timeout];
@@ -51,7 +51,6 @@
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"test", @"Is valid result.");
 
-    [api release];
 }
 
 - (void)testMultiCall
@@ -69,7 +68,6 @@
     STAssertEqualObjects([[results objectAtIndex:1] valueForKey:@"type"], @"error", @"Second result is error.");
     STAssertEqualObjects([[results objectAtIndex:2] valueForKey:@"type"], @"auth_required", @"Third result is auth_required.");
 
-    [api release];
 }
 
 - (void)testMultiCallIntermix
@@ -93,7 +91,6 @@
     STAssertEquals([results count], (NSUInteger)1, @"There's is 1 results.");
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call2", @"Is first call.");
 
-    [api release];
 }
 
 - (void)testMultiCallLimit
@@ -122,7 +119,6 @@
     STAssertEquals([results count], (NSUInteger)1, @"The 11th result made its way on a second request.");
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call11", @"It's the 11th one.");
 
-    [api release];
 }
 
 - (void)testCallInvalidMethod
@@ -135,7 +131,6 @@
     STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"error", @"Is error response");
 
-    [api release];
 }
 
 - (void)testGrantTypeClientCredentials
@@ -154,7 +149,6 @@
     STAssertFalse([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
     STAssertFalse([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
 
-    [api release];
 }
 
 - (void)testGrantTypeClientCredentialsRefreshToken
@@ -183,7 +177,6 @@
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
     STAssertFalse([accessToken isEqual:[api.session objectForKey:@"access_token"]], @"Access token refreshed with not refresh_token");
 
-    [api release];
 }
 
 - (void)testGrantTypeWrongPassword
@@ -222,9 +215,8 @@
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
     STAssertTrue([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
 
-    [api release];
-    [username release], username = nil;
-    [password release], password = nil;
+    username = nil;
+    password = nil;
     api = [[Dailymotion alloc] init];
     api.UIDelegate = self;
     [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
@@ -237,7 +229,6 @@
     result = [[results lastObject] objectForKey:@"result"];
     STAssertEqualObjects([result objectForKey:@"username"], kDMUsername, @"Is valid username.");
 
-    [api release];
 }
 
 - (void)testGrantTypeAuthorization
@@ -261,7 +252,6 @@
     STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"file_upload", @"Is file_upload response");
     STAssertNotNil([[results lastObject] objectForKey:@"url"], @"Got an URL.");
 
-    [api release];
 }
 
 - (void)testSessionStoreKey
@@ -277,7 +267,6 @@
     [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API key changes");
 
-    [api release];
 }
 
 - (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion

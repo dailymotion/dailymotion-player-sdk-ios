@@ -13,14 +13,8 @@
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
 		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E270FE126369C100B541BE /* Dailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* Dailymotion.m */; };
-		53E271BD1263F56A00B541BE /* SBJsonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E271B01263F56A00B541BE /* SBJsonBase.h */; };
-		53E271BE1263F56A00B541BE /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E271B11263F56A00B541BE /* SBJsonBase.m */; };
-		53E271BF1263F56A00B541BE /* SBJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E271B21263F56A00B541BE /* SBJsonParser.h */; };
-		53E271C01263F56A00B541BE /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E271B31263F56A00B541BE /* SBJsonParser.m */; };
-		53E271C11263F56A00B541BE /* SBJsonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E271B41263F56A00B541BE /* SBJsonWriter.h */; };
-		53E271C21263F56A00B541BE /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E271B51263F56A00B541BE /* SBJsonWriter.m */; };
 		53E273C91265C23E00B541BE /* DailymotionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E273C81265C23E00B541BE /* DailymotionTest.m */; };
-		53E274201266302900B541BE /* libDailymotion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libDailymotion.a */; };
+		53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libDailymotion SDK.a */; };
 		AA747D9F0F9514B9006C5449 /* iOS_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -43,18 +37,12 @@
 		533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTestConfig.h; sourceTree = "<group>"; };
 		53E270FB126369C100B541BE /* Dailymotion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dailymotion.h; sourceTree = "<group>"; };
 		53E270FC126369C100B541BE /* Dailymotion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Dailymotion.m; sourceTree = "<group>"; };
-		53E271B01263F56A00B541BE /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
-		53E271B11263F56A00B541BE /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonBase.m; sourceTree = "<group>"; };
-		53E271B21263F56A00B541BE /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
-		53E271B31263F56A00B541BE /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
-		53E271B41263F56A00B541BE /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
-		53E271B51263F56A00B541BE /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		53E273561265BD1C00B541BE /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E273C71265C23E00B541BE /* DailymotionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTest.h; sourceTree = "<group>"; };
 		53E273C81265C23E00B541BE /* DailymotionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DailymotionTest.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Prefix.pch; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		D2AAC07E0554694100DB518D /* libDailymotion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDailymotion.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC07E0554694100DB518D /* libDailymotion SDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libDailymotion SDK.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53E274201266302900B541BE /* libDailymotion.a in Frameworks */,
+				53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,7 +68,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libDailymotion.a */,
+				D2AAC07E0554694100DB518D /* libDailymotion SDK.a */,
 				53E273561265BD1C00B541BE /* Tests.octest */,
 			);
 			name = Products;
@@ -115,9 +103,9 @@
 				531138771430D68400ED3153 /* DailymotionPlayerViewController.m */,
 				531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */,
 				531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */,
-				53E271A81263F56A00B541BE /* JSON */,
 			);
 			name = Dailymotion;
+			path = "Dailymotion SDK";
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -128,19 +116,6 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		53E271A81263F56A00B541BE /* JSON */ = {
-			isa = PBXGroup;
-			children = (
-				53E271B01263F56A00B541BE /* SBJsonBase.h */,
-				53E271B11263F56A00B541BE /* SBJsonBase.m */,
-				53E271B21263F56A00B541BE /* SBJsonParser.h */,
-				53E271B31263F56A00B541BE /* SBJsonParser.m */,
-				53E271B41263F56A00B541BE /* SBJsonWriter.h */,
-				53E271B51263F56A00B541BE /* SBJsonWriter.m */,
-			);
-			path = JSON;
-			sourceTree = "<group>";
-		};
 		53E273741265BD9700B541BE /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +124,7 @@
 				53E273C81265C23E00B541BE /* DailymotionTest.m */,
 			);
 			name = Tests;
+			path = "Dailymotion SDK";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -160,9 +136,6 @@
 			files = (
 				AA747D9F0F9514B9006C5449 /* iOS_Prefix.pch in Headers */,
 				53E270FD126369C100B541BE /* Dailymotion.h in Headers */,
-				53E271BD1263F56A00B541BE /* SBJsonBase.h in Headers */,
-				53E271BF1263F56A00B541BE /* SBJsonParser.h in Headers */,
-				53E271C11263F56A00B541BE /* SBJsonWriter.h in Headers */,
 				531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */,
 				531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */,
 			);
@@ -190,9 +163,9 @@
 			productReference = 53E273561265BD1C00B541BE /* Tests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
-		D2AAC07D0554694100DB518D /* Dailymotion */ = {
+		D2AAC07D0554694100DB518D /* Dailymotion SDK */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Dailymotion" */;
+			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Dailymotion SDK" */;
 			buildPhases = (
 				D2AAC07A0554694100DB518D /* Headers */,
 				D2AAC07B0554694100DB518D /* Sources */,
@@ -202,9 +175,9 @@
 			);
 			dependencies = (
 			);
-			name = Dailymotion;
+			name = "Dailymotion SDK";
 			productName = "dailymotion-sdk-objc";
-			productReference = D2AAC07E0554694100DB518D /* libDailymotion.a */;
+			productReference = D2AAC07E0554694100DB518D /* libDailymotion SDK.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -213,7 +186,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Dailymotion SDK iOS" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -230,7 +203,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D2AAC07D0554694100DB518D /* Dailymotion */,
+				D2AAC07D0554694100DB518D /* Dailymotion SDK */,
 				53E273551265BD1C00B541BE /* DailymotionTests */,
 			);
 		};
@@ -276,9 +249,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				53E270FE126369C100B541BE /* Dailymotion.m in Sources */,
-				53E271BE1263F56A00B541BE /* SBJsonBase.m in Sources */,
-				53E271C01263F56A00B541BE /* SBJsonParser.m in Sources */,
-				53E271C21263F56A00B541BE /* SBJsonWriter.m in Sources */,
 				531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */,
 				531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */,
 			);
@@ -289,7 +259,7 @@
 /* Begin PBXTargetDependency section */
 		53E2735C1265BD4300B541BE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D2AAC07D0554694100DB518D /* Dailymotion */;
+			target = D2AAC07D0554694100DB518D /* Dailymotion SDK */;
 			targetProxy = 53E2735B1265BD4300B541BE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -300,6 +270,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/dailymotion_sdk_objc.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -309,7 +280,7 @@
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "“$(BUILT_PRODUCTS_DIR)”";
-				PRODUCT_NAME = Dailymotion;
+				PRODUCT_NAME = "Dailymotion SDK";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -322,13 +293,14 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/dailymotion_sdk_objc.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "“$(BUILT_PRODUCTS_DIR)”";
-				PRODUCT_NAME = Dailymotion;
+				PRODUCT_NAME = "Dailymotion SDK";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -355,7 +327,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
@@ -380,7 +352,7 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
@@ -391,6 +363,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -421,6 +394,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -450,7 +424,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Dailymotion" */ = {
+		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Dailymotion SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB921F08733DC00010E9CD /* Debug */,
