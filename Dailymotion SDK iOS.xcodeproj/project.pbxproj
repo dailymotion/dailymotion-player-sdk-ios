@@ -9,12 +9,18 @@
 /* Begin PBXBuildFile section */
 		531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 531138761430D68400ED3153 /* DailymotionPlayerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 531138771430D68400ED3153 /* DailymotionPlayerViewController.m */; };
+		531A6312158514F700EB269B /* DMOAuthSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A6310158514F700EB269B /* DMOAuthSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		531A6313158514F700EB269B /* DMOAuthSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A6311158514F700EB269B /* DMOAuthSession.m */; };
+		531A63151585512000EB269B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 531A63141585512000EB269B /* Security.framework */; };
+		531A63181585670D00EB269B /* DMOAuthSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A63171585670D00EB269B /* DMOAuthSessionTest.m */; };
 		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
 		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E270FE126369C100B541BE /* Dailymotion.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* Dailymotion.m */; };
 		53E273C91265C23E00B541BE /* DailymotionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E273C81265C23E00B541BE /* DailymotionTest.m */; };
 		53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libDailymotion SDK.a */; };
+		53F0816B15827C43000E56C4 /* DMNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 53F0816915827C43000E56C4 /* DMNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53F0816C15827C43000E56C4 /* DMNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F0816A15827C43000E56C4 /* DMNetworking.m */; };
 		AA747D9F0F9514B9006C5449 /* iOS_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -32,6 +38,11 @@
 /* Begin PBXFileReference section */
 		531138761430D68400ED3153 /* DailymotionPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionPlayerViewController.h; sourceTree = "<group>"; };
 		531138771430D68400ED3153 /* DailymotionPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DailymotionPlayerViewController.m; sourceTree = "<group>"; };
+		531A6310158514F700EB269B /* DMOAuthSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSession.h; sourceTree = "<group>"; };
+		531A6311158514F700EB269B /* DMOAuthSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSession.m; sourceTree = "<group>"; };
+		531A63141585512000EB269B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		531A63161585670D00EB269B /* DMOAuthSessionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSessionTest.h; sourceTree = "<group>"; };
+		531A63171585670D00EB269B /* DMOAuthSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSessionTest.m; sourceTree = "<group>"; };
 		531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBoundableInputStream.h; sourceTree = "<group>"; };
 		531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBoundableInputStream.m; sourceTree = "<group>"; };
 		533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTestConfig.h; sourceTree = "<group>"; };
@@ -40,6 +51,8 @@
 		53E273561265BD1C00B541BE /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E273C71265C23E00B541BE /* DailymotionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTest.h; sourceTree = "<group>"; };
 		53E273C81265C23E00B541BE /* DailymotionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DailymotionTest.m; sourceTree = "<group>"; };
+		53F0816915827C43000E56C4 /* DMNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMNetworking.h; sourceTree = "<group>"; };
+		53F0816A15827C43000E56C4 /* DMNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMNetworking.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Prefix.pch; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libDailymotion SDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libDailymotion SDK.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				531A63151585512000EB269B /* Security.framework in Frameworks */,
 				53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,6 +103,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				531A63141585512000EB269B /* Security.framework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -103,6 +118,10 @@
 				531138771430D68400ED3153 /* DailymotionPlayerViewController.m */,
 				531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */,
 				531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */,
+				53F0816915827C43000E56C4 /* DMNetworking.h */,
+				53F0816A15827C43000E56C4 /* DMNetworking.m */,
+				531A6310158514F700EB269B /* DMOAuthSession.h */,
+				531A6311158514F700EB269B /* DMOAuthSession.m */,
 			);
 			name = Dailymotion;
 			path = "Dailymotion SDK";
@@ -122,6 +141,8 @@
 				533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */,
 				53E273C71265C23E00B541BE /* DailymotionTest.h */,
 				53E273C81265C23E00B541BE /* DailymotionTest.m */,
+				531A63161585670D00EB269B /* DMOAuthSessionTest.h */,
+				531A63171585670D00EB269B /* DMOAuthSessionTest.m */,
 			);
 			name = Tests;
 			path = "Dailymotion SDK";
@@ -138,6 +159,8 @@
 				53E270FD126369C100B541BE /* Dailymotion.h in Headers */,
 				531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */,
 				531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */,
+				53F0816B15827C43000E56C4 /* DMNetworking.h in Headers */,
+				531A6312158514F700EB269B /* DMOAuthSession.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53E273C91265C23E00B541BE /* DailymotionTest.m in Sources */,
+				531A63181585670D00EB269B /* DMOAuthSessionTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +275,8 @@
 				53E270FE126369C100B541BE /* Dailymotion.m in Sources */,
 				531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */,
 				531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */,
+				53F0816C15827C43000E56C4 /* DMNetworking.m in Sources */,
+				531A6313158514F700EB269B /* DMOAuthSession.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +355,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
+				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 			};
@@ -354,6 +381,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
+				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 			};
@@ -372,10 +400,13 @@
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -403,9 +434,12 @@
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
 				GCC_PREFIX_HEADER = iOS_Prefix.pch;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,

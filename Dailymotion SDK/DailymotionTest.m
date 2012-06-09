@@ -9,6 +9,15 @@
 #import "DailymotionTest.h"
 #import "DailymotionTestConfig.h"
 
+#define INIT dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);\
+             NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:10];
+#define REINIT semaphore = dispatch_semaphore_create(0);
+#define DONE dispatch_semaphore_signal(semaphore);
+#define WAIT while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))\
+                 [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil];\
+             dispatch_release(semaphore);
+
+
 @implementation NSURLRequest (IgnoreSSL)
 
 // Workaround for strange SSL with SenTestCase invalid certificate bug
@@ -20,44 +29,52 @@
 @end
 
 @implementation DailymotionTest
-
-- (void)tearDown
 {
-    results = nil;
+    NSString *username;
+    NSString *password;
+}
+
+- (void)setUp
+{
     username = nil;
     password = nil;
 }
 
-- (void)waitResponseWithTimeout:(NSTimeInterval)timeout
+- (Dailymotion *)api
 {
-    results = nil;
-    results = [[NSMutableArray alloc] init];
-
-    NSDate *expires = [NSDate dateWithTimeIntervalSinceNow:timeout];
-    while ([results count] == 0 && [expires timeIntervalSinceNow] > 0)
-    {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    }
+    Dailymotion *api = [[Dailymotion alloc] init];
+#ifdef kDMAPIEndpointURL
+    api.APIBaseURL = kDMAPIEndpointURL;
+#endif
+#ifdef kDMOAuthAuthorizeEndpointURL
+    api.oAuthAuthorizationEndpointURL = kDMOAuthAuthorizeEndpointURL;
+#endif
+#ifdef kDMOAuthTokenEndpointURL
+    api.oAuthTokenEndpointURL = kDMOAuthTokenEndpointURL;
+#endif
+    return api;
 }
 
 - (void)testSingleCall
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
+    INIT
 
-    [self waitResponseWithTimeout:5];
+    [self.api get:@"/echo" args:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        STAssertEqualObjects([result objectForKey:@"message"], @"test", @"Is valid result.");
+        DONE
+    }];
 
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
-    STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"test", @"Is valid result.");
-
+    WAIT
 }
 
+/* TODO
 - (void)testMultiCall
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" delegate:self];
+    Dailymotion *api = self.api;
+    [api get:@"/echo" args:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] callback:self];
+    [api get:@"/echo" delegate:self];
     [api request:@"video.subscriptions" delegate:self];
 
     [self waitResponseWithTimeout:5];
@@ -120,115 +137,159 @@
     STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call11", @"It's the 11th one.");
 
 }
+*/
 
 - (void)testCallInvalidMethod
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api request:@"invalid.method" withArguments:nil delegate:self];
+    INIT
 
-    [self waitResponseWithTimeout:5];
+    [self.api get:@"/invalid/path" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNotNil(error, @"Is error response");
+        STAssertNil(result, @"Result is nil");
+        DONE
+    }];
 
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"error", @"Is error response");
-
+    WAIT
 }
 
 - (void)testGrantTypeClientCredentials
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    INIT
+
+    Dailymotion *api = self.api;
+    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read"];
     [api clearSession];
-    [api request:@"auth.info" withArguments:nil delegate:self];
+    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        DONE
+    }];
 
-    [self waitResponseWithTimeout:5];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
-    NSDictionary *result = [[results lastObject] objectForKey:@"result"];
-    STAssertFalse([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
-    STAssertFalse([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
-    STAssertFalse([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
-
+    WAIT
 }
 
 - (void)testGrantTypeClientCredentialsRefreshToken
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
+    INIT
+
+    Dailymotion *api = self.api;
+    api.delegate = self;
+    username = kDMUsername;
+    password = kDMPassword;
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
     [api clearSession];
-    [api request:@"auth.info" withArguments:nil delegate:self];
+    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        STAssertNotNil(api.session.refreshToken, @"Got a refresh token");
 
-    [self waitResponseWithTimeout:5];
+        NSString *accessToken = api.session.accessToken;
+        NSString *refreshToken = api.session.refreshToken;
+        api.session.expires = [NSDate dateWithTimeIntervalSince1970:0];
 
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
+        [api get:@"/auth" callback:^(NSDictionary *result2, NSError *error2)
+        {
+            STAssertNil(error2, @"Is success response");
+            STAssertEqualObjects(refreshToken, api.session.refreshToken, @"Same refresh token");
+            STAssertFalse([accessToken isEqual:api.session.accessToken], @"Access token refreshed");
+            DONE
+        }];
+    }];
 
-    NSString *accessToken = [api.session objectForKey:@"access_token"];
-    NSMutableDictionary *session = [api.session mutableCopy];
-    [session setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:@"expires"];
-    [session removeObjectForKey:@"refresh_token"];
-    api.session = session;
-
-    [api request:@"auth.info" withArguments:nil delegate:self];
-
-    [self waitResponseWithTimeout:5];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
-    STAssertFalse([accessToken isEqual:[api.session objectForKey:@"access_token"]], @"Access token refreshed with not refresh_token");
-
+    WAIT
 }
+
+- (void)testGrantTypeClientCredentialsRefreshWithNoRefreshToken
+{
+    INIT
+
+    Dailymotion *api = self.api;
+    api.delegate = self;
+    username = kDMUsername;
+    password = kDMPassword;
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
+    [api clearSession];
+    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        STAssertNotNil(api.session.refreshToken, @"Got a refresh token");
+         
+        NSString *accessToken = api.session.accessToken;
+        api.session.accessToken = nil;
+        api.session.expires = [NSDate dateWithTimeIntervalSince1970:0];
+        api.session.refreshToken = nil;
+         
+        [api get:@"/auth" callback:^(NSDictionary *result2, NSError *error2)
+        {
+            STAssertNil(error2, @"Is success response");
+            STAssertFalse([accessToken isEqual:api.session.accessToken], @"Access token refreshed with no refresh_token");
+            DONE
+        }];
+    }];
+    
+    WAIT
+}
+
 
 - (void)testGrantTypeWrongPassword
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    api.UIDelegate = self;
+    INIT
+
+    Dailymotion *api = self.api;
+    api.delegate = self;
     username = @"username";
     password = @"wrong_password";
     [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
-    [api request:@"auth.info" withArguments:nil delegate:self];
+    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNotNil(error, @"Is error response");
+        STAssertNil(result, @"Result is nil");
+        DONE
+    }];
 
-    [self waitResponseWithTimeout:5];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"error", @"Is error response");
+    WAIT
 }
 
-- (void)testGrantTypePassword
+- (void)testSessionStorage
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    api.UIDelegate = self;
+    INIT
+
+    Dailymotion *api = self.api;
+    api.delegate = self;
     username = kDMUsername;
     password = kDMPassword;
-    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"write"];
     [api clearSession];
-    [api request:@"auth.info" withArguments:nil delegate:self];
+    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        STAssertFalse([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
+        STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `write' scope.");
+        STAssertFalse([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `delete' scope.");
+        DONE
+    }];
+    
+    WAIT
+    REINIT
 
-    [self waitResponseWithTimeout:5];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
-    NSDictionary *result = [[results lastObject] objectForKey:@"result"];
-    STAssertEqualObjects([result objectForKey:@"username"], kDMUsername, @"Is valid username.");
-    STAssertTrue([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
-    STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `read' scope.");
-    STAssertTrue([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `read' scope.");
-
-    username = nil;
+    api = self.api;
+    api.delegate = self;
+    username = nil; // should not ask for credentials
     password = nil;
-    api = [[Dailymotion alloc] init];
-    api.UIDelegate = self;
-    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
-    [api request:@"auth.info" withArguments:nil delegate:self];
+    [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"write"];
+    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        STAssertEqualObjects([result objectForKey:@"username"], kDMUsername, @"Is valid username.");
+        STAssertFalse([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
+        STAssertTrue([[result objectForKey:@"scope"] containsObject:@"write"], @"Has `write' scope.");
+        STAssertFalse([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `delete' scope.");
+        DONE
+    }];
 
-    [self waitResponseWithTimeout:5];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"success", @"Is success response");
-    result = [[results lastObject] objectForKey:@"result"];
-    STAssertEqualObjects([result objectForKey:@"username"], kDMUsername, @"Is valid username.");
-
+    WAIT
 }
 
 - (void)testGrantTypeAuthorization
@@ -238,30 +299,32 @@
 
 - (void)testUploadFile
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    api.UIDelegate = self;
+    INIT
+
+    Dailymotion *api = self.api;
+    api.delegate = self;
     username = kDMUsername;
     password = kDMPassword;
     [api setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api clearSession];
-    [api uploadFile:kDMTestFilePath delegate:self];
+    [api uploadFile:kDMTestFilePath callback:^(NSString *url, NSError *error)
+    {
+        STAssertNil(error, @"Is success response");
+        STAssertNotNil(url, @"Got an URL.");
+        STAssertEqualObjects([[NSURL URLWithString:url] absoluteString], url, @"URL is valid");
+        DONE
+    }];
 
-    [self waitResponseWithTimeout:100];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 result.");
-    STAssertEqualObjects([[results lastObject] valueForKey:@"type"], @"file_upload", @"Is file_upload response");
-    STAssertNotNil([[results lastObject] objectForKey:@"url"], @"Got an URL.");
-
+    WAIT
 }
 
 - (void)testSessionStoreKey
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
+    Dailymotion *api = self.api;
     STAssertNil([api sessionStoreKey], @"Session store key is nil if no grant type");
     [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     NSString *sessionStoreKey = [api sessionStoreKey];
     STAssertNotNil(sessionStoreKey, @"Session store key is not nil if grant type defined");
-    STAssertTrue([sessionStoreKey length] < 50, @"Session store key is not too long");
     [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:@"another secret" scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api sessionStoreKey]], @"Session store key is different when API secret changes");
     [api setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
@@ -269,36 +332,16 @@
 
 }
 
-- (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion
+- (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion handler:(void (^)(NSString *, NSString *))setCredentials
 {
     if (username)
     {
-        [dailymotion setUsername:username password:password];
+        setCredentials(username, password);
     }
     else
     {
-        STAssertTrue(NO, @"API unexpectedly asked for end-user credentials");
+        STFail(@"API unexpectedly asked for end-user credentials");
     }
-}
-
-- (void)dailymotion:(Dailymotion *)dailymotion didReturnResult:(id)result userInfo:(NSDictionary *)userInfo
-{
-    [results addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"success", @"type", result, @"result", nil]];
-}
-
-- (void)dailymotion:(Dailymotion *)dailymotion didReturnError:(NSError *)error userInfo:(NSDictionary *)userInfo
-{
-    [results addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"error", @"type", error, @"error", nil]];
-}
-
-- (void)dailymotion:(Dailymotion *)dailymotion didRequestAuthWithMessage:(NSString *)message userInfo:(NSDictionary *)userInfo
-{
-    [results addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"auth_required", @"type", message, @"message", nil]];
-}
-
-- (void)dailymotion:(Dailymotion *)dailymotion didUploadFileAtURL:(NSString *)URL
-{
-    [results addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"file_upload", @"type", URL, @"url", nil]];
 }
 
 @end

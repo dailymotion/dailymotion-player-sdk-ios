@@ -6,7 +6,6 @@
 //  Copyright 2011 Dailymotion. All rights reserved.
 //
 
-#import "Dailymotion.h"
 #import "DailymotionPlayerViewController.h"
 
 @interface DailymotionPlayerViewController ()
@@ -27,6 +26,7 @@
     float _currentTime;
 }
 
+@synthesize webBaseURLString = _webBaseURLString;
 @synthesize delegate = _delegate;
 @synthesize autoplay = _autoplay;
 @synthesize bufferedTime = _bufferedTime;
@@ -95,7 +95,7 @@
     }
 
 
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", Dailymotion.WebEndpoint, video];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
     for (NSString *param in [params keyEnumerator])
     {
         id value = [params objectForKey:param];

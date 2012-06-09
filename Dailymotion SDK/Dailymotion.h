@@ -6,6 +6,8 @@
 //  Copyright 2010 Dailymotion. All rights reserved.
 //
 
+#import "DMOAuthSession.h"
+
 #if TARGET_OS_IPHONE
 #import "DailymotionPlayerViewController.h"
 #endif
@@ -13,68 +15,6 @@
 @class Dailymotion;
 
 @protocol DailymotionDelegate <NSObject>
-
-@optional
-
-/**
- * Called when an API request returned a successful response.
- *
- * @param dailymotion The dailymotion instance sending the message.
- * @param result The result returned by the API. It may be a ``NSDictionnary`` or an
- *               ``NSArray`` of ``NSDictionnary``s depending on the format of the API response.
- * @param userInfo The dictionnary provided to the ``request:withArguments:delegate:userInfo:`` method.
- */
-- (void)dailymotion:(Dailymotion *)dailymotion didReturnResult:(id)result userInfo:(NSDictionary *)userInfo;
-
-/**
- * Called when an API request return an error response.
- *
- * @param dailymotion The dailymotion instance sending the message.
- * @param error The error returned by the server. NSError domaines can be one of:
- *              - DailymotionTransportErrorDomain: when the error is at transport level (network error, server error, protocol error)
- *              - DailymotionAuthErrorDomain: when the error is at the OAuth level (invalid key, unsufficient permission, etc.)
- *              - DailymotionApiErrorDomain: the the error is at the API level (see `API reference for more info
- *                <http://www.dailymotion.com/doc/api/reference.html>`_)
- * @param userInfo The dictionnary provided to the ``request:withArguments:delegate:userInfo:`` method.
- */
-- (void)dailymotion:(Dailymotion *)dailymotion didReturnError:(NSError *)error userInfo:(NSDictionary *)userInfo;
-
-/**
- * Called when an API request call resulted in a ``403`` error. This can happen when an API request requiring an authentication has
- * been call with no previous authentication or if the authorization doesn't have sufficient scope or if the used API key is
- * missing a requires role.
- *
- * @param dailymotion The dailymotion instance sending the message.
- * @param message The message comming from the server asking for authentication
- * @param userInfo The dictionnary provided to the ``request:withArguments:delegate:userInfo:`` method.
- */
-- (void)dailymotion:(Dailymotion *)dailymotion didRequestAuthWithMessage:(NSString *)message userInfo:(NSDictionary *)userInfo;
-
-/**
- * Called at regular interval while uploading a file in order to let you inform end user on the progress of the upload.
- *
- * The value of totalBytesExpectedToWrite may change during the upload if the request needs to be retransmitted
- * due to a lost connection or an authentication challenge from the server.
- *
- * @param dailymotion The dailymotion instance sending the message.
- * @param bytesWritten The number of bytes written in the latest write.
- * @param totalBytesWritten The total number of bytes written for this connection.
- * @param totalBytesExpectedToWrite The number of bytes the connection expects to write.
- */
-- (void)dailymotion:(Dailymotion *)dailymotion didSendFileData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
-
-/**
- * This delegate method is called upon successful file upload using the ``uploadFile:delegate:`` method.
- *
- * @param dailymotion The dailymotion instance sending the message.
- * @param URL The URL returned by the upload server. You can use this URL as argument for methods asking for an URL like
- *            ``video.create`` for instance.
- */
-- (void)dailymotion:(Dailymotion *)dailymotion didUploadFileAtURL:(NSString *)URL;
-
-@end
-
-@protocol DailymotionUIDelegate <NSObject>
 
 @optional
 
@@ -104,12 +44,12 @@
 
 /**
  * Called when the grant method is ``DailymotionGrantTypePassword`` and the credentials are requested by the library.
- * The delegate have to ask the user for her credentials and need to call ``setUsername:password:`` method in order for
- * the pending API calls to be performed.
+ * The delegate have to ask the user for her credentials and need to call back the ``handler` method in order for
+ * the pending API calls to be completed.
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypePassword``.
  */
-- (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion;
+- (void)dailymotionDidRequestUserCredentials:(Dailymotion *)dailymotion handler:(void (^)(NSString *username, NSString *password))setCredentials;
 
 
 /**
@@ -129,33 +69,116 @@ typedef enum
     DailymotionGrantTypePassword
 } DailymotionGrantType;
 
-typedef enum
-{
-    DailymotionConnectionStateNone,
-    DailymotionConnectionStateOAuthRequest,
-    DailymotionConnectionStateAPIRequest
-} DailymotionConnectionState;
-
 extern NSString * const DailymotionTransportErrorDomain;
 extern NSString * const DailymotionAuthErrorDomain;
 extern NSString * const DailymotionApiErrorDomain;
 
 #if TARGET_OS_IPHONE
-#define PLATFORM_DELEGATES , UIWebViewDelegate
+#define PLATFORM_DELEGATES <UIWebViewDelegate>
 #else
 #define PLATFORM_DELEGATES
 #import <WebKit/WebKit.h>
 #endif
 
-@interface Dailymotion : NSObject <DailymotionDelegate PLATFORM_DELEGATES>
+@interface Dailymotion : NSObject PLATFORM_DELEGATES
 
+@property (nonatomic) NSString *version;
 @property (nonatomic, assign) NSTimeInterval timeout;
-@property (nonatomic, readonly) NSString *version;
+
+@property (nonatomic, copy) NSURL *APIBaseURL;
 
 /**
- * Set the user interface delegate that conforms to the ``DailymotionUIDelegate`` protocol.
+ * Make a GET request to Dailymotion's API with the given method name and arguments.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param callback A block taking the response as first argument and an error as second argument
  */
-@property (nonatomic, unsafe_unretained) id<DailymotionUIDelegate> UIDelegate;
+- (void)get:(NSString *)path callback:(void (^)(id, NSError*))callback;
+
+/**
+ * Make a POST request to Dailymotion's API with the given method name and arguments.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param callback A block taking the response as first argument and an error as second argument
+ */
+- (void)post:(NSString *)path callback:(void (^)(id, NSError*))callback;
+
+/**
+ * Make a DELETE request to Dailymotion's API with the given method name and arguments.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param callback A block taking the response as first argument and an error as second argument
+ */
+- (void)delete:(NSString *)path callback:(void (^)(id, NSError*))callback;
+
+/**
+ * Make a GET request to Dailymotion's API with the given method name and arguments.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param callback A block taking the response as first argument and an error as second argument
+ */
+- (void)get:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+
+/**
+ * Make a POST request to Dailymotion's API with the given method name and arguments.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param callback A block taking the response as first argument and an error as second argument
+ */
+- (void)post:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+
+/**
+ * Make a DELETE request to Dailymotion's API with the given method name and arguments.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param callback A block taking the response as first argument and an error as second argument
+ */
+- (void)delete:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+
+/**
+ * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
+ *
+ * @param filePath The path to the file to upload
+ * @param callback A block taking the uploaded file URL string as first argument and an error as second argument
+ */
+- (void)uploadFile:(NSString *)filePath callback:(void (^)(NSString *url, NSError *error))callback;
+
+
+/**
+ * Create a DailymtionPlayer object initialized with the specified video ID.
+ *
+ * @param video The Dailymotion video ID that identifies the video that the player will load.
+ * @param params A dictionary containing `player parameters <http://www.dailymotion.com/doc/api/player.html#player-params>`_
+ *               that can be used to customize the player.
+ */
+#if TARGET_OS_IPHONE
+- (DailymotionPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
+- (DailymotionPlayerViewController *)player:(NSString *)video;
+#endif
+
+
+@property (nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
+@property (nonatomic, copy) NSURL *oAuthTokenEndpointURL;
+
+/**
+ * Set the delegate that conforms to the ``DailymotionDelegate`` protocol.
+ */
+@property (nonatomic, unsafe_unretained) id<DailymotionDelegate> delegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
@@ -168,7 +191,7 @@ extern NSString * const DailymotionApiErrorDomain;
  * - ``refresh_token``: a token used to request a new valid ``access_token`` without having to ask the end-user again and again
  * - ``scope``: an indication on the permission scope granted by the end-user for this session
  */
-@property (nonatomic) NSDictionary *session;
+@property (nonatomic) DMOAuthSession *session;
 
 /**
  * If this property is set to ``NO``, the session won't be stored automatically for latter use. When not stored, your
@@ -176,19 +199,6 @@ extern NSString * const DailymotionApiErrorDomain;
  * By default this property is set to ``YES``.
  */
 @property (nonatomic, assign) BOOL autoSaveSession;
-
-
-+ (void)setWebEndpoint:(NSString *)url;
-+ (NSString *)WebEndpoint;
-
-+ (void)setAPIEndpoint:(NSString *)url;
-+ (NSString *)APIEndpoint;
-
-+ (void)setOAuthAuthorizeEndpoint:(NSString *)url;
-+ (NSString *)OAuthAuthorizeEndpoint;
-
-+ (void)setOAuthTokenEndpoint:(NSString *)url;
-+ (NSString *)OAuthTokenEndpoint;
 
 /**
  * Set the grant type to be used for API requests.
@@ -209,57 +219,9 @@ extern NSString * const DailymotionApiErrorDomain;
 @property (nonatomic, readonly) DailymotionGrantType grantType;
 
 /**
- * Call this method when the API asked for credentials thru the ``dailymotionDidRequestUserCredentials:`` UIDelegate
- * method. DO NOT call this method BEFORE the API asked for it as it won't work.
- */
-- (void)setUsername:(NSString *)username password:(NSString *)password;
-
-/**
  * Remove the right for the current API key to access the current user account.
  */
 - (void)logout;
-
-/**
- * Make a request to Dailymotion's API with the given method name and arguments.
- *
- * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
- *
- * @param path An API URI path
- * @param arguments An NSDictionnary with key-value pairs containing arguments
- * @param delegate An object implementing ``DailymotionDelegate`` protocol for notifying the calling application
- *                 when the request has received response
- * @param userInfo A dictionary containing user-defined information which will be passed back with each delegate methods
- */
-- (void)request:(NSString *)path delegate:(id<DailymotionDelegate>)delegate;
-- (void)request:(NSString *)path delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo;
-- (void)request:(NSString *)path withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate;
-- (void)request:(NSString *)path withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo;
-
-/**
- * @deprecated
- */
-- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate userInfo:(NSDictionary *)userInfo __attribute__ ((deprecated));
-- (void)callMethod:(NSString *)methodName withArguments:(NSDictionary *)arguments delegate:(id<DailymotionDelegate>)delegate __attribute__ ((deprecated));
-
-/**
- * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
- *
- * @param filePath The path to the file to upload
- */
-- (void)uploadFile:(NSString *)filePath delegate:(id<DailymotionDelegate>)delegate;
-
-
-/**
- * Create a DailymtionPlayer object initialized with the specified video ID.
- *
- * @param video The Dailymotion video ID that identifies the video that the player will load.
- * @param params A dictionary containing `player parameters <http://www.dailymotion.com/doc/api/player.html#player-params>`_
- *               that can be used to customize the player.
- */
-#if TARGET_OS_IPHONE
-- (DailymotionPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
-- (DailymotionPlayerViewController *)player:(NSString *)video;
-#endif
 
 /**
  * Clears the session for the current grant type.
@@ -283,6 +245,6 @@ extern NSString * const DailymotionApiErrorDomain;
  *
  * This method can be overloaded to handle different type of storage.
  */
-- (NSDictionary *)readSession;
+- (DMOAuthSession *)readSession;
 
 @end

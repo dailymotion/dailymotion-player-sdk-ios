@@ -26,6 +26,8 @@
 
 @interface DailymotionPlayerViewController : UIViewController <UIWebViewDelegate>
 
+@property (nonatomic, copy) NSString *webBaseURLString;
+
 @property (nonatomic, unsafe_unretained) id<DailymotionPlayerDelegate>delegate;
 
 /**
