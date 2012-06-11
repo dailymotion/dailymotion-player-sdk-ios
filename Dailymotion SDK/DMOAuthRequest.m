@@ -11,6 +11,32 @@
 #import <objc/runtime.h>
 #import <CommonCrypto/CommonDigest.h>
 
+#define DMOAuthPerformMandatoryDelegate(selector, object)\
+if ([self.delegate respondsToSelector:selector])\
+{\
+    [self.delegate performSelector:selector withObject:self withObject:object];\
+}\
+else\
+{\
+    NSString *currentGrantType = nil;\
+    switch (self.grantType)\
+    {\
+        case DailymotionGrantTypePassword: currentGrantType = @"DailymotionGrantTypePassword"; break;\
+        case DailymotionGrantTypeAuthorization: currentGrantType = @"DailymotionGrantTypeAuthorization"; break;\
+        case DailymotionGrantTypeClientCredentials: currentGrantType = @"DailymotionGrantTypeClientCredentials"; break;\
+        case DailymotionNoGrant: currentGrantType = @"DailymotionNoGrant"; break;\
+    }\
+    if (self.delegate)\
+    {\
+        NSLog(@"*** Dailymotion: Your delegate doesn't implement mandatory %@ method for %@.", selector, currentGrantType);\
+    }\
+    else\
+    {\
+        NSLog(@"*** Dailymotion: You must set a delegate for %@.", currentGrantType);\
+    }\
+}
+
+
 @interface DMOAuthRequest ()
 
 @property (nonatomic, readwrite) DailymotionGrantType grantType;
@@ -157,13 +183,13 @@ static char callbackKey;
 #endif
         objc_setAssociatedObject(self, &callbackKey, handler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-        [self performMandatoryDelegateSelector:@selector(dailymotionOAuthRequest:createModalDialogWithView:) withObject:webview];
+        DMOAuthPerformMandatoryDelegate(@selector(dailymotionOAuthRequest:createModalDialogWithView:), webview);
         // TODO
     }
     else if (self.grantType == DailymotionGrantTypePassword)
     {
         // Inform delegate to request end-user credentials
-        [self performMandatoryDelegateSelector:@selector(dailymotionOAuthRequest:didRequestUserCredentialsWithHandler:) withObject:^(NSString *username, NSString *password)
+        DMOAuthPerformMandatoryDelegate(@selector(dailymotionOAuthRequest:didRequestUserCredentialsWithHandler:), ^(NSString *username, NSString *password)
         {
             NSMutableDictionary *payload = [NSMutableDictionary dictionary];
             [payload setObject:@"password" forKey:@"grant_type"];
@@ -179,7 +205,7 @@ static char callbackKey;
             {
                 [self handleOAuthResponse:response data:responseData completionHandler:handler];
             }];
-        }];
+        });
     }
     else
     {
@@ -307,33 +333,6 @@ static char callbackKey;
     }
 }
 
-- (void)performMandatoryDelegateSelector:(SEL)selector withObject:(id)object
-{
-    if ([self.delegate respondsToSelector:selector])
-    {
-        [self.delegate performSelector:selector withObject:self withObject:object];
-    }
-    else
-    {
-        NSString *currentGrantType = nil;
-        switch (self.grantType)
-        {
-            case DailymotionGrantTypePassword: currentGrantType = @"DailymotionGrantTypePassword"; break;
-            case DailymotionGrantTypeAuthorization: currentGrantType = @"DailymotionGrantTypeAuthorization"; break;
-            case DailymotionGrantTypeClientCredentials: currentGrantType = @"DailymotionGrantTypeClientCredentials"; break;
-            case DailymotionNoGrant: currentGrantType = @"DailymotionNoGrant"; break;
-        }
-        if (self.delegate)
-        {
-            NSLog(@"*** Dailymotion: Your delegate doesn't implement mandatory %@ method for %@.", selector, currentGrantType);
-        }
-        else
-        {
-            NSLog(@"*** Dailymotion: You must set a delegate for %@.", currentGrantType);
-        }
-    }
-}
-
 #pragma mark public
 
 - (void)setGrantType:(DailymotionGrantType)type withAPIKey:(NSString *)apiKey secret:(NSString *)apiSecret scope:(NSString *)scope
@@ -448,12 +447,12 @@ static char callbackKey;
     if ([request.URL.scheme isEqualToString:@"dailymotion"])
     {
         [self handleOAuthAuthorizationResponseWithURL:request.URL completionHandler:objc_getAssociatedObject(self, &callbackKey)];
-        [self performMandatoryDelegateSelector:@selector(dailymotionOAuthRequestCloseModalDialog:) withObject:nil];
+        DMOAuthPerformMandatoryDelegate(@selector(dailymotionOAuthRequestCloseModalDialog:), nil);
         return NO;
     }
     else if (navigationType == UIWebViewNavigationTypeLinkClicked)
     {
-        [self performMandatoryDelegateSelector:@selector(dailymotionOAuthRequestCloseModalDialog:) withObject:nil];
+        DMOAuthPerformMandatoryDelegate(@selector(dailymotionOAuthRequestCloseModalDialog:), nil);
         if ([self.delegate respondsToSelector:@selector(dailymotionOAuthRequest:shouldOpenURLInExternalBrowser:)])
         {
             if ([self.delegate dailymotionOAuthRequest:self shouldOpenURLInExternalBrowser:request.URL])
