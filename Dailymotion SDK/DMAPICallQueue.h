@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class Dailymotion;
+@class DMAPI;
 @class DMAPICall;
 
 @interface DMAPICallQueue : NSObject
 
-@property (nonatomic, unsafe_unretained) Dailymotion *delegate;
+@property (nonatomic, unsafe_unretained) DMAPI *delegate;
 
 - (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
 - (DMAPICall *)callWithId:(NSString *)callId;

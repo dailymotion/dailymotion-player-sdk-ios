@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class DailymotionPlayerViewController;
+@class DMPlayerViewController;
 
 @protocol DailymotionPlayerDelegate <NSObject>
 
@@ -20,11 +20,11 @@
  * @param player The player which emited the event
  * @param eventName The name of the emited event
  */
-- (void)dailymotionPlayer:(DailymotionPlayerViewController *)player didReceiveEvent:(NSString *)eventName;
+- (void)dailymotionPlayer:(DMPlayerViewController *)player didReceiveEvent:(NSString *)eventName;
 
 @end
 
-@interface DailymotionPlayerViewController : UIViewController <UIWebViewDelegate>
+@interface DMPlayerViewController : UIViewController <UIWebViewDelegate>
 
 @property (nonatomic, copy) NSString *webBaseURLString;
 

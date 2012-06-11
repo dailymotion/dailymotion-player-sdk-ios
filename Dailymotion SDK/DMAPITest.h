@@ -7,8 +7,8 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-#import "Dailymotion.h"
+#import "DMAPI.h"
 
-@interface DailymotionTest : SenTestCase <DailymotionOAuthDelegate>
+@interface DMAPITest : SenTestCase <DailymotionOAuthDelegate>
 
 @end

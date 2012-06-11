@@ -1,21 +1,29 @@
 //
-//  Dailymotion.m
+//  DMAPI.m
 //  Dailymotion
 //
 //  Created by Olivier Poitrey on 11/10/10.
 //  Copyright 2010 Dailymotion. All rights reserved.
 //
 
-#import "Dailymotion.h"
+#import "DMAPI.h"
 #import "DMNetworking.h"
 #import "DMBoundableInputStream.h"
+
+#ifdef __OBJC_GC__
+#error Dailymotion SDK does not support Objective-C Garbage Collection
+#endif
+	
+#if !__has_feature(objc_arc)
+#error Dailymotion SDK is ARC only. Either turn on ARC for the project or use -fobjc-arc flag
+#endif
 
 #define kDMMaxCallsPerRequest 10
 
 static NSString *const kDMVersion = @"2.0";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
-@implementation Dailymotion
+@implementation DMAPI
 {
     DMNetworking *uploadNetworkQueue;
     DMAPICallQueue *callQueue;
@@ -367,14 +375,14 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 #pragma mark Player
 
 #if TARGET_OS_IPHONE
-- (DailymotionPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params
+- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params
 {
-    return [[DailymotionPlayerViewController alloc] initWithVideo:video params:params];
+    return [[DMPlayerViewController alloc] initWithVideo:video params:params];
 }
 
-- (DailymotionPlayerViewController *)player:(NSString *)video
+- (DMPlayerViewController *)player:(NSString *)video
 {
-    return [[DailymotionPlayerViewController alloc] initWithVideo:video];
+    return [[DMPlayerViewController alloc] initWithVideo:video];
 }
 #endif
 

@@ -1,5 +1,5 @@
 //
-//  Dailymotion.h
+//  DMAPI.h
 //  Dailymotion
 //
 //  Created by Olivier Poitrey on 11/10/10.
@@ -11,10 +11,10 @@
 #import "DMAPIError.h"
 
 #if TARGET_OS_IPHONE
-#import "DailymotionPlayerViewController.h"
+#import "DMPlayerViewController.h"
 #endif
 
-@interface Dailymotion : NSObject
+@interface DMAPI : NSObject
 
 @property (nonatomic) NSString *version;
 @property (nonatomic, assign) NSTimeInterval timeout;
@@ -111,8 +111,8 @@
  *               that can be used to customize the player.
  */
 #if TARGET_OS_IPHONE
-- (DailymotionPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
-- (DailymotionPlayerViewController *)player:(NSString *)video;
+- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
+- (DMPlayerViewController *)player:(NSString *)video;
 #endif
 
 /**

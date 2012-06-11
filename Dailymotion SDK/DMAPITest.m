@@ -6,7 +6,7 @@
 //  Copyright 2010 Dailymotion. All rights reserved.
 //
 
-#import "DailymotionTest.h"
+#import "DMAPITest.h"
 #import "DailymotionTestConfig.h"
 
 #define INIT dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);\
@@ -28,7 +28,7 @@
 
 @end
 
-@implementation DailymotionTest
+@implementation DMAPITest
 {
     NSString *username;
     NSString *password;
@@ -40,9 +40,9 @@
     password = nil;
 }
 
-- (Dailymotion *)api
+- (DMAPI *)api
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
+    DMAPI *api = [[DMAPI alloc] init];
 #ifdef kDMAPIEndpointURL
     api.APIBaseURL = kDMAPIEndpointURL;
 #endif
@@ -157,7 +157,7 @@
 {
     INIT
 
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     [api.oauth setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read"];
     [api.oauth clearSession];
     [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
@@ -173,7 +173,7 @@
 {
     INIT
 
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     api.oauth.delegate = self;
     username = kDMUsername;
     password = kDMPassword;
@@ -204,7 +204,7 @@
 {
     INIT
 
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     api.oauth.delegate = self;
     username = kDMUsername;
     password = kDMPassword;
@@ -236,7 +236,7 @@
 {
     INIT
 
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     api.oauth.delegate = self;
     username = @"username";
     password = @"wrong_password";
@@ -256,7 +256,7 @@
 {
     INIT
 
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     api.oauth.delegate = self;
     username = kDMUsername;
     password = kDMPassword;
@@ -301,7 +301,7 @@
 {
     INIT
 
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     api.oauth.delegate = self;
     username = kDMUsername;
     password = kDMPassword;
@@ -324,7 +324,7 @@
 
 - (void)testSessionStoreKey
 {
-    Dailymotion *api = self.api;
+    DMAPI *api = self.api;
     STAssertNil([api.oauth sessionStoreKey], @"Session store key is nil if no grant type");
     [api.oauth setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     NSString *sessionStoreKey = [api.oauth sessionStoreKey];

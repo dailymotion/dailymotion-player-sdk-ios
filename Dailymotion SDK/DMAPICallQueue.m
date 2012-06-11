@@ -7,9 +7,9 @@
 //
 
 #import "DMAPICallQueue.h"
-#import "Dailymotion.h"
+#import "DMAPI.h"
 
-@interface Dailymotion (Cancel)
+@interface DMAPI (Cancel)
 
 - (void)cancelCall:(DMAPICall *)call;
 

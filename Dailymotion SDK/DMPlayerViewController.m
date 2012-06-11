@@ -6,9 +6,9 @@
 //  Copyright 2011 Dailymotion. All rights reserved.
 //
 
-#import "DailymotionPlayerViewController.h"
+#import "DMPlayerViewController.h"
 
-@interface DailymotionPlayerViewController ()
+@interface DMPlayerViewController ()
 @property (nonatomic, readwrite) BOOL autoplay;
 @property (nonatomic, readwrite) float bufferedTime;
 @property (nonatomic, readwrite) float duration;
@@ -18,7 +18,7 @@
 @property (nonatomic, readwrite) NSError *error;
 @end
 
-@implementation DailymotionPlayerViewController
+@implementation DMPlayerViewController
 {
     NSString *video;
     NSDictionary *params;
