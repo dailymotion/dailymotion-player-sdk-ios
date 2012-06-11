@@ -13,6 +13,10 @@
 		531A6313158514F700EB269B /* DMOAuthSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A6311158514F700EB269B /* DMOAuthSession.m */; };
 		531A63151585512000EB269B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 531A63141585512000EB269B /* Security.framework */; };
 		531A63181585670D00EB269B /* DMOAuthSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A63171585670D00EB269B /* DMOAuthSessionTest.m */; };
+		531A631B1586069B00EB269B /* DMOAuthRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A63191586069B00EB269B /* DMOAuthRequest.h */; };
+		531A631C1586069B00EB269B /* DMOAuthRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A631A1586069B00EB269B /* DMOAuthRequest.m */; };
+		531A631F1586175700EB269B /* DMAPIError.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A631D1586175700EB269B /* DMAPIError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		531A63201586175700EB269B /* DMAPIError.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A631E1586175700EB269B /* DMAPIError.m */; };
 		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
 		53E270FD126369C100B541BE /* Dailymotion.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* Dailymotion.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -43,6 +47,10 @@
 		531A63141585512000EB269B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		531A63161585670D00EB269B /* DMOAuthSessionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSessionTest.h; sourceTree = "<group>"; };
 		531A63171585670D00EB269B /* DMOAuthSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSessionTest.m; sourceTree = "<group>"; };
+		531A63191586069B00EB269B /* DMOAuthRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthRequest.h; sourceTree = "<group>"; };
+		531A631A1586069B00EB269B /* DMOAuthRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthRequest.m; sourceTree = "<group>"; };
+		531A631D1586175700EB269B /* DMAPIError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPIError.h; sourceTree = "<group>"; };
+		531A631E1586175700EB269B /* DMAPIError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPIError.m; sourceTree = "<group>"; };
 		531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMBoundableInputStream.h; sourceTree = "<group>"; };
 		531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMBoundableInputStream.m; sourceTree = "<group>"; };
 		533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTestConfig.h; sourceTree = "<group>"; };
@@ -120,8 +128,12 @@
 				531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */,
 				53F0816915827C43000E56C4 /* DMNetworking.h */,
 				53F0816A15827C43000E56C4 /* DMNetworking.m */,
+				531A63191586069B00EB269B /* DMOAuthRequest.h */,
+				531A631A1586069B00EB269B /* DMOAuthRequest.m */,
 				531A6310158514F700EB269B /* DMOAuthSession.h */,
 				531A6311158514F700EB269B /* DMOAuthSession.m */,
+				531A631D1586175700EB269B /* DMAPIError.h */,
+				531A631E1586175700EB269B /* DMAPIError.m */,
 			);
 			name = Dailymotion;
 			path = "Dailymotion SDK";
@@ -161,6 +173,8 @@
 				531138781430D68400ED3153 /* DailymotionPlayerViewController.h in Headers */,
 				53F0816B15827C43000E56C4 /* DMNetworking.h in Headers */,
 				531A6312158514F700EB269B /* DMOAuthSession.h in Headers */,
+				531A631B1586069B00EB269B /* DMOAuthRequest.h in Headers */,
+				531A631F1586175700EB269B /* DMAPIError.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +291,8 @@
 				531138791430D68400ED3153 /* DailymotionPlayerViewController.m in Sources */,
 				53F0816C15827C43000E56C4 /* DMNetworking.m in Sources */,
 				531A6313158514F700EB269B /* DMOAuthSession.m in Sources */,
+				531A631C1586069B00EB269B /* DMOAuthRequest.m in Sources */,
+				531A63201586175700EB269B /* DMAPIError.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

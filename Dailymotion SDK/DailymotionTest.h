@@ -9,6 +9,6 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import "Dailymotion.h"
 
-@interface DailymotionTest : SenTestCase <DailymotionDelegate>
+@interface DailymotionTest : SenTestCase <DailymotionOAuthDelegate>
 
 @end

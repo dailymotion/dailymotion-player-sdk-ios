@@ -19,16 +19,13 @@
 
 - (DMNetworkingOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
-- (DMNetworkingOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers dependsOn:(NSOperation *)dependency completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
-- (DMNetworkingOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers dependsOn:(NSOperation *)dependency completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)putURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
-- (DMNetworkingOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers dependsOn:(NSOperation *)dependency completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetworkingOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
-- (DMNetworkingOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers dependsOn:(NSOperation *)dependency completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetworkingOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 
 - (void)cancelAllConnections;
 
@@ -47,11 +44,5 @@ typedef void(^FailureBlock)(NSError *error);
 @property (nonatomic, strong) void (^completionHandler)(NSURLResponse *response, NSData *responseData, NSError *connectionError);
 
 - (id)initWithRequest:(NSURLRequest *)request;
-
-@end
-
-@interface DMNetworkingShowstopperOperation : NSOperation
-
-- (void)done;
 
 @end
