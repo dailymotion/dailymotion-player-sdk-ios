@@ -57,8 +57,8 @@
 		531A6310158514F700EB269B /* DMOAuthSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSession.h; sourceTree = "<group>"; };
 		531A6311158514F700EB269B /* DMOAuthSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSession.m; sourceTree = "<group>"; };
 		531A63141585512000EB269B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		531A63161585670D00EB269B /* DMOAuthSessionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSessionTest.h; sourceTree = "<group>"; };
-		531A63171585670D00EB269B /* DMOAuthSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSessionTest.m; sourceTree = "<group>"; };
+		531A63161585670D00EB269B /* DMOAuthSessionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DMOAuthSessionTest.h; path = OAuth/DMOAuthSessionTest.h; sourceTree = "<group>"; };
+		531A63171585670D00EB269B /* DMOAuthSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMOAuthSessionTest.m; path = OAuth/DMOAuthSessionTest.m; sourceTree = "<group>"; };
 		531A63191586069B00EB269B /* DMOAuthClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthClient.h; sourceTree = "<group>"; };
 		531A631A1586069B00EB269B /* DMOAuthClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthClient.m; sourceTree = "<group>"; };
 		531A631D1586175700EB269B /* DMAPIError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPIError.h; sourceTree = "<group>"; };
@@ -73,8 +73,8 @@
 		53E270FB126369C100B541BE /* DMAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPI.h; sourceTree = "<group>"; };
 		53E270FC126369C100B541BE /* DMAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPI.m; sourceTree = "<group>"; };
 		53E273561265BD1C00B541BE /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		53E273C71265C23E00B541BE /* DMAPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPITest.h; sourceTree = "<group>"; };
-		53E273C81265C23E00B541BE /* DMAPITest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPITest.m; sourceTree = "<group>"; };
+		53E273C71265C23E00B541BE /* DMAPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DMAPITest.h; path = API/DMAPITest.h; sourceTree = "<group>"; };
+		53E273C81265C23E00B541BE /* DMAPITest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMAPITest.m; path = API/DMAPITest.m; sourceTree = "<group>"; };
 		53F0816915827C43000E56C4 /* DMNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMNetworking.h; sourceTree = "<group>"; };
 		53F0816A15827C43000E56C4 /* DMNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMNetworking.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Prefix.pch; sourceTree = "<group>"; };
@@ -165,7 +165,7 @@
 				53002EAD15878AF70060AC98 /* DMAPICall.h */,
 				53002EAE15878AF70060AC98 /* DMAPICall.m */,
 			);
-			name = API;
+			path = API;
 			sourceTree = "<group>";
 		};
 		531ED7AB1586A236005F6FE5 /* Networking */ = {
@@ -178,7 +178,7 @@
 				531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */,
 				531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */,
 			);
-			name = Networking;
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		531ED7AF1586A5B6005F6FE5 /* Player */ = {
@@ -187,7 +187,7 @@
 				531138761430D68400ED3153 /* DMPlayerViewController.h */,
 				531138771430D68400ED3153 /* DMPlayerViewController.m */,
 			);
-			name = Player;
+			path = Player;
 			sourceTree = "<group>";
 		};
 		531ED7B11586A5D2005F6FE5 /* OAuth */ = {
@@ -200,7 +200,7 @@
 				5397428415872ED000ABF402 /* DMOAuthRequestOperation.h */,
 				5397428515872ED000ABF402 /* DMOAuthRequestOperation.m */,
 			);
-			name = OAuth;
+			path = OAuth;
 			sourceTree = "<group>";
 		};
 		53E273741265BD9700B541BE /* Tests */ = {
