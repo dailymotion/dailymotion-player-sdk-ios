@@ -7,23 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		53002EAA15876C860060AC98 /* DMNetRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 53002EA815876C860060AC98 /* DMNetRequestOperation.h */; };
+		53002EAA15876C860060AC98 /* DMNetRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 53002EA815876C860060AC98 /* DMNetRequestOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53002EAB15876C860060AC98 /* DMNetRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 53002EA915876C860060AC98 /* DMNetRequestOperation.m */; };
-		53002EAF15878AF70060AC98 /* DMAPICall.h in Headers */ = {isa = PBXBuildFile; fileRef = 53002EAD15878AF70060AC98 /* DMAPICall.h */; };
+		53002EAF15878AF70060AC98 /* DMAPICall.h in Headers */ = {isa = PBXBuildFile; fileRef = 53002EAD15878AF70060AC98 /* DMAPICall.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53002EB015878AF70060AC98 /* DMAPICall.m in Sources */ = {isa = PBXBuildFile; fileRef = 53002EAE15878AF70060AC98 /* DMAPICall.m */; };
 		531138781430D68400ED3153 /* DMPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 531138761430D68400ED3153 /* DMPlayerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531138791430D68400ED3153 /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 531138771430D68400ED3153 /* DMPlayerViewController.m */; };
+		53149E3E1587A5860068ADB7 /* DMUDID.h in Headers */ = {isa = PBXBuildFile; fileRef = 53149E3C1587A5860068ADB7 /* DMUDID.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53149E3F1587A5860068ADB7 /* DMUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = 53149E3D1587A5860068ADB7 /* DMUDID.m */; };
 		531A6312158514F700EB269B /* DMOAuthSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A6310158514F700EB269B /* DMOAuthSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531A6313158514F700EB269B /* DMOAuthSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A6311158514F700EB269B /* DMOAuthSession.m */; };
 		531A63151585512000EB269B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 531A63141585512000EB269B /* Security.framework */; };
 		531A63181585670D00EB269B /* DMOAuthSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A63171585670D00EB269B /* DMOAuthSessionTest.m */; };
-		531A631B1586069B00EB269B /* DMOAuthClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A63191586069B00EB269B /* DMOAuthClient.h */; };
+		531A631B1586069B00EB269B /* DMOAuthClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A63191586069B00EB269B /* DMOAuthClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531A631C1586069B00EB269B /* DMOAuthClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A631A1586069B00EB269B /* DMOAuthClient.m */; };
 		531A631F1586175700EB269B /* DMAPIError.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A631D1586175700EB269B /* DMAPIError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531A63201586175700EB269B /* DMAPIError.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A631E1586175700EB269B /* DMAPIError.m */; };
-		531A632E15862E2E00EB269B /* DMAPICallQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A632C15862E2E00EB269B /* DMAPICallQueue.h */; };
+		531A632E15862E2E00EB269B /* DMAPICallQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A632C15862E2E00EB269B /* DMAPICallQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531A632F15862E2E00EB269B /* DMAPICallQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A632D15862E2E00EB269B /* DMAPICallQueue.m */; };
-		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; };
+		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
 		5397428615872ED000ABF402 /* DMOAuthRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 5397428415872ED000ABF402 /* DMOAuthRequestOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5397428715872ED000ABF402 /* DMOAuthRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5397428515872ED000ABF402 /* DMOAuthRequestOperation.m */; };
@@ -54,6 +56,8 @@
 		53002EAE15878AF70060AC98 /* DMAPICall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPICall.m; sourceTree = "<group>"; };
 		531138761430D68400ED3153 /* DMPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMPlayerViewController.h; sourceTree = "<group>"; };
 		531138771430D68400ED3153 /* DMPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMPlayerViewController.m; sourceTree = "<group>"; };
+		53149E3C1587A5860068ADB7 /* DMUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMUDID.h; sourceTree = "<group>"; };
+		53149E3D1587A5860068ADB7 /* DMUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMUDID.m; sourceTree = "<group>"; };
 		531A6310158514F700EB269B /* DMOAuthSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSession.h; sourceTree = "<group>"; };
 		531A6311158514F700EB269B /* DMOAuthSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSession.m; sourceTree = "<group>"; };
 		531A63141585512000EB269B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -140,6 +144,7 @@
 				531ED7AF1586A5B6005F6FE5 /* Player */,
 				531ED7AB1586A236005F6FE5 /* Networking */,
 				531ED7B11586A5D2005F6FE5 /* OAuth */,
+				53149E361587A30A0068ADB7 /* Utils */,
 			);
 			name = Source;
 			path = "Dailymotion SDK";
@@ -151,6 +156,15 @@
 				AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		53149E361587A30A0068ADB7 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				53149E3C1587A5860068ADB7 /* DMUDID.h */,
+				53149E3D1587A5860068ADB7 /* DMUDID.m */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		531ED7AA1586A220005F6FE5 /* API */ = {
@@ -235,6 +249,7 @@
 				5397428615872ED000ABF402 /* DMOAuthRequestOperation.h in Headers */,
 				53002EAA15876C860060AC98 /* DMNetRequestOperation.h in Headers */,
 				53002EAF15878AF70060AC98 /* DMAPICall.h in Headers */,
+				53149E3E1587A5860068ADB7 /* DMUDID.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +372,7 @@
 				5397428715872ED000ABF402 /* DMOAuthRequestOperation.m in Sources */,
 				53002EAB15876C860060AC98 /* DMNetRequestOperation.m in Sources */,
 				53002EB015878AF70060AC98 /* DMAPICall.m in Sources */,
+				53149E3F1587A5860068ADB7 /* DMUDID.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

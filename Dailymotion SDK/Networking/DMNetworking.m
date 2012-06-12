@@ -7,6 +7,7 @@
 //
 
 #import "DMNetworking.h"
+#import "DMUDID.h"
 
 @implementation DMNetworking
 {
@@ -87,6 +88,7 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     [request setHTTPMethod:method];
     [request setAllHTTPHeaderFields:headers];
+    [request addValue:[DMUDID deviceIdentifier] forHTTPHeaderField:@"X-DeviceId"];
     [request setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
     [request setTimeoutInterval:self.timeout];
 
