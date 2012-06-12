@@ -1,5 +1,5 @@
 //
-//  DMOAuthRequest.h
+//  DMOAuthClient.h
 //  Dailymotion SDK iOS
 //
 //  Created by Olivier Poitrey on 11/06/12.
@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "DMOAuthSession.h"
 #import "DMNetworking.h"
+#import "DMOAuthRequestOperation.h"
 
 #define kDMOAuthRedirectURI @"none://fake-callback"
 
@@ -29,7 +30,7 @@ typedef enum
 
 @protocol DailymotionOAuthDelegate;
 
-@interface DMOAuthRequest : NSObject PLATFORM_DELEGATES
+@interface DMOAuthClient : NSObject PLATFORM_DELEGATES
 
 @property (nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
 @property (nonatomic, copy) NSURL *oAuthTokenEndpointURL;
@@ -63,7 +64,7 @@ typedef enum
 /**
  * Perform a request with oauth authentication
  */
-- (void)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 
 /**
  * Set the grant type to be used for API requests.
@@ -124,7 +125,7 @@ typedef enum
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
  */
 #if TARGET_OS_IPHONE
-- (void)dailymotionOAuthRequest:(DMOAuthRequest *)request createModalDialogWithView:(UIView *)view;
+- (void)dailymotionOAuthRequest:(DMOAuthClient *)request createModalDialogWithView:(UIView *)view;
 #else
 - (void)dailymotionOAuthRequest:(DMOAuthRequest *)request createModalDialogWithView:(NSView *)view;
 #endif
@@ -135,7 +136,7 @@ typedef enum
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
  */
-- (void)dailymotionOAuthRequestCloseModalDialog:(DMOAuthRequest *)request;
+- (void)dailymotionOAuthRequestCloseModalDialog:(DMOAuthClient *)request;
 
 /**
  * Called when the grant method is ``DailymotionGrantTypePassword`` and the credentials are requested by the library.
@@ -144,7 +145,7 @@ typedef enum
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypePassword``.
  */
-- (void)dailymotionOAuthRequest:(DMOAuthRequest *)request didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
+- (void)dailymotionOAuthRequest:(DMOAuthClient *)request didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
 
 
 /**
@@ -152,6 +153,6 @@ typedef enum
  * the Dailymotion SDK asks the UI delegate if the link should be openned in an external browser or if the UI delegate
  * want to handle the openned link by itself.
  */
-- (BOOL)dailymotionOAuthRequest:(DMOAuthRequest *)request shouldOpenURLInExternalBrowser:(NSURL *)url;
+- (BOOL)dailymotionOAuthRequest:(DMOAuthClient *)request shouldOpenURLInExternalBrowser:(NSURL *)url;
 
 @end

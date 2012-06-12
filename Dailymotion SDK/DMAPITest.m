@@ -336,7 +336,7 @@
 
 }
 
-- (void)dailymotionOAuthRequest:(DMOAuthRequest *)request didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
+- (void)dailymotionOAuthRequest:(DMOAuthClient *)request didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
 {
     if (username)
     {

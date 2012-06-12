@@ -41,48 +41,48 @@
     [queue cancelAllOperations];
 }
 
-- (DMNetworkingOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"GET" payload:nil headers:nil completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"GET" payload:nil headers:headers completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"POST" payload:payload headers:nil completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"POST" payload:payload headers:headers completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)putURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:nil completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:headers completionHandler:handler];
 }
 
 
-- (DMNetworkingOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:nil completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:headers completionHandler:handler];
 }
 
-- (DMNetworkingOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     [request setHTTPMethod:method];
@@ -131,141 +131,10 @@
         [request setHTTPBodyStream:payload];
     }
 
-    DMNetworkingOperation *operation = [[DMNetworkingOperation alloc] initWithRequest:request];
+    DMNetRequestOperation *operation = [[DMNetRequestOperation alloc] initWithRequest:request];
     operation.completionHandler = handler;
     [queue addOperation:operation];
     return operation;
-}
-
-@end
-
-
-@implementation DMNetworkingOperation
-{
-    BOOL executing;
-    BOOL finished;
-    NSMutableData *responseData;
-}
-
-@synthesize request = _request;
-@synthesize response = _response;
-@synthesize error = _error;
-@synthesize connection = _connection;
-@synthesize completionHandler = _completionHandler;
-@synthesize progressHandler = _progressHandler;
-@dynamic responseData;
-
-- (id)initWithRequest:(NSURLRequest *)request
-{
-    if ((self = [super init]))
-    {
-        self.request = request;
-        executing = NO;
-        finished = NO;
-        responseData = [[NSMutableData alloc] init];
-    }
-    return self;
-}
-
-- (void)start
-{
-    if (self.isCancelled)
-    {
-        [self willChangeValueForKey:@"isFinished"];
-        finished = YES;
-        [self didChangeValueForKey:@"isFinished"];
-        return;
-    }
-
-    dispatch_async(dispatch_get_main_queue(), ^
-    {
-        [self willChangeValueForKey:@"isExecuting"];
-        self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self startImmediately:NO];
-        [self.connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-        [self.connection start];
-        executing = YES;
-        [self didChangeValueForKey:@"isExecuting"];
-    });
-}
-
-- (void)cancel
-{
-    if (self.isFinished) return;
-    [super cancel];
-    [self.connection cancel];
-    [self done];
-}
-
-- (void)done
-{
-    [self willChangeValueForKey:@"isFinished"];
-    [self willChangeValueForKey:@"isExecuting"];
-    executing = NO;
-    if (self.completionHandler && !self.isCancelled)
-    {
-        self.completionHandler(self.response, responseData, self.error);
-        self.completionHandler = nil;
-    }
-    self.progressHandler = nil;
-    finished = YES;
-    [self didChangeValueForKey:@"isExecuting"];
-    [self didChangeValueForKey:@"isFinished"];
-}
-
-- (BOOL)isConcurrent
-{
-    return YES;
-}
-
-- (BOOL)isExecuting
-{
-    return executing;
-}
-
-- (BOOL)isFinished
-{
-    return finished;
-}
-
-- (NSData *)responseData
-{
-    return responseData;
-}
-
-#pragma mark NSURLConnection delegate
-
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [responseData appendData:data];
-}
-
-- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
-{
-    if (self.progressHandler)
-    {
-        self.progressHandler(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    self.response = response;
-}
-
--(void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    [self done];
-}
-
-- (void)connection:(NSURLConnection*)connection didFailWithError:(NSError *)connectionError
-{
-    self.error = connectionError;
-    [self done];
-}
-
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse *)cachedResponse
-{
-    return nil;
 }
 
 @end

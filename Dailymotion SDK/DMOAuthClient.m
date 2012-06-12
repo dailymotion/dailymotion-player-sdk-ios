@@ -1,12 +1,12 @@
 //
-//  DMOAuthRequest.m
+//  DMOAuthClient.m
 //  Dailymotion SDK iOS
 //
 //  Created by Olivier Poitrey on 11/06/12.
 //  Copyright (c) 2012 Dailymotion. All rights reserved.
 //
 
-#import "DMOAuthRequest.h"
+#import "DMOAuthClient.h"
 #import "DMAPIError.h"
 #import <objc/runtime.h>
 #import <CommonCrypto/CommonDigest.h>
@@ -37,17 +37,16 @@ else\
 }
 
 
-@interface DMOAuthRequest ()
+@interface DMOAuthClient ()
 
+@property (nonatomic, strong) NSOperationQueue *requestQueue;
 @property (nonatomic, readwrite) DailymotionGrantType grantType;
 
 @end
 
 
-@implementation DMOAuthRequest
+@implementation DMOAuthClient
 {
-    NSOperationQueue *waitingQueue;
-    NSError *lastError;
     BOOL sessionLoaded;
     NSDictionary *grantInfo;
     DMOAuthSession *_session;
@@ -56,6 +55,7 @@ else\
 @synthesize networkQueue = _networkQueue;
 @synthesize oAuthAuthorizationEndpointURL = _oAuthAuthorizationEndpointURL;
 @synthesize oAuthTokenEndpointURL = _oAuthTokenEndpointURL;
+@synthesize requestQueue = _requestQueue;
 @synthesize grantType = _grantType;
 @synthesize autoSaveSession = _autoSaveSession;
 @synthesize delegate = _delegate;
@@ -70,6 +70,7 @@ static char callbackKey;
         self.oAuthAuthorizationEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"];
         self.oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];
         self.networkQueue = [[DMNetworking alloc] init];
+        self.requestQueue = [[NSOperationQueue alloc] init];
         sessionLoaded = NO;
         self.autoSaveSession = YES;
     }
@@ -78,65 +79,53 @@ static char callbackKey;
 
 - (void)dealloc
 {
+    [_requestQueue cancelAllOperations];
     [_networkQueue cancelAllConnections];
 }
 
-- (void)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
+    DMOAuthRequestOperation *request = [[DMOAuthRequestOperation alloc] initWithURL:URL
+                                                                             method:method
+                                                                            payload:payload
+                                                                       networkQueue:self.networkQueue completionHandler:handler];
+
     NSString *accessToken = self.session.accessToken;
     if (self.grantType == DailymotionNoGrant)
     {
         // No authentication requested, just forward
-        [self.networkQueue performRequestWithURL:URL method:method payload:payload headers:headers completionHandler:handler];
     }
     else if (accessToken)
     {
         // Authentication requeseted and own a valid access token, perform the request by adding the token in the Authorization header
-        NSMutableDictionary *mutableHeaders = [headers mutableCopy];
-        [mutableHeaders setValue:[NSString stringWithFormat:@"OAuth2 %@", accessToken] forKey:@"Authorization"];
-        [self.networkQueue performRequestWithURL:URL method:method payload:payload headers:mutableHeaders completionHandler:handler];
+        request.accessToken = accessToken;
     }
     else
     {
-        if (lastError)
-        {
-            handler(nil, nil, lastError);
-            return;
-        }
-
         // OAuth authentication is require but no valid access token is found, request a new one and postpone calls.
         // NOTE: if several requests are performed before the access token is returned, they are postponed and called
         // all at once once the token server answered
-        BOOL requestToken = NO;
-        if (!waitingQueue)
-        {
-            waitingQueue = [[NSOperationQueue alloc] init];
-            waitingQueue.maxConcurrentOperationCount = 1;
-            waitingQueue.suspended = YES;
-            requestToken = YES;
-        }
+        self.requestQueue.suspended = YES;
 
-        __unsafe_unretained DMOAuthRequest *bself = self;
-        [waitingQueue addOperationWithBlock:^
+        __unsafe_unretained DMOAuthClient *bself = self;
+        [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
         {
-            // Queue the same call to be executed once the token retrival is done
-            [bself performRequestWithURL:URL method:method payload:payload headers:headers completionHandler:handler];
-        }];
-
-        if (requestToken)
-        {
-            [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
+            if (error)
             {
-                lastError = error;
+                [bself.requestQueue.operations makeObjectsPerformSelector:@selector(cancelWithError:) withObject:error];
+            }
+            else
+            {
+                [bself.requestQueue.operations makeObjectsPerformSelector:@selector(setAccessToken:) withObject:newAccessToken];
+            }
 
-                // Release all requests waiting for access token
-                waitingQueue.suspended = NO;
-                [waitingQueue waitUntilAllOperationsAreFinished];
-                waitingQueue = nil;
-                lastError = nil;
-            }];
-        }
+            bself.requestQueue.suspended = NO;
+        }];
     }
+
+    [self.requestQueue addOperation:request];
+
+    return request;
 }
 
 - (void)requestAccessTokenWithCompletionHandler:(void (^)(NSString *, NSError *))handler

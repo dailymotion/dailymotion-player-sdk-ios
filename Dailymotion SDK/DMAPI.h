@@ -6,7 +6,7 @@
 //  Copyright 2010 Dailymotion. All rights reserved.
 //
 
-#import "DMOAuthRequest.h"
+#import "DMOAuthClient.h"
 #import "DMAPICallQueue.h"
 #import "DMAPIError.h"
 
@@ -22,13 +22,26 @@
 @property (nonatomic, copy) NSURL *APIBaseURL;
 
 /**
+ * Maximum number of allowed concurrent API calls. By default, this property is automatically
+ * managed regarding current network type (Wifi > 3G/Edge). Changing this value manually will
+ * disable the automatic management.
+ */
+@property (nonatomic, assign) NSUInteger maxConcurrency;
+
+/**
+ * Maximum number of call allowed to be batched in a single request. The hard API limit is 10
+ * and default value is 10 as well.
+ */
+@property (nonatomic, assign) NSUInteger maxAggregatedCallCount;
+
+/**
  * The DMOAuthRequest object responsible for API authentication. You may have to set a delegate
  * and call the `setGrantType:withAPIKey:secret:scope:` method on this object if you want to
  * make authenticated API request.
  *
  * @see DMOAuthRequest
  */
-@property (nonatomic, strong) DMOAuthRequest *oauth;
+@property (nonatomic, strong) DMOAuthClient *oauth;
 
 /**
  * Make a GET request to Dailymotion's API with the given method name and arguments.
