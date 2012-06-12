@@ -86,6 +86,7 @@
         }
     }
 
+    [self willChangeValueForKey:@"isExecuting"];
     __unsafe_unretained DMOAuthRequestOperation *bself = self;
     self.request = [self.networkQueue performRequestWithURL:self.URL
                                                      method:self.method
@@ -99,6 +100,8 @@
     {
         self.request.progressHandler = self.progressHandler;
     }
+    executing = YES;
+    [self didChangeValueForKey:@"isExecuting"];
 }
 
 - (void)cancelWithError:(NSError *)error
@@ -116,7 +119,8 @@
     if (self.isFinished) return;
     [super cancel];
     [self.request cancel];
-    [self doneWithResponse:nil data:nil error:nil];
+    executing = NO;
+    finished = YES;
 }
 
 - (void)doneWithResponse:(NSURLResponse *)response data:(NSData *)responseData error:(NSError *)error
