@@ -28,7 +28,7 @@ else\
     }\
     if (self.delegate)\
     {\
-        NSLog(@"*** Dailymotion: Your delegate doesn't implement mandatory %@ method for %@.", selector, currentGrantType);\
+        NSLog(@"*** Dailymotion: Your delegate doesn't implement mandatory %@ method for %@.", NSStringFromSelector(selector), currentGrantType);\
     }\
     else\
     {\
@@ -157,7 +157,7 @@ static char callbackKey;
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?response_type=code&client_id=%@&scope=%@&redirect_uri=%@",
                                            [self.oAuthAuthorizationEndpointURL absoluteString], [grantInfo valueForKey:@"key"],
                                            [[grantInfo valueForKey:@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
-                                           [[NSString stringWithString:kDMOAuthRedirectURI] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                           [kDMOAuthRedirectURI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
 
 #if TARGET_OS_IPHONE
