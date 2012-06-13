@@ -21,13 +21,6 @@
 
 @implementation DMAPICall
 
-@synthesize callId = _callId;
-@synthesize method = _method;
-@synthesize path = _path;
-@synthesize args = _args;
-@synthesize callback = _callback;
-@synthesize isCancelled = _isCancelled;
-
 - (id)init
 {
     if ((self = [super init]))

@@ -26,16 +26,6 @@
     BOOL finished;
 }
 
-@synthesize accessToken = _accessToken;
-@synthesize URL = _URL;
-@synthesize method = _method;
-@synthesize headers = _headers;
-@synthesize payload = _payload;
-@synthesize completionHandler = _completionHandler;
-@synthesize networkQueue = _networkQueue;
-@synthesize request = _request;
-@dynamic progressHandler;
-
 - (id)initWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     if ((self = [super init]))

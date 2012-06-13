@@ -9,12 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface DMBoundableInputStream : NSInputStream
-{
-    @private
-    NSData *headData, *tailData;
-    NSUInteger headLength, tailLength, deliveredLength, tailPosition;
-    NSInputStream *middleStream;
-}
 
 @property (nonatomic) NSData *headData, *tailData;
 @property (nonatomic) NSInputStream *middleStream;

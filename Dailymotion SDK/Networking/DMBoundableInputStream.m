@@ -11,8 +11,14 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
 @implementation DMBoundableInputStream
-@synthesize middleStream;
-@dynamic headData, tailData;
+{
+    NSData *headData;
+    NSData *tailData;
+    NSUInteger headLength;
+    NSUInteger tailLength;
+    NSUInteger deliveredLength;
+    NSUInteger tailPosition;
+}
 
 - (void)setHeadData:(NSData *)newHeadData
 {
@@ -59,7 +65,7 @@
     }
     if (sentLength < maxLength && deliveredLength >= headLength && tailPosition == 0)
     {
-        readLength = [middleStream read:buffer + sentLength maxLength:maxLength - sentLength];
+        readLength = [self.middleStream read:buffer + sentLength maxLength:maxLength - sentLength];
         sentLength += readLength;
         deliveredLength += readLength;
     }
@@ -80,7 +86,7 @@
 
 - (BOOL)hasBytesAvailable
 {
-    if ([middleStream hasBytesAvailable])
+    if ([self.middleStream hasBytesAvailable])
     {
         return YES;
     }
@@ -99,62 +105,62 @@
 
 - (void)open
 {
-    [middleStream open];
+    [self.middleStream open];
 }
 
 - (void)close
 {
-    [middleStream close];
+    [self.middleStream close];
 }
 
 - (id <NSStreamDelegate>)delegate
 {
-    return [middleStream delegate];
+    return [self.middleStream delegate];
 }
 
 - (void)setDelegate:(id <NSStreamDelegate>)delegate
 {
-    [middleStream setDelegate:delegate];
+    [self.middleStream setDelegate:delegate];
 }
 
 - (id)propertyForKey:(NSString *)key
 {
-    return [middleStream propertyForKey:key];
+    return [self.middleStream propertyForKey:key];
 }
 
 - (BOOL)setProperty:(id)property forKey:(NSString *)key
 {
-    return [middleStream setProperty:property forKey:key];
+    return [self.middleStream setProperty:property forKey:key];
 }
 
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {
-    [middleStream scheduleInRunLoop:aRunLoop forMode:mode];
+    [self.middleStream scheduleInRunLoop:aRunLoop forMode:mode];
 }
 
 - (void)removeFromRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {
-    [middleStream removeFromRunLoop:aRunLoop forMode:mode];
+    [self.middleStream removeFromRunLoop:aRunLoop forMode:mode];
 }
 
 - (NSStreamStatus)streamStatus
 {
-    return [middleStream streamStatus];
+    return [self.middleStream streamStatus];
 }
 
 - (NSError *)streamError
 {
-    return [middleStream streamError];
+    return [self.middleStream streamError];
 }
 
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
 {
-    return [middleStream methodSignatureForSelector:selector];
+    return [self.middleStream methodSignatureForSelector:selector];
 }
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
-    [invocation invokeWithTarget:middleStream];
+    [invocation invokeWithTarget:self.middleStream];
 }
 
 @end

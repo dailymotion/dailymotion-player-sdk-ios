@@ -15,14 +15,6 @@
     NSMutableData *responseData;
 }
 
-@synthesize request = _request;
-@synthesize response = _response;
-@synthesize error = _error;
-@synthesize connection = _connection;
-@synthesize completionHandler = _completionHandler;
-@synthesize progressHandler = _progressHandler;
-@dynamic responseData;
-
 - (id)initWithRequest:(NSURLRequest *)request
 {
     if ((self = [super init]))

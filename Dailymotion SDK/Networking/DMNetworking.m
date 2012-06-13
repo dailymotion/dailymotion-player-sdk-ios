@@ -14,10 +14,6 @@
     NSOperationQueue *queue;
 }
 
-@synthesize timeout = _timeout;
-@synthesize userAgent = _userAgent;
-@dynamic maxConcurrency;
-
 - (id)init
 {
     if ((self = [super init]))

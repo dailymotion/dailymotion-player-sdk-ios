@@ -32,8 +32,6 @@
     NSMutableDictionary *callQueue;
 }
 
-@synthesize delegate = _delegate;
-
 - (id)init
 {
     if ((self = [super init]))

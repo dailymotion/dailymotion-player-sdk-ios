@@ -52,15 +52,6 @@ else\
     DMOAuthSession *_session;
 }
 
-@synthesize networkQueue = _networkQueue;
-@synthesize oAuthAuthorizationEndpointURL = _oAuthAuthorizationEndpointURL;
-@synthesize oAuthTokenEndpointURL = _oAuthTokenEndpointURL;
-@synthesize requestQueue = _requestQueue;
-@synthesize grantType = _grantType;
-@synthesize autoSaveSession = _autoSaveSession;
-@synthesize delegate = _delegate;
-@dynamic session;
-
 static char callbackKey;
 
 - (id)init

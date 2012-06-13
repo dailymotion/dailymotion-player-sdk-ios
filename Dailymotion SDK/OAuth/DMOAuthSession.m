@@ -23,11 +23,6 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     NSString *_accessToken;
 }
 
-@dynamic accessToken;
-@synthesize expires = _expires;
-@synthesize refreshToken = _refreshToken;
-@synthesize scope = _scope;
-
 + (DMOAuthSession *)sessionWithSessionInfo:(NSDictionary *)sessionInfo;
 {
     DMOAuthSession *session = [[self alloc] init];

@@ -34,13 +34,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     NSUInteger runningRequestCount;
 }
 
-@synthesize APIBaseURL = _APIBaseURL;
-@synthesize oauth = _oauth;
-@dynamic version;
-@dynamic timeout;
-@dynamic maxConcurrency;
-@dynamic maxAggregatedCallCount;
-
 - (id)init
 {
     if ((self = [super init]))

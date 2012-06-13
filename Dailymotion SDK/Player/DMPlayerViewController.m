@@ -26,20 +26,6 @@
     float _currentTime;
 }
 
-@synthesize webBaseURLString = _webBaseURLString;
-@synthesize delegate = _delegate;
-@synthesize autoplay = _autoplay;
-@synthesize bufferedTime = _bufferedTime;
-@synthesize duration = _duration;
-@synthesize seeking = _seeking;
-@synthesize paused = _paused;
-@synthesize ended = _ended;
-@synthesize error = _error;
-@synthesize muted = _muted;
-@dynamic fullscreen;
-@dynamic currentTime;
-@synthesize volume = _volume;
-
 - (id)initWithVideo:(NSString *)aVideo params:(NSDictionary *)someParams
 {
     if ((self = [super init]))
