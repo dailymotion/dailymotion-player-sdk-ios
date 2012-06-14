@@ -15,6 +15,7 @@
 
 @end
 
+
 @interface DMAPICall ()
 
 @property (nonatomic, copy, readwrite) NSString *callId;
@@ -26,18 +27,21 @@
 
 @end
 
+@interface DMAPICallQueue ()
+
+@property (nonatomic, assign) NSUInteger _callNextId;
+@property (nonatomic, strong) NSMutableDictionary *_callQueue;
+
+@end
+
 @implementation DMAPICallQueue
-{
-    NSUInteger callNextId;
-    NSMutableDictionary *callQueue;
-}
 
 - (id)init
 {
     if ((self = [super init]))
     {
-        callNextId = 0;
-        callQueue = [[NSMutableDictionary alloc] init];
+        self._callNextId = 0;
+        self._callQueue = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -46,7 +50,7 @@
 {
     @synchronized(self)
     {
-        NSString *callId = [NSString stringWithFormat:@"%d", callNextId++];
+        NSString *callId = [NSString stringWithFormat:@"%d", self._callNextId++];
         DMAPICall *call = [[DMAPICall alloc] init];
         call.callId = callId;
         call.path = path;
@@ -61,7 +65,7 @@
             call.callback = ^(id result, NSError *error) {/* noop */};
         }
 
-        [callQueue setObject:call forKey:callId];
+        [self._callQueue setObject:call forKey:callId];
         
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
 
@@ -72,7 +76,7 @@
 
 - (DMAPICall *)callWithId:(NSString *)callId
 {
-    return [callQueue objectForKey:callId];
+    return [self._callQueue objectForKey:callId];
 }
 
 - (DMAPICall *)removeCallWithId:(NSString *)callId
@@ -81,7 +85,7 @@
     {
         DMAPICall *call = [self callWithId:callId];
         [call removeObserver:self forKeyPath:@"isCancelled"];
-        [callQueue removeObjectForKey:callId];
+        [self._callQueue removeObjectForKey:callId];
         return call;
     }
 }
@@ -90,10 +94,10 @@
 {
     @synchronized(self)
     {
-        if ([callQueue objectForKey:call.callId])
+        if ([self._callQueue objectForKey:call.callId])
         {
             [call removeObserver:self forKeyPath:@"isCancelled"];
-            [callQueue removeObjectForKey:call.callId];
+            [self._callQueue removeObjectForKey:call.callId];
             return YES;
         }
         else

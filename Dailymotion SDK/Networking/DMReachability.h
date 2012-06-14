@@ -48,19 +48,19 @@ typedef enum
 
 typedef void (^DMNetworkReachable)(DMReachability * reachability);
 typedef void (^DMNetworkUnreachable)(DMReachability * reachability);
+typedef void (^DMNetworkReachabilityChanged)(DMReachability * reachability);
 
 @interface DMReachability : NSObject
 
 @property (nonatomic, copy) DMNetworkReachable reachableBlock;
 @property (nonatomic, copy) DMNetworkUnreachable unreachableBlock;
 
-
 @property (nonatomic, assign) BOOL reachableOnWWAN;
 
-+ (DMReachability*)reachabilityWithHostname:(NSString*)hostname;
-+ (DMReachability*)reachabilityForInternetConnection;
-+ (DMReachability*)reachabilityWithAddress:(const struct sockaddr_in*)hostAddress;
-+ (DMReachability*)reachabilityForLocalWiFi;
++ (DMReachability *)reachabilityWithHostname:(NSString*)hostname;
++ (DMReachability *)reachabilityForInternetConnection;
++ (DMReachability *)reachabilityWithAddress:(const struct sockaddr_in*)hostAddress;
++ (DMReachability *)reachabilityForLocalWiFi;
 
 - (DMReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref;
 
@@ -73,16 +73,14 @@ typedef void (^DMNetworkUnreachable)(DMReachability * reachability);
 
 // WWAN may be available, but not active until a connection has been established.
 // WiFi may require a connection for VPN on Demand.
-- (BOOL)isConnectionRequired; // Identical DDG variant.
-- (BOOL)connectionRequired; // Apple's routine.
-                            // Dynamic, on demand connection?
+- (BOOL)isConnectionRequired;
 - (BOOL)isConnectionOnDemand;
 // Is user intervention required?
 - (BOOL)isInterventionRequired;
 
 - (DMNetworkStatus)currentReachabilityStatus;
 - (SCNetworkReachabilityFlags)reachabilityFlags;
-- (NSString*)currentReachabilityString;
-- (NSString*)currentReachabilityFlags;
+- (NSString *)currentReachabilityString;
+- (NSString *)currentReachabilityFlags;
 
 @end

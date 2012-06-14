@@ -10,7 +10,8 @@
 
 @interface DMBoundableInputStream : NSInputStream
 
-@property (nonatomic) NSData *headData, *tailData;
+@property (nonatomic) NSData *headData;
+@property (nonatomic) NSData *tailData;
 @property (nonatomic) NSInputStream *middleStream;
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;

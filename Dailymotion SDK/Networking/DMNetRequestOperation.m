@@ -8,11 +8,16 @@
 
 #import "DMNetRequestOperation.h"
 
+@interface DMNetRequestOperation ()
+
+@property (nonatomic, assign) BOOL _executing;
+@property (nonatomic, assign) BOOL _finished;
+
+@end
+
 @implementation DMNetRequestOperation
 {
-    BOOL executing;
-    BOOL finished;
-    NSMutableData *responseData;
+    NSMutableData *_responseData;
 }
 
 - (id)initWithRequest:(NSURLRequest *)request
@@ -20,9 +25,9 @@
     if ((self = [super init]))
     {
         self.request = request;
-        executing = NO;
-        finished = NO;
-        responseData = [[NSMutableData alloc] init];
+        self._executing = NO;
+        self._finished = NO;
+        _responseData = [[NSMutableData alloc] init];
     }
     return self;
 }
@@ -32,7 +37,7 @@
     if (self.isCancelled)
     {
         [self willChangeValueForKey:@"isFinished"];
-        finished = YES;
+        self._finished = YES;
         [self didChangeValueForKey:@"isFinished"];
         return;
     }
@@ -43,7 +48,7 @@
         self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self startImmediately:NO];
         [self.connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
         [self.connection start];
-        executing = YES;
+        self._executing = YES;
         [self didChangeValueForKey:@"isExecuting"];
     });
 }
@@ -53,22 +58,22 @@
     if (self.isFinished) return;
     [super cancel];
     [self.connection cancel];
-    executing = NO;
-    finished = YES;
+    self._executing = NO;
+    self._finished = YES;
 }
 
 - (void)done
 {
     [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isExecuting"];
-    executing = NO;
+    self._executing = NO;
     if (self.completionHandler && !self.isCancelled)
     {
-        self.completionHandler(self.response, responseData, self.error);
+        self.completionHandler(self.response, _responseData, self.error);
         self.completionHandler = nil;
     }
     self.progressHandler = nil;
-    finished = YES;
+    self._finished = YES;
     [self didChangeValueForKey:@"isExecuting"];
     [self didChangeValueForKey:@"isFinished"];
 }
@@ -80,24 +85,24 @@
 
 - (BOOL)isExecuting
 {
-    return executing;
+    return self._executing;
 }
 
 - (BOOL)isFinished
 {
-    return finished;
+    return self._finished;
 }
 
 - (NSData *)responseData
 {
-    return responseData;
+    return _responseData;
 }
 
 #pragma mark NSURLConnection delegate
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    [responseData appendData:data];
+    [_responseData appendData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite

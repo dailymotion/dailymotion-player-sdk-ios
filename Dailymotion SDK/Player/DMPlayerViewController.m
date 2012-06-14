@@ -16,24 +16,26 @@
 @property (nonatomic, readwrite) BOOL paused;
 @property (nonatomic, readwrite) BOOL ended;
 @property (nonatomic, readwrite) NSError *error;
+@property (nonatomic, strong) NSString *_video;
+@property (nonatomic, strong) NSDictionary *_params;
+
 @end
+
 
 @implementation DMPlayerViewController
 {
-    NSString *video;
-    NSDictionary *params;
     BOOL _fullscreen;
     float _currentTime;
 }
 
-- (id)initWithVideo:(NSString *)aVideo params:(NSDictionary *)someParams
+- (id)initWithVideo:(NSString *)video params:(NSDictionary *)params
 {
     if ((self = [super init]))
     {
-        video = aVideo;
-        params = someParams;
+        self._video = video;
+        self._params = params;
 
-        self.autoplay = [[params objectForKey:@"autoplay"] boolValue] == YES;
+        self.autoplay = [[self._params objectForKey:@"autoplay"] boolValue] == YES;
         self.currentTime = 0;
         self.bufferedTime = 0;
         self.duration = NAN;
@@ -81,10 +83,10 @@
     }
 
 
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
-    for (NSString *param in [params keyEnumerator])
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, self._video];
+    for (NSString *param in [self._params keyEnumerator])
     {
-        id value = [params objectForKey:param];
+        id value = [self._params objectForKey:param];
         if ([value isKindOfClass:NSString.class])
         {
             value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];

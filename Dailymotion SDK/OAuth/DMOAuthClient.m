@@ -41,14 +41,14 @@ else\
 
 @property (nonatomic, strong) NSOperationQueue *requestQueue;
 @property (nonatomic, readwrite) DailymotionGrantType grantType;
+@property (nonatomic, assign) BOOL _sessionLoaded;
+@property (nonatomic, strong) NSDictionary *_grantInfo;
 
 @end
 
 
 @implementation DMOAuthClient
 {
-    BOOL sessionLoaded;
-    NSDictionary *grantInfo;
     DMOAuthSession *_session;
 }
 
@@ -62,7 +62,7 @@ static char callbackKey;
         self.oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];
         self.networkQueue = [[DMNetworking alloc] init];
         self.requestQueue = [[NSOperationQueue alloc] init];
-        sessionLoaded = NO;
+        self._sessionLoaded = NO;
         self.autoSaveSession = YES;
     }
     return self;
@@ -131,9 +131,9 @@ static char callbackKey;
     {
         NSMutableDictionary *payload = [NSMutableDictionary dictionary];
         [payload setObject:@"refresh_token" forKey:@"grant_type"];
-        [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
-        [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
-        [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
+        [payload setObject:[self._grantInfo valueForKey:@"key"] forKey:@"client_id"];
+        [payload setObject:[self._grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
+        [payload setObject:[self._grantInfo valueForKey:@"scope"] forKey:@"scope"];
         [payload setObject:self.session.refreshToken forKey:@"refresh_token"];
         [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
          {
@@ -147,7 +147,7 @@ static char callbackKey;
         // Perform authorization server request
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?response_type=code&client_id=%@&scope=%@&redirect_uri=%@",
                                            [self.oAuthAuthorizationEndpointURL absoluteString], [grantInfo valueForKey:@"key"],
-                                           [[grantInfo valueForKey:@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                                           [[self._grantInfo valueForKey:@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
                                            [kDMOAuthRedirectURI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
 
@@ -173,9 +173,9 @@ static char callbackKey;
         {
             NSMutableDictionary *payload = [NSMutableDictionary dictionary];
             [payload setObject:@"password" forKey:@"grant_type"];
-            [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
-            [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
-            [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
+            [payload setObject:[self._grantInfo valueForKey:@"key"] forKey:@"client_id"];
+            [payload setObject:[self._grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
+            [payload setObject:[self._grantInfo valueForKey:@"scope"] forKey:@"scope"];
             [payload setObject:(username ? username : @"") forKey:@"username"];
             [payload setObject:(password ? password : @"") forKey:@"password"];
             [self.networkQueue postURL:self.oAuthTokenEndpointURL
@@ -192,9 +192,9 @@ static char callbackKey;
         // Perform token server request
         NSMutableDictionary *payload = [NSMutableDictionary dictionary];
         [payload setObject:@"client_credentials" forKey:@"grant_type"];
-        [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
-        [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
-        [payload setObject:[grantInfo valueForKey:@"scope"] forKey:@"scope"];
+        [payload setObject:[self._grantInfo valueForKey:@"key"] forKey:@"client_id"];
+        [payload setObject:[self._grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
+        [payload setObject:[self._grantInfo valueForKey:@"scope"] forKey:@"scope"];
         [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
         {
             [self handleOAuthResponse:response data:responseData completionHandler:handler];
@@ -294,8 +294,8 @@ static char callbackKey;
     {
         NSMutableDictionary *payload = [NSMutableDictionary dictionary];
         [payload setObject:@"authorization_code" forKey:@"grant_type"];
-        [payload setObject:[grantInfo valueForKey:@"key"] forKey:@"client_id"];
-        [payload setObject:[grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
+        [payload setObject:[self._grantInfo valueForKey:@"key"] forKey:@"client_id"];
+        [payload setObject:[self._grantInfo valueForKey:@"secret"] forKey:@"client_secret"];
         [payload setObject:[result valueForKey:@"code"] forKey:@"code"];
         [payload setObject:kDMOAuthRedirectURI forKey:@"redirect_uri"];
         [self.networkQueue postURL:self.oAuthTokenEndpointURL
@@ -348,7 +348,7 @@ static char callbackKey;
     }
 
     self.grantType = type;
-    grantInfo = [info copy];
+    self._grantInfo = [info copy];
 }
 
 - (void)clearSession
@@ -367,10 +367,10 @@ static char callbackKey;
 
 - (DMOAuthSession *)session
 {
-    if (!_session && !sessionLoaded)
+    if (!_session && !self._sessionLoaded)
     {
         [self setSession: [self readSession]];
-        sessionLoaded = YES; // If read session returns nil, prevent session from trying each time
+        self._sessionLoaded = YES; // If read session returns nil, prevent session from trying each time
     }
 
     return _session;
@@ -386,11 +386,11 @@ static char callbackKey;
 
 - (NSString *)sessionStoreKey
 {
-    if (self.grantType == DailymotionNoGrant || ![grantInfo valueForKey:@"hash"])
+    if (self.grantType == DailymotionNoGrant || ![self._grantInfo valueForKey:@"hash"])
     {
         return nil;
     }
-    return [NSString stringWithFormat:@"com.dailymotion.api.%@", [grantInfo valueForKey:@"hash"]];
+    return [NSString stringWithFormat:@"com.dailymotion.api.%@", [self._grantInfo valueForKey:@"hash"]];
 }
 
 - (void)storeSession

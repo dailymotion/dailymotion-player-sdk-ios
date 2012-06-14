@@ -27,15 +27,22 @@
 static NSString *const kDMVersion = @"2.0";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
+@interface DMAPI ()
+
+@property (nonatomic, strong) DMNetworking *_uploadNetworkQueue;
+@property (nonatomic, strong) DMAPICallQueue *_callQueue;
+@property (nonatomic, strong) NSMutableDictionary *_callRequest;
+@property (nonatomic, assign) BOOL _autoConcurrency;
+@property (nonatomic, assign) NSUInteger _runningRequestCount;
+
+@end
+
+
 @implementation DMAPI
 {
-    DMNetworking *uploadNetworkQueue;
-    DMAPICallQueue *callQueue;
-    NSMutableDictionary *callRequest;
-    BOOL autoConcurrency;
     NSUInteger _maxConcurrency;
     NSUInteger _maxAggregatedCallCount;
-    NSUInteger runningRequestCount;
+    NSURL *_APIBaseURL;
 }
 
 - (id)init
@@ -43,28 +50,28 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     if ((self = [super init]))
     {
         self.APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
-        uploadNetworkQueue = [[DMNetworking alloc] init];
-        uploadNetworkQueue.maxConcurrency = 1;
-        uploadNetworkQueue.userAgent = self.userAgent;
-        callQueue = [[DMAPICallQueue alloc] init];
-        callQueue.delegate = self;
-        callRequest = [[NSMutableDictionary alloc] init];
+        self._uploadNetworkQueue = [[DMNetworking alloc] init];
+        self._uploadNetworkQueue.maxConcurrency = 1;
+        self._uploadNetworkQueue.userAgent = self.userAgent;
+        self._callQueue = [[DMAPICallQueue alloc] init];
+        self._callQueue.delegate = self;
+        self._callRequest = [[NSMutableDictionary alloc] init];
         self.oauth = [[DMOAuthClient alloc] init];
         self.oauth.networkQueue.userAgent = self.userAgent;
         self.timeout = 15;
-        autoConcurrency = NO;
+        self._autoConcurrency = NO;
         _maxConcurrency = 2; // TODO handle auto setup / network type
         _maxAggregatedCallCount = kDMHardMaxCallsPerRequest;
-        runningRequestCount = 0;
+        self._runningRequestCount = 0;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    callQueue.delegate = nil;
+    self._callQueue.delegate = nil;
     [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
-    [uploadNetworkQueue cancelAllConnections];
+    [self._uploadNetworkQueue cancelAllConnections];
 }
 
 #pragma mark -
@@ -74,14 +81,14 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 {
     @synchronized(self)
     {
-        while (runningRequestCount < self.maxConcurrency && [[callRequest allKeysForObject:[NSNull null]] count] > 0)
+        while (self._runningRequestCount < self.maxConcurrency && [[self._callRequest allKeysForObject:[NSNull null]] count] > 0)
         {
             NSMutableArray *calls = [[NSMutableArray alloc] init];
             // Process calls in FIFO order
             uint_fast8_t total = 0;
-            for (NSString *callId in [callRequest allKeysForObject:[NSNull null]])
+            for (NSString *callId in [self._callRequest allKeysForObject:[NSNull null]])
             {
-                DMAPICall *call = [callQueue callWithId:callId];
+                DMAPICall *call = [self._callQueue callWithId:callId];
                 NSAssert(call != nil, @"Call id from request pool is present in call queue");
                 if (![call isCancelled])
                 {
@@ -108,7 +115,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
     for (DMAPICall *call in calls)
     {
-        NSAssert([[callRequest objectForKey:call.callId] isKindOfClass:[NSNull class]], @"Trying to schedule same call twice");
+        NSAssert([[self._callRequest objectForKey:call.callId] isKindOfClass:[NSNull class]], @"Trying to schedule same call twice");
         NSDictionary *callRequestBody = [NSMutableDictionary dictionary];
         [callRequestBody setValue:call.callId forKey:@"id"];
         [callRequestBody setValue:[NSString stringWithFormat:@"%@ %@", call.method, call.path] forKey:@"call"];
@@ -120,7 +127,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     }
 
     NSMutableDictionary *headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
-    runningRequestCount++;
+    self._runningRequestCount++;
     DMOAuthRequestOperation *request; 
     request = [self.oauth performRequestWithURL:self.APIBaseURL
                                          method:@"POST"
@@ -129,13 +136,13 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                     cachePolicy:NSURLRequestUseProtocolCachePolicy
                               completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
     {
-        runningRequestCount--;
+        self._runningRequestCount--;
         [self handleAPIResponse:response data:responseData error:connectionError calls:calls];
     }];
 
     for (DMAPICall *call in calls)
     {
-        [callRequest setObject:request forKey:call.callId];
+        [self._callRequest setObject:request forKey:call.callId];
     }
 }
 
@@ -184,7 +191,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 // Reschedule calls
                 for (DMAPICall *call in calls)
                 {
-                    [callRequest setObject:[NSNull null] forKey:call.callId];
+                    [self._callRequest setObject:[NSNull null] forKey:call.callId];
                 }
                 [self scheduleDequeuing];
                 return;
@@ -243,14 +250,14 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 return;
             }
 
-            DMAPICall *call = [callQueue removeCallWithId:callId];
+            DMAPICall *call = [self._callQueue removeCallWithId:callId];
             if (!call)
             {
                 NSLog(@"DMAPI BUG: API returned a result for an unknown call id: %@", callId);
                 continue;
             }
 
-            [callRequest removeObjectForKey:call.callId];
+            [self._callRequest removeObjectForKey:call.callId];
 
             if (![calls containsObject:call])
             {
@@ -287,9 +294,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         // Search for pending calls that wouldn't have been answered by this response and inform delegate(s) about the error
         for (DMAPICall *call in calls)
         {
-            if ([callQueue removeCall:call])
+            if ([self._callQueue removeCall:call])
             {
-                [callRequest removeObjectForKey:call.callId];
+                [self._callRequest removeObjectForKey:call.callId];
                 NSError *error = [DMAPIError errorWithMessage:@"Invalid API server response: no result."
                                                        domain:DailymotionApiErrorDomain
                                                          type:nil
@@ -303,22 +310,22 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 - (void)cancelCall:(DMAPICall *)call
 {
-    id request = [callRequest objectForKey:call.callId];
+    id request = [self._callRequest objectForKey:call.callId];
     if (request)
     {
         if ([request isKindOfClass:[NSNull class]])
         {
             // The call hasn't been sent the the server yet, just forget it
-            [callRequest removeObjectForKey:call.callId];
-            [callQueue removeCallWithId:call.callId];
+            [self._callRequest removeObjectForKey:call.callId];
+            [self._callQueue removeCallWithId:call.callId];
         }
         else if ([request isKindOfClass:[DMOAuthRequestOperation class]])
         {
             // The call has been sent to the server, it may be part of a batch request
             BOOL requestCancellable = YES;
-            for (NSString *queuedCallId in [callRequest allKeysForObject:request])
+            for (NSString *queuedCallId in [self._callRequest allKeysForObject:request])
             {
-                DMAPICall *queuedCall = [callQueue callWithId:queuedCallId];
+                DMAPICall *queuedCall = [self._callQueue callWithId:queuedCallId];
                 NSAssert(queuedCall != nil, @"Request to cancel is present in the queue");
                 if (queuedCall != call && ![queuedCall isCancelled])
                 {
@@ -349,19 +356,37 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     {
         for (DMAPICall *call in calls)
         {
-            if ([callQueue removeCall:call])
+            if ([self._callQueue removeCall:call])
             {
-                [callRequest removeObjectForKey:call.callId];
+                [self._callRequest removeObjectForKey:call.callId];
                 call.callback(nil, error);
             }
         }
     }
 }
 
+#pragma mark - Accessors
+
+- (void)setAPIBaseURL:(NSURL *)APIBaseURL
+{
+    if (_APIBaseURL != APIBaseURL)
+    {
+        [self._reach stopNotifier];
+        self._reach = [DMReachability reachabilityWithHostname:APIBaseURL.host];
+        [self._reach startNotifier];
+    }
+    _APIBaseURL = APIBaseURL;
+}
+
+- (NSURL *)APIBaseURL
+{
+    return _APIBaseURL;
+}
+
 - (void)setMaxConcurrency:(NSUInteger)maxConcurrency
 {
     _maxConcurrency = maxConcurrency;
-    autoConcurrency = NO;
+    self._autoConcurrency = NO;
 }
 
 - (NSUInteger)maxConcurrency
@@ -409,8 +434,8 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 - (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback
 {
-    DMAPICall *call = [callQueue addCallWithPath:path method:method args:args callback:callback];
-    [callRequest setObject:[NSNull null] forKey:call.callId];
+    DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args callback:callback];
+    [self._callRequest setObject:[NSNull null] forKey:call.callId];
     [self scheduleDequeuing];
     return call;
 }
@@ -428,8 +453,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     [self get:@"/logout" callback:nil];
 }
 
-#pragma mark -
-#pragma mark Upload
+#pragma mark - Upload
 
 - (DMAPICall *)uploadFile:(NSString *)filePath progress:(void (^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))progress callback:(void (^)(NSString *, NSError*))callback
 {
@@ -452,10 +476,11 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         [headers setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", kDMBoundary] forKey:@"Content-Type"];
         [headers setValue:[NSString stringWithFormat:@"%d", (fileSize + payload.headData.length + payload.tailData.length)] forKey:@"Content-Length"];
 
-        DMNetRequestOperation *networkOperation = [uploadNetworkQueue postURL:[NSURL URLWithString:[result objectForKey:@"upload_url"]]
-                                                                      payload:(NSInputStream *)payload
-                                                                      headers:headers
-                                                            completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
+        DMNetRequestOperation *networkOperation;
+        networkOperation = [self._uploadNetworkQueue postURL:[NSURL URLWithString:[result objectForKey:@"upload_url"]]
+                                                    payload:(NSInputStream *)payload
+                                                    headers:headers
+                                          completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
         {
             NSDictionary *uploadInfo = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
             if ([uploadInfo objectForKey:@"url"])
@@ -484,8 +509,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     return nil;
 }
 
-#pragma mark -
-#pragma mark Player
+#pragma mark - Player
 
 #if TARGET_OS_IPHONE
 - (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params
@@ -499,13 +523,12 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 }
 #endif
 
-#pragma mark -
-#pragma mark Utils
+#pragma mark - Utils
 
 - (void)setTimeout:(NSTimeInterval)timeout
 {
     self.oauth.networkQueue.timeout = timeout;
-    uploadNetworkQueue.timeout = timeout;
+    self._uploadNetworkQueue.timeout = timeout;
 }
 
 - (NSTimeInterval)timeout

@@ -9,33 +9,37 @@
 #import "DMNetworking.h"
 #import "DMUDID.h"
 
+@interface DMNetworking ()
+
+@property (nonatomic, strong) NSOperationQueue *_queue;
+
+@end
+
+
 @implementation DMNetworking
-{
-    NSOperationQueue *queue;
-}
 
 - (id)init
 {
     if ((self = [super init]))
     {
-        queue = [[NSOperationQueue alloc] init];
+        self._queue = [[NSOperationQueue alloc] init];
     }
     return self;
 }
 
 - (void)setMaxConcurrency:(NSUInteger)maxConcurrency
 {
-    queue.maxConcurrentOperationCount = maxConcurrency;
+    self._queue.maxConcurrentOperationCount = maxConcurrency;
 }
 
 - (NSUInteger)maxConcurrency
 {
-    return queue.maxConcurrentOperationCount;
+    return self._queue.maxConcurrentOperationCount;
 }
 
 - (void)cancelAllConnections
 {
-    [queue cancelAllOperations];
+    [self._queue cancelAllOperations];
 }
 
 - (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
@@ -132,7 +136,7 @@
 
     DMNetRequestOperation *operation = [[DMNetRequestOperation alloc] initWithRequest:request];
     operation.completionHandler = handler;
-    [queue addOperation:operation];
+    [self._queue addOperation:operation];
     return operation;
 }
 

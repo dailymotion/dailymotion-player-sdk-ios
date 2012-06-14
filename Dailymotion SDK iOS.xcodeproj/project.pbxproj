@@ -17,6 +17,7 @@
 		53149E3F1587A5860068ADB7 /* DMUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = 53149E3D1587A5860068ADB7 /* DMUDID.m */; };
 		531580C21589F81200F25C7D /* DMReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 531580C01589F81200F25C7D /* DMReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531580C31589F81200F25C7D /* DMReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 531580C11589F81200F25C7D /* DMReachability.m */; };
+		531580C9158A21E200F25C7D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 531580C7158A21C700F25C7D /* SystemConfiguration.framework */; };
 		531A6312158514F700EB269B /* DMOAuthSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A6310158514F700EB269B /* DMOAuthSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531A6313158514F700EB269B /* DMOAuthSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A6311158514F700EB269B /* DMOAuthSession.m */; };
 		531A63151585512000EB269B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 531A63141585512000EB269B /* Security.framework */; };
@@ -62,6 +63,7 @@
 		53149E3D1587A5860068ADB7 /* DMUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMUDID.m; sourceTree = "<group>"; };
 		531580C01589F81200F25C7D /* DMReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMReachability.h; sourceTree = "<group>"; };
 		531580C11589F81200F25C7D /* DMReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMReachability.m; sourceTree = "<group>"; };
+		531580C7158A21C700F25C7D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		531A6310158514F700EB269B /* DMOAuthSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthSession.h; sourceTree = "<group>"; };
 		531A6311158514F700EB269B /* DMOAuthSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthSession.m; sourceTree = "<group>"; };
 		531A63141585512000EB269B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -97,6 +99,7 @@
 			files = (
 				531A63151585512000EB269B /* Security.framework in Frameworks */,
 				53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */,
+				531580C9158A21E200F25C7D /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +138,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				531580C7158A21C700F25C7D /* SystemConfiguration.framework */,
 				531A63141585512000EB269B /* Security.framework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 			);
