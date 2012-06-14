@@ -122,6 +122,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                          method:@"POST"
                                         payload:[NSJSONSerialization dataWithJSONObject:callRequestBodies options:0 error:NULL]
                                         headers:headers
+                                    cachePolicy:NSURLRequestUseProtocolCachePolicy
                               completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
     {
         runningRequestCount--;

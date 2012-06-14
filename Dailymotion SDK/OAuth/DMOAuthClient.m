@@ -74,7 +74,7 @@ static char callbackKey;
     [_networkQueue cancelAllConnections];
 }
 
-- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     DMOAuthRequestOperation *request = [[DMOAuthRequestOperation alloc] initWithURL:URL
                                                                              method:method

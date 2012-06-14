@@ -40,46 +40,46 @@
 
 - (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"GET" payload:nil headers:nil completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"GET" payload:nil headers:nil cachePolicy:0 completionHandler:handler];
 }
 
 - (DMNetRequestOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"GET" payload:nil headers:headers completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"GET" payload:nil headers:headers cachePolicy:0 completionHandler:handler];
 }
 
 - (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"POST" payload:payload headers:nil completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"POST" payload:payload headers:nil cachePolicy:0 completionHandler:handler];
 }
 
 - (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"POST" payload:payload headers:headers completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"POST" payload:payload headers:headers cachePolicy:0 completionHandler:handler];
 }
 
 - (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:nil completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:nil cachePolicy:0 completionHandler:handler];
 }
 
 - (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:headers completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:headers cachePolicy:0 completionHandler:handler];
 }
 
 
 - (DMNetRequestOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:nil completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:nil cachePolicy:0 completionHandler:handler];
 }
 
 - (DMNetRequestOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
-    return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:headers completionHandler:handler];
+    return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:headers cachePolicy:0 completionHandler:handler];
 }
 
-- (DMNetRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (DMNetRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     [request setHTTPMethod:method];
@@ -87,6 +87,7 @@
     [request addValue:[DMUDID deviceIdentifier] forHTTPHeaderField:@"X-DeviceId"];
     [request setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
     [request setTimeoutInterval:self.timeout];
+    [request setCachePolicy:cachePolicy];
 
     if ([payload isKindOfClass:[NSDictionary class]])
     {

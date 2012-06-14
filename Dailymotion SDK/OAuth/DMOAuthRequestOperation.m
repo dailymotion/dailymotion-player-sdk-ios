@@ -82,6 +82,7 @@
                                                      method:self.method
                                                     payload:self.payload
                                                     headers:headers
+                                                cachePolicy:NSURLRequestUseProtocolCachePolicy
                                           completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
     {
         [bself doneWithResponse:response data:responseData error:error];
