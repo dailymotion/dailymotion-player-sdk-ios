@@ -39,7 +39,7 @@ typedef enum
 /**
  * Set the delegate that conforms to the ``DailymotionDelegate`` protocol.
  */
-@property (nonatomic, unsafe_unretained) id<DailymotionOAuthDelegate> delegate;
+@property (nonatomic, weak) id<DailymotionOAuthDelegate> delegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session

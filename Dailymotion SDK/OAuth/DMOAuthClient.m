@@ -98,7 +98,7 @@ static char callbackKey;
         // all at once once the token server answered
         self.requestQueue.suspended = YES;
 
-        __unsafe_unretained DMOAuthClient *bself = self;
+        __weak DMOAuthClient *bself = self;
         [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
         {
             if (error)

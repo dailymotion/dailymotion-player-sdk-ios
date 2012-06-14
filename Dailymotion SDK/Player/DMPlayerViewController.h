@@ -28,7 +28,7 @@
 
 @property (nonatomic, copy) NSString *webBaseURLString;
 
-@property (nonatomic, unsafe_unretained) id<DailymotionPlayerDelegate>delegate;
+@property (nonatomic, weak) id<DailymotionPlayerDelegate>delegate;
 
 /**
  * Determines whether the media resource plays automatically when available (read-only).

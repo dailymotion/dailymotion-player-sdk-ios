@@ -13,7 +13,7 @@
 
 @interface DMAPICallQueue : NSObject
 
-@property (nonatomic, unsafe_unretained) DMAPI *delegate;
+@property (nonatomic, weak) DMAPI *delegate;
 
 - (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
 - (DMAPICall *)callWithId:(NSString *)callId;

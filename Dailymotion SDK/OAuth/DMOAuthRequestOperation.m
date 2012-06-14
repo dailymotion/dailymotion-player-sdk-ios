@@ -77,7 +77,7 @@
     }
 
     [self willChangeValueForKey:@"isExecuting"];
-    __unsafe_unretained DMOAuthRequestOperation *bself = self;
+    __weak DMOAuthRequestOperation *bself = self;
     self.request = [self.networkQueue performRequestWithURL:self.URL
                                                      method:self.method
                                                     payload:self.payload

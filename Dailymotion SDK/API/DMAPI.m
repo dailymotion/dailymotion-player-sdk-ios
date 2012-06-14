@@ -18,6 +18,10 @@
 #error Dailymotion SDK is ARC only. Either turn on ARC for the project or use -fobjc-arc flag
 #endif
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_5_0
+#error Dailymotion doesn't support Deployement Target version < 5.0
+#endif
+
 #define kDMHardMaxCallsPerRequest 10
 
 static NSString *const kDMVersion = @"2.0";
