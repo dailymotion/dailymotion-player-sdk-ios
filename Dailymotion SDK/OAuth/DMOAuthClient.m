@@ -146,7 +146,7 @@ static char callbackKey;
     {
         // Perform authorization server request
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?response_type=code&client_id=%@&scope=%@&redirect_uri=%@",
-                                           [self.oAuthAuthorizationEndpointURL absoluteString], [grantInfo valueForKey:@"key"],
+                                           [self.oAuthAuthorizationEndpointURL absoluteString], [self._grantInfo valueForKey:@"key"],
                                            [[self._grantInfo valueForKey:@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
                                            [kDMOAuthRedirectURI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];

@@ -8,12 +8,13 @@
 
 #import "DMAPI.h"
 #import "DMNetworking.h"
+#import "DMReachability.h"
 #import "DMBoundableInputStream.h"
 
 #ifdef __OBJC_GC__
 #error Dailymotion SDK does not support Objective-C Garbage Collection
 #endif
-	
+
 #if !__has_feature(objc_arc)
 #error Dailymotion SDK is ARC only. Either turn on ARC for the project or use -fobjc-arc flag
 #endif
@@ -29,6 +30,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 @interface DMAPI ()
 
+@property (nonatomic, strong) DMReachability *_reach;
 @property (nonatomic, strong) DMNetworking *_uploadNetworkQueue;
 @property (nonatomic, strong) DMAPICallQueue *_callQueue;
 @property (nonatomic, strong) NSMutableDictionary *_callRequest;
@@ -49,6 +51,11 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 {
     if ((self = [super init]))
     {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(reachabilityChanged:)
+                                                     name:DMReachabilityChangedNotification
+                                                   object:nil];
+
         self.APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
         self._uploadNetworkQueue = [[DMNetworking alloc] init];
         self._uploadNetworkQueue.maxConcurrency = 1;
@@ -69,13 +76,48 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     self._callQueue.delegate = nil;
     [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
     [self._uploadNetworkQueue cancelAllConnections];
 }
 
-#pragma mark -
-#pragma mark API
+- (void)reachabilityChanged:(DMReachability *)reach
+{
+    if (self._reach != reach)
+    {
+        return;
+    }
+
+    if (self._autoConcurrency)
+    {
+        switch (self._reach.currentReachabilityStatus)
+        {
+            case DMReachableViaWiFi:
+#ifdef DEBUG
+                NSLog(@"Dailymotion API is reachable via Wifi");
+#endif
+                _maxConcurrency = 6;
+                break;
+
+            case DMReachableViaWWAN:
+#ifdef DEBUG
+                NSLog(@"Dailymotion API is reachable via cellular network");
+#endif
+                _maxConcurrency = 2;
+                break;
+
+            case DMNotReachable:
+#ifdef DEBUG
+                NSLog(@"Dailymotion API is not reachable");
+#endif
+                break;
+        }
+    }
+
+}
+
+#pragma mark - API
 
 - (void)dequeueCalls
 {
@@ -128,7 +170,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
     NSMutableDictionary *headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
     self._runningRequestCount++;
-    DMOAuthRequestOperation *request; 
+    DMOAuthRequestOperation *request;
     request = [self.oauth performRequestWithURL:self.APIBaseURL
                                          method:@"POST"
                                         payload:[NSJSONSerialization dataWithJSONObject:callRequestBodies options:0 error:NULL]
