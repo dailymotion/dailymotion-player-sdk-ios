@@ -67,7 +67,7 @@
             call.callback = ^(id result, DMAPICacheInfo *cache, NSError *error) {/* noop */};
         }
 
-        [self._callQueue setObject:call forKey:callId];
+        self._callQueue[callId] = call;
         
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
 
@@ -78,7 +78,7 @@
 
 - (DMAPICall *)callWithId:(NSString *)callId
 {
-    return [self._callQueue objectForKey:callId];
+    return self._callQueue[callId];
 }
 
 - (DMAPICall *)removeCallWithId:(NSString *)callId
@@ -96,7 +96,7 @@
 {
     @synchronized(self)
     {
-        if ([self._callQueue objectForKey:call.callId])
+        if (self._callQueue[call.callId])
         {
             [call removeObserver:self forKeyPath:@"isCancelled"];
             [self._callQueue removeObjectForKey:call.callId];

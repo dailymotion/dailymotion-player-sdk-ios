@@ -159,28 +159,27 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
     for (DMAPICall *call in calls)
     {
-        NSAssert([[self._callRequest objectForKey:call.callId] isKindOfClass:[NSNull class]], @"Trying to schedule same call twice");
-        NSDictionary *callRequestBody = [NSMutableDictionary dictionary];
-        [callRequestBody setValue:call.callId forKey:@"id"];
-        [callRequestBody setValue:[NSString stringWithFormat:@"%@ %@", call.method, call.path] forKey:@"call"];
+        NSAssert([self._callRequest[call.callId] isKindOfClass:[NSNull class]], @"Trying to schedule same call twice");
+        NSMutableDictionary *callRequestBody = [NSMutableDictionary dictionary];
+        callRequestBody[@"id"] = call.callId;
+        callRequestBody[@"call"] = [NSString stringWithFormat:@"%@ %@", call.method, call.path];
         if (call.args)
         {
-            [callRequestBody setValue:call.args forKey:@"args"];
+            callRequestBody[@"args"] = call.args;
         }
         if (call.cacheInfo && call.cacheInfo.etag)
         {
-            [callRequestBody setValue:call.cacheInfo.etag forKey:@"etag"];
+            callRequestBody[@"etag"] = call.cacheInfo.etag;
         }
         [callRequestBodies addObject:callRequestBody];
     }
 
-    NSMutableDictionary *headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
     self._runningRequestCount++;
     DMOAuthRequestOperation *request;
     request = [self.oauth performRequestWithURL:self.APIBaseURL
                                          method:@"POST"
                                         payload:[NSJSONSerialization dataWithJSONObject:callRequestBodies options:0 error:NULL]
-                                        headers:headers
+                                        headers:@{@"Content-Type": @"application/json"}
                                     cachePolicy:NSURLRequestUseProtocolCachePolicy
                               completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
     {
@@ -190,7 +189,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
     for (DMAPICall *call in calls)
     {
-        [self._callRequest setObject:request forKey:call.callId];
+        self._callRequest[call.callId] = request;
     }
 }
 
@@ -212,7 +211,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     {
         NSString *type = nil;
         NSString *message = nil;
-        NSString *authenticateHeader = [httpResponse.allHeaderFields valueForKey:@"Www-Authenticate"];
+        NSString *authenticateHeader = httpResponse.allHeaderFields[@"Www-Authenticate"];
 
         if (authenticateHeader)
         {
@@ -239,7 +238,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 // Reschedule calls
                 for (DMAPICall *call in calls)
                 {
-                    [self._callRequest setObject:[NSNull null] forKey:call.callId];
+                    self._callRequest[call.callId] = [NSNull null];
                 }
                 [self scheduleDequeuing];
                 return;
@@ -284,7 +283,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
             if ([result isKindOfClass:[NSDictionary class]])
             {
-                callId = [result objectForKey:@"id"];
+                callId = result[@"id"];
             }
 
             if (!callId)
@@ -312,9 +311,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 NSLog(@"DMAPI BUG: API returned a result for a existing call id not supposted to be part of this batch request: %@", callId);
             }
 
-            NSDictionary *resultData = [result objectForKey:@"result"];
-            NSDictionary *resultError = [result objectForKey:@"error"];
-            NSDictionary *resultCacheInfo = [result objectForKey:@"cache"];
+            NSDictionary *resultData = result[@"result"];
+            NSDictionary *resultError = result[@"error"];
+            NSDictionary *resultCacheInfo = result[@"cache"];
 
             if ([call isCancelled])
             {
@@ -322,8 +321,8 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
             }
             else if (isdict(resultError))
             {
-                NSString *code = [[result objectForKey:@"error"] objectForKey:@"code"];
-                NSString *message = [[result objectForKey:@"error"] objectForKey:@"message"];
+                NSString *code = result[@"error"][@"code"];
+                NSString *message = result[@"error"][@"message"];
 
                 NSError *error = [DMAPIError errorWithMessage:message domain:DailymotionApiErrorDomain type:code response:response data:responseData];
                 call.callback(nil, nil, error);
@@ -373,7 +372,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 - (void)cancelCall:(DMAPICall *)call
 {
-    id request = [self._callRequest objectForKey:call.callId];
+    id request = self._callRequest[call.callId];
     if (request)
     {
         if ([request isKindOfClass:[NSNull class]])
@@ -503,7 +502,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 - (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
 {
     DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args cacheInfo:cacheInfo callback:callback];
-    [self._callRequest setObject:[NSNull null] forKey:call.callId];
+    self._callRequest[call.callId] = [NSNull null];
     [self scheduleDequeuing];
     return call;
 }
@@ -540,20 +539,21 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         payload.headData = [[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"file\"; filename=\"%@\"\r\nContent-Type: application/octet-stream\r\n\r\n", kDMBoundary, [filePath lastPathComponent]] dataUsingEncoding:NSUTF8StringEncoding];
         payload.tailData = [[NSString stringWithFormat:@"\r\n--%@--\r\n", kDMBoundary] dataUsingEncoding:NSUTF8StringEncoding];
 
-        NSMutableDictionary *headers = [NSMutableDictionary dictionary];
-        [headers setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", kDMBoundary] forKey:@"Content-Type"];
-        [headers setValue:[NSString stringWithFormat:@"%d", (fileSize + payload.headData.length + payload.tailData.length)] forKey:@"Content-Length"];
-
+        NSDictionary *headers =
+        @{
+            @"Content-Type": [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kDMBoundary],
+            @"Content-Length": [NSString stringWithFormat:@"%d", (fileSize + payload.headData.length + payload.tailData.length)]
+        };
         DMNetRequestOperation *networkOperation;
-        networkOperation = [self._uploadNetworkQueue postURL:[NSURL URLWithString:[result objectForKey:@"upload_url"]]
+        networkOperation = [self._uploadNetworkQueue postURL:[NSURL URLWithString:result[@"upload_url"]]
                                                      payload:(NSInputStream *)payload
                                                      headers:headers
                                            completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
         {
             NSDictionary *uploadInfo = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
-            if ([uploadInfo objectForKey:@"url"])
+            if (uploadInfo[@"url"])
             {
-                callback([uploadInfo objectForKey:@"url"], nil);
+                callback(uploadInfo[@"url"], nil);
             }
             else
             {

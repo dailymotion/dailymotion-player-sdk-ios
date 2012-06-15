@@ -135,7 +135,7 @@ static NSCache *itemInstancesCache;
             {
                 [result enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop)
                 {
-                    [bself._fieldsCache setObject:object forKey:key];
+                    bself._fieldsCache[key] = object;
                 }];
 
                 callback([bself._fieldsCache dictionaryForKeys:fields], NO, nil);

@@ -19,11 +19,11 @@
     session = [DMOAuthSession sessionWithSessionInfo:sessionInfo];
     STAssertNil(session, @"Empty session is not accepted");
 
-    sessionInfo = [NSDictionary dictionaryWithObject:[NSNull null] forKey:@"access_token"];
+    sessionInfo = @{@"access_token": [NSNull null]};
     session = [DMOAuthSession sessionWithSessionInfo:sessionInfo];
     STAssertNil(session, @"Session with null access_token is not accepted");
 
-    sessionInfo = [NSDictionary dictionaryWithObject:@"" forKey:@"access_token"];
+    sessionInfo = @{@"access_token": @""};
     session = [DMOAuthSession sessionWithSessionInfo:sessionInfo];
     STAssertNil(session, @"Session with empty access_token is not accepted");
 }
@@ -33,24 +33,25 @@
     NSDictionary *sessionInfo;
     DMOAuthSession *session;
 
-    sessionInfo = [NSDictionary dictionaryWithObject:@"1k3j2kj3k2j3kdj233kdj2" forKey:@"access_token"];
+    sessionInfo = @{@"access_token": @"1k3j2kj3k2j3kdj233kdj2"};
     session = [DMOAuthSession sessionWithSessionInfo:sessionInfo];
     STAssertNotNil(session, @"Session just an access token is accepted");
-    STAssertEqualObjects(session.accessToken, [sessionInfo valueForKey:@"access_token"], @"Access token is set");
+    STAssertEqualObjects(session.accessToken, sessionInfo[@"access_token"], @"Access token is set");
     STAssertNil(session.refreshToken, @"Refresh token not set");
 
-    sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                   @"1k3j2kj3k2j3kdj233kdj2", @"access_token",
-                   @"k2j3kdjio234jknsakfjh2", @"refresh_token",
-                   @"scope1 scope2", @"scope",
-                   [NSNumber numberWithInt:3200], @"expires_in",
-                   nil];
+    sessionInfo =
+    @{
+        @"access_token": @"1k3j2kj3k2j3kdj233kdj2",
+        @"refresh_token": @"k2j3kdjio234jknsakfjh2",
+        @"scope": @"scope1 scope2",
+        @"expires_in": @3200
+    };
     session = [DMOAuthSession sessionWithSessionInfo:sessionInfo];
     STAssertNotNil(session, @"Full session is accepted");
-    STAssertEqualObjects(session.accessToken, [sessionInfo valueForKey:@"access_token"], @"Access token is set");
-    STAssertEqualObjects(session.refreshToken, [sessionInfo valueForKey:@"refresh_token"], @"Refresh token is set");
-    STAssertEqualObjects(session.scope, [sessionInfo valueForKey:@"scope"], @"Scope token is set");
-    STAssertEqualsWithAccuracy([session.expires timeIntervalSinceNow], [[sessionInfo valueForKey:@"expires_in"] doubleValue], 1, @"Expires token is set");
+    STAssertEqualObjects(session.accessToken, sessionInfo[@"access_token"], @"Access token is set");
+    STAssertEqualObjects(session.refreshToken, sessionInfo[@"refresh_token"], @"Refresh token is set");
+    STAssertEqualObjects(session.scope, sessionInfo[@"scope"], @"Scope token is set");
+    STAssertEqualsWithAccuracy([session.expires timeIntervalSinceNow], [sessionInfo[@"expires_in"] doubleValue], 1, @"Expires token is set");
 }
 
 - (void)testKeychainStore
@@ -58,12 +59,13 @@
     NSDictionary *sessionInfo;
     DMOAuthSession *session, *restoredSession;
 
-    sessionInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                   @"1k3j2kj3k2j3kdj233kdj2", @"access_token",
-                   @"k2j3kdjio234jknsakfjh2", @"refresh_token",
-                   @"scope1 scope2", @"scope",
-                   [NSNumber numberWithInt:3200], @"expires_in",
-                   nil];
+    sessionInfo =
+    @{
+        @"access_token": @"1k3j2kj3k2j3kdj233kdj2",
+        @"refresh_token": @"k2j3kdjio234jknsakfjh2",
+        @"scope": @"scope1 scope2",
+        @"expires_in": @3200
+    };
     session = [DMOAuthSession sessionWithSessionInfo:sessionInfo];
 
     STAssertTrue([session storeInKeychainWithIdentifier:@"com.dailymotion.test"], @"Keychain store succeed");

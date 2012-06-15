@@ -107,7 +107,7 @@
             NSString *escapedValue = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes
             (
                 NULL,
-                (__bridge CFStringRef)[payload objectForKey:key],
+                (__bridge CFStringRef)payload[key],
                 NULL,
                 CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`"),
                 kCFStringEncodingUTF8

@@ -10,7 +10,7 @@
 
 NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
 
-#define DMISSET(dict, key) [dict valueForKey:key] && ![[dict valueForKey:key] isKindOfClass:[NSNull class]] && ![[dict valueForKey:key] isEqual:@""]
+#define DMISSET(dict, key) dict[key] && ![dict[key] isKindOfClass:[NSNull class]] && ![dict[key] isEqual:@""]
 
 @interface DMOAuthSession ()
 
@@ -31,23 +31,23 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     {
         if (DMISSET(sessionInfo, @"access_token"))
         {
-            session.accessToken = [sessionInfo valueForKey:@"access_token"];
+            session.accessToken = sessionInfo[@"access_token"];
         }
         if (DMISSET(sessionInfo, @"expires_in"))
         {
-            session.expires = [NSDate dateWithTimeIntervalSinceNow:[[sessionInfo valueForKey:@"expires_in"] doubleValue]];
+            session.expires = [NSDate dateWithTimeIntervalSinceNow:[sessionInfo[@"expires_in"] doubleValue]];
         }
         else if (DMISSET(sessionInfo, @"expires"))
         {
-            session.expires = [sessionInfo valueForKey:@"expires"];
+            session.expires = sessionInfo[@"expires"];
         }
         if (DMISSET(sessionInfo, @"refresh_token"))
         {
-            session.refreshToken = [sessionInfo valueForKey:@"refresh_token"];
+            session.refreshToken = sessionInfo[@"refresh_token"];
         }
         if (DMISSET(sessionInfo, @"scope"))
         {
-            session.scope = [sessionInfo valueForKey:@"scope"];
+            session.scope = sessionInfo[@"scope"];
         }
         if (!session.accessToken && !session.refreshToken)
         {
@@ -117,7 +117,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
         NSMutableDictionary *updateItem = [NSMutableDictionary dictionaryWithDictionary:(__bridge NSDictionary *)attributes];
 
         // Second we need to add the appropriate search key/values.
-        [updateItem setObject:[keychainQuery objectForKey:(__bridge id)kSecClass] forKey:(__bridge id)kSecClass];
+        updateItem[(__bridge id)kSecClass] = keychainQuery[(__bridge id)kSecClass];
 
         // Lastly, we need to set up the updated attribute list being careful to remove the class.
         NSMutableDictionary *tempCheck = [self secItemDictionaryForIdentifier:keychainIdentifier];
@@ -159,25 +159,23 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
 
 + (NSDictionary *)keychainQueryForIdentifier:(NSString *)keychainIdentifier
 {
-    NSMutableDictionary *query = [[NSMutableDictionary alloc] init];
-
-    [query setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
-
-    [query setObject:keychainIdentifier forKey:(__bridge id)kSecAttrAccount];
-    [query setObject:@"Dailymotion" forKey:(__bridge id)kSecAttrService];
-
-    // Return the attributes of the first match only:
-    [query setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
-
-    // Return the attributes of the keychain item (the password is
-    // acquired in the secItemFormatToDictionary: method):
-    [query setObject:(id)kCFBooleanTrue forKey:(__bridge id)kSecReturnAttributes];
+    return
+    @{
+        (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrAccount: keychainIdentifier,
+        (__bridge id)kSecAttrService: @"Dailymotion",
 
 #if !TARGET_IPHONE_SIMULATOR
-    [query setObject:kDMKeychainAccessGroup forKey:(__bridge id)kSecAttrAccessGroup];
+        (__bridge id)kSecAttrAccessGroup: kDMKeychainAccessGroup
 #endif
 
-    return query;
+        // Return the attributes of the first match only:
+        (__bridge id)kSecMatchLimit: (__bridge id)kSecMatchLimitOne,
+
+        // Return the attributes of the keychain item (the password is
+        // acquired in the secItemFormatToDictionary: method):
+        (__bridge id)kSecReturnAttributes: (id)kCFBooleanTrue
+    };
 }
 
 - (NSMutableDictionary *)secItemDictionaryForIdentifier:(NSString *)keychainIdentifier
@@ -185,31 +183,17 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     // Create a dictionary to return populated with the attributes and data.
     NSMutableDictionary *secItem = [NSMutableDictionary dictionary];
 
-    /*
-    if (self.accessToken)
-    {
-        [secItem setObject:self.accessToken forKey:@"access_token"];
-    }
-    if (self.expires)
-    {
-        [secItem setObject:self.expires forKey:@"expires"];
-    }*/
     if (self.refreshToken)
     {
         // Convert the NSString to NSData to meet the requirements for the value type kSecValueData.
         // This is where to store sensitive data that should be encrypted thus we store the refresh token in there
-        [secItem setObject:[self.refreshToken dataUsingEncoding:NSUTF8StringEncoding] forKey:(__bridge id)kSecValueData];
+        secItem[(__bridge id)kSecValueData] = [self.refreshToken dataUsingEncoding:NSUTF8StringEncoding];
     }
-    /*
-    if (self.scope)
-    {
-        [secItem setObject:self.scope forKey:@"scope"];
-    }*/
 
     // Add the Generic Password keychain item class attribute.
-    [secItem setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
-    [secItem setObject:keychainIdentifier forKey:(__bridge id)kSecAttrAccount];
-    [secItem setObject:@"Dailymotion" forKey:(__bridge id)kSecAttrService];
+    secItem[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+    secItem[(__bridge id)kSecAttrAccount] = keychainIdentifier;
+    secItem[(__bridge id)kSecAttrService] = @"Dailymotion";
 
     return secItem;
 }
@@ -220,8 +204,8 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     NSMutableDictionary *returnDictionary = [NSMutableDictionary dictionaryWithDictionary:secItem];
 
     // Add the proper search key and class attribute.
-    [returnDictionary setObject:(id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
-    [returnDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+    returnDictionary[(__bridge id)kSecReturnData] = (id)kCFBooleanTrue;
+    returnDictionary[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
 
     // Acquire the password data from the attributes.
     CFTypeRef passwordData = NULL;
@@ -234,7 +218,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
         NSString *password = [[NSString alloc] initWithBytes:[(__bridge NSData *)passwordData bytes]
                                                       length:[(__bridge NSData *)passwordData length]
                                                     encoding:NSUTF8StringEncoding];
-        [returnDictionary setObject:password forKey:@"refresh_token"];
+        returnDictionary[@"refresh_token"] = password;
     }
     else
     {

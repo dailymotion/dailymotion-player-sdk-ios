@@ -35,7 +35,7 @@
         self._video = video;
         self._params = params;
 
-        self.autoplay = [[self._params objectForKey:@"autoplay"] boolValue] == YES;
+        self.autoplay = [self._params[@"autoplay"] boolValue] == YES;
         self.currentTime = 0;
         self.bufferedTime = 0;
         self.duration = NAN;
@@ -86,7 +86,7 @@
     NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, self._video];
     for (NSString *param in [self._params keyEnumerator])
     {
-        id value = [self._params objectForKey:param];
+        id value = self._params[param];
         if ([value isKindOfClass:NSString.class])
         {
             value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -126,7 +126,7 @@
                 // stringByReplacingPercentEscapesUsingEncoding may return nil on malformed UTF8 sequence
                 if (!val) val = @"";
 
-                [data setObject:val forKey:key];
+                data[key] = val;
             }
         }
 
@@ -134,23 +134,23 @@
         {
             if ([eventName isEqualToString:@"timeupdate"])
             {
-                self.currentTime = [[data objectForKey:@"time"] floatValue];
+                self.currentTime = [data[@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"progress"])
             {
-                self.bufferedTime = [[data objectForKey:@"time"] floatValue];
+                self.bufferedTime = [data[@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"durationchange"])
             {
-                self.duration = [[data objectForKey:@"duration"] floatValue];
+                self.duration = [data[@"duration"] floatValue];
             }
             else if ([eventName isEqualToString:@"fullscreenchange"])
             {
-                self.fullscreen = [[data objectForKey:@"fullscreen"] boolValue];
+                self.fullscreen = [data[@"fullscreen"] boolValue];
             }
             else if ([eventName isEqualToString:@"volumechange"])
             {
-                self.volume = [[data objectForKey:@"volume"] floatValue];
+                self.volume = [data[@"volume"] floatValue];
             }
             else if ([eventName isEqualToString:@"play"] || [eventName isEqualToString:@"playing"])
             {
@@ -167,23 +167,25 @@
             else if ([eventName isEqualToString:@"seeking"])
             {
                 self.seeking = YES;
-                self.currentTime = [[data objectForKey:@"time"] floatValue];
+                self.currentTime = [data[@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"seeked"])
             {
                 self.seeking = NO;
-                self.currentTime = [[data objectForKey:@"time"] floatValue];
+                self.currentTime = [data[@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"error"])
             {
+                NSDictionary *userInfo =
+                @{
+                    @"code": data[@"code"],
+                    @"title": data[@"title"],
+                    @"message": data[@"message"],
+                    NSLocalizedDescriptionKey: data[@"message"]
+                };
                 self.error = [NSError errorWithDomain:@"DailymotionPlayer"
-                                                 code:[[data objectForKey:@"code"] integerValue]
-                                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                       [data objectForKey:@"code"], @"code",
-                                                       [data objectForKey:@"title"], @"title",
-                                                       [data objectForKey:@"message"], @"message",
-                                                       [data objectForKey:@"message"], NSLocalizedDescriptionKey,
-                                                       nil]];
+                                                 code:[data[@"code"] integerValue]
+                                             userInfo:userInfo];
             }
 
             if ([self.delegate respondsToSelector:@selector(dailymotionPlayer:didReceiveEvent:)])

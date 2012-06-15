@@ -30,11 +30,11 @@
     if ((self = [super init]))
     {
         self.date = [NSDate date];
-        self.namespace = [cacheInfo valueForKey:@"namespace"];
-        self.invalidates = [cacheInfo valueForKey:@"invalidates"];
-        self.etag = [cacheInfo valueForKey:@"etag"];
-        self.public = [[cacheInfo valueForKey:@"public"] boolValue];
-        self.maxAge = [[cacheInfo valueForKey:@"maxAge"] floatValue];
+        self.namespace = cacheInfo[@"namespace"];
+        self.invalidates = cacheInfo[@"invalidates"];
+        self.etag = cacheInfo[@"etag"];
+        self.public = [cacheInfo[@"public"] boolValue];
+        self.maxAge = [cacheInfo[@"maxAge"] floatValue];
     }
 
     return self;

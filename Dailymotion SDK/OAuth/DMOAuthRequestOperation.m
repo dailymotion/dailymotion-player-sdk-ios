@@ -66,12 +66,12 @@
         if (headers)
         {
             NSMutableDictionary *mutableHeaders = [headers mutableCopy];
-            [mutableHeaders setValue:[NSString stringWithFormat:@"OAuth2 %@", self.accessToken] forKey:@"Authorization"];
+            mutableHeaders[@"Authorization"] = [NSString stringWithFormat:@"OAuth2 %@", self.accessToken];
             headers = mutableHeaders;
         }
         else
         {
-            headers = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"OAuth2 %@", self.accessToken] forKey:@"Authorization"];
+            headers = @{@"Authorization": [NSString stringWithFormat:@"OAuth2 %@", self.accessToken]};
         }
     }
 

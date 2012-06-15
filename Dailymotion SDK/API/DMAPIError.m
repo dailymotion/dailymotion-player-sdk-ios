@@ -20,24 +20,24 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
     if (type)
     {
-        [userInfo setObject:type forKey:@"error"];
+        userInfo[@"error"] = type;
     }
     if (message)
     {
-        [userInfo setObject:message forKey:NSLocalizedDescriptionKey];
+        userInfo[NSLocalizedDescriptionKey] = message;
     }
     if (response)
     {
-        [userInfo setObject:[NSNumber numberWithInt:httpResponse.statusCode] forKey:@"status-code"];
+        userInfo[@"status-code"] = [NSNumber numberWithInt:httpResponse.statusCode];
 
-        if ([httpResponse.allHeaderFields valueForKey:@"Content-Type"])
+        if (httpResponse.allHeaderFields[@"Content-Type"])
         {
-            [userInfo setObject:[httpResponse.allHeaderFields valueForKey:@"Content-Type"] forKey:@"content-type"];
+            userInfo[@"content-type"] = httpResponse.allHeaderFields[@"Content-Type"];
         }
     }
     if (data)
     {
-        [userInfo setObject:[data copy] forKey:@"content-data"];
+        userInfo[@"content-data"] = data;
     }
 
     NSInteger code = 0;

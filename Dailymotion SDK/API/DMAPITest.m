@@ -59,7 +59,7 @@
 {
     INIT
 
-    [self.api get:@"/echo" args:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    [self.api get:@"/echo" args:@{@"message": @"test"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         STAssertEqualObjects([result objectForKey:@"message"], @"test", @"Is valid result.");
