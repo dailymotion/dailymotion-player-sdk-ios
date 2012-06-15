@@ -14,7 +14,7 @@ static NSCache *itemInstancesCache;
 
 @interface DMItem ()
 
-@property (nonatomic, readwrite, copy) NSString *name;
+@property (nonatomic, readwrite, copy) NSString *type;
 @property (nonatomic, readwrite, copy) NSString *itemId;
 @property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
 @property (nonatomic, strong) DMAPI *_api;
@@ -34,26 +34,26 @@ static NSCache *itemInstancesCache;
     itemInstancesCache.countLimit = 500;
 }
 
-+ (DMItem *)itemWithName:(NSString *)name forId:(NSString *)itemId fromAPI:(DMAPI *)api
++ (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", name, itemId];
+    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", type, itemId];
     DMItem *item = [itemInstancesCache objectForKey:cacheKey];
     if (!item)
     {
-        item = [[self alloc] initWithName:name forId:itemId fromAPI:api];
+        item = [[self alloc] initWithType:type forId:itemId fromAPI:api];
     }
 
     return item;
 }
 
-- (id)initWithName:(NSString *)name forId:(NSString *)itemId fromAPI:(DMAPI *)api
+- (id)initWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
 {
     if ((self = [super init]))
     {
-        self.name = name;
+        self.type = type;
         self.itemId = itemId;
         self._api = api;
-        self._path = [NSString stringWithFormat:@"/%@/%@", name, itemId];
+        self._path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
         self._fieldsCache = [[NSMutableDictionary alloc] init];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -96,14 +96,15 @@ static NSCache *itemInstancesCache;
 
 - (void)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
+    fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
     NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
-    BOOL allFieldsCached = [[data allKeysForObject:[NSNull null]] count] == 0;
-    BOOL someFieldsCached = allFieldsCached || [[data allKeysForObject:[NSNull null]] count] < [fields count];
+    BOOL allFieldsCached = [data count] == [fields count];
+    BOOL someFieldsCached = allFieldsCached || [data count] > 0;
     BOOL cacheStalled = self.cacheInfo ? self.cacheInfo.stalled : YES;
 
     if (someFieldsCached)
     {
-        callback(allFieldsCached ? data : [data dictionaryByFilteringNullValues], cacheStalled || !allFieldsCached, nil);
+        callback(data, cacheStalled || !allFieldsCached, nil);
     }
 
     if (!allFieldsCached || cacheStalled)
@@ -112,7 +113,7 @@ static NSCache *itemInstancesCache;
         if (!allFieldsCached && !cacheStalled)
         {
             // Only load the missing fields if the cache is still valid
-            fieldsToLoad = [data allKeysForObject:[NSNull null]];
+            fieldsToLoad = [data allMissingKeysForKeys:fields];
         }
 
         // Perform conditional request only if we already have all requested fields in cache

@@ -43,6 +43,10 @@
 		53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libDailymotion SDK.a */; };
 		53E8F684158AB39D000A5BF3 /* NSDictionary+DMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F682158AB39D000A5BF3 /* NSDictionary+DMAdditions.h */; settings = {ATTRIBUTES = (); }; };
 		53E8F685158AB39D000A5BF3 /* NSDictionary+DMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F683158AB39D000A5BF3 /* NSDictionary+DMAdditions.m */; };
+		53E8F68A158B6138000A5BF3 /* DMItemCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F688158B6138000A5BF3 /* DMItemCollection.h */; };
+		53E8F68B158B6138000A5BF3 /* DMItemCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F689158B6138000A5BF3 /* DMItemCollection.m */; };
+		53E8F697158B67A0000A5BF3 /* DMQueryString.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F695158B67A0000A5BF3 /* DMQueryString.h */; };
+		53E8F698158B67A0000A5BF3 /* DMQueryString.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F696158B67A0000A5BF3 /* DMQueryString.m */; };
 		53F0816B15827C43000E56C4 /* DMNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 53F0816915827C43000E56C4 /* DMNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53F0816C15827C43000E56C4 /* DMNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F0816A15827C43000E56C4 /* DMNetworking.m */; };
 		AA747D9F0F9514B9006C5449 /* iOS_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */; };
@@ -100,6 +104,10 @@
 		53E273C81265C23E00B541BE /* DMAPITest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMAPITest.m; path = API/DMAPITest.m; sourceTree = "<group>"; };
 		53E8F682158AB39D000A5BF3 /* NSDictionary+DMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+DMAdditions.h"; sourceTree = "<group>"; };
 		53E8F683158AB39D000A5BF3 /* NSDictionary+DMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+DMAdditions.m"; sourceTree = "<group>"; };
+		53E8F688158B6138000A5BF3 /* DMItemCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemCollection.h; sourceTree = "<group>"; };
+		53E8F689158B6138000A5BF3 /* DMItemCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemCollection.m; sourceTree = "<group>"; };
+		53E8F695158B67A0000A5BF3 /* DMQueryString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMQueryString.h; sourceTree = "<group>"; };
+		53E8F696158B67A0000A5BF3 /* DMQueryString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMQueryString.m; sourceTree = "<group>"; };
 		53F0816915827C43000E56C4 /* DMNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMNetworking.h; sourceTree = "<group>"; };
 		53F0816A15827C43000E56C4 /* DMNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMNetworking.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Prefix.pch; sourceTree = "<group>"; };
@@ -189,6 +197,8 @@
 				53149E3D1587A5860068ADB7 /* DMUDID.m */,
 				53E8F682158AB39D000A5BF3 /* NSDictionary+DMAdditions.h */,
 				53E8F683158AB39D000A5BF3 /* NSDictionary+DMAdditions.m */,
+				53E8F695158B67A0000A5BF3 /* DMQueryString.h */,
+				53E8F696158B67A0000A5BF3 /* DMQueryString.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -198,6 +208,8 @@
 			children = (
 				531580CB158A269A00F25C7D /* DMItem.h */,
 				531580CC158A269A00F25C7D /* DMItem.m */,
+				53E8F688158B6138000A5BF3 /* DMItemCollection.h */,
+				53E8F689158B6138000A5BF3 /* DMItemCollection.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -295,6 +307,8 @@
 				531580CD158A269A00F25C7D /* DMItem.h in Headers */,
 				531580D1158A473800F25C7D /* DMAPICacheInfo.h in Headers */,
 				53E8F684158AB39D000A5BF3 /* NSDictionary+DMAdditions.h in Headers */,
+				53E8F68A158B6138000A5BF3 /* DMItemCollection.h in Headers */,
+				53E8F697158B67A0000A5BF3 /* DMQueryString.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,6 +437,8 @@
 				531580CE158A269A00F25C7D /* DMItem.m in Sources */,
 				531580D2158A473800F25C7D /* DMAPICacheInfo.m in Sources */,
 				53E8F685158AB39D000A5BF3 /* NSDictionary+DMAdditions.m in Sources */,
+				53E8F68B158B6138000A5BF3 /* DMItemCollection.m in Sources */,
+				53E8F698158B67A0000A5BF3 /* DMQueryString.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,6 +579,7 @@
 					"-framework",
 					UIKit,
 					"-ObjC",
+					"-all_load",
 				);
 				PRODUCT_NAME = Tests;
 				SDKROOT = iphoneos;
@@ -597,6 +614,7 @@
 					"-framework",
 					UIKit,
 					"-ObjC",
+					"-all_load",
 				);
 				PRODUCT_NAME = Tests;
 				SDKROOT = iphoneos;

@@ -11,19 +11,20 @@
 
 @interface DMItem : NSObject
 
-@property (nonatomic, readonly, copy) NSString *name;
+@property (nonatomic, readonly, copy) NSString *type;
 @property (nonatomic, readonly, copy) NSString *itemId;
 @property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
 
 /**
  * Get an DMItem for a given object name (i.e.: video, user, playlist) and an object id
  *
- * @param name The item type name
+ * @param type The item type name
  * @param objectId The item id
+ * @param api The DMAPI object to use to retrieve item data
  *
  * @return A shared instance of DMItem for the requested object
  */
-+ (DMItem *)itemWithName:(NSString *)name forId:(NSString *)itemId fromAPI:(DMAPI *)api;
++ (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api;
 
 /**
  * Load some fields from either API or cache and callback the passed block with the fields data

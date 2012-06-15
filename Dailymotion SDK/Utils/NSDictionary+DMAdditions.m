@@ -8,6 +8,7 @@
 
 #import "NSDictionary+DMAdditions.h"
 
+static NSString *const DMNotFound = @"DMKeyNotFound";
 static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BOOL *stop)
 {
     return ![obj isKindOfClass:[NSNull class]];
@@ -17,13 +18,24 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
 
 - (NSDictionary *)dictionaryForKeys:(NSArray *)keys
 {
-    NSArray *values = [self objectsForKeys:keys notFoundMarker:[NSNull null]];
-    return [NSDictionary dictionaryWithObjects:values forKeys:keys];
+    NSArray *values = [self objectsForKeys:keys notFoundMarker:DMNotFound];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjects:values forKeys:keys];
+    [dict removeObjectsForKeys:[dict allKeysForObject:DMNotFound]];
+    return dict;
 }
 
-- (NSDictionary *)dictionaryByFilteringNullValues
+- (NSArray *)allMissingKeysForKeys:(NSArray *)keys
 {
-    return [self dictionaryForKeys:[[self keysOfEntriesPassingTest:filterNull] allObjects]];
+    NSArray *values = [self objectsForKeys:keys notFoundMarker:DMNotFound];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjects:values forKeys:keys];
+    return [dict allKeysForObject:DMNotFound];
+}
+
+- (NSArray *)objectsForExistingKeys:(NSArray *)keys
+{
+    NSMutableArray *objects = [[self objectsForKeys:keys notFoundMarker:DMNotFound] mutableCopy];
+    [objects removeObject:DMNotFound];
+    return objects;
 }
 
 @end

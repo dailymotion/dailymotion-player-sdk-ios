@@ -11,6 +11,7 @@
 @interface NSDictionary(DMAdditions)
 
 - (NSDictionary *)dictionaryForKeys:(NSArray *)keys;
-- (NSDictionary *)dictionaryByFilteringNullValues;
+- (NSArray *)allMissingKeysForKeys:(NSArray *)keys;
+- (NSArray *)objectsForExistingKeys:(NSArray *)keys;
 
 @end

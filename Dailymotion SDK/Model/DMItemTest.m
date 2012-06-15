@@ -46,7 +46,7 @@
 - (void)testGetItemFields
 {
     DMAPI *api = self.api;
-    DMItem *video = [DMItem itemWithName:@"video" forId:@"xmcyw2" fromAPI:api];
+    DMItem *video = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
 
     INIT(1)
 
@@ -66,7 +66,7 @@
 - (void)testGetStalledItemFields
 {
     DMAPI *api = self.api;
-    DMItem *video = [DMItem itemWithName:@"video" forId:@"xmcyw2" fromAPI:api];
+    DMItem *video = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
     [video flushCache];
 
     INIT(1)

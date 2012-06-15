@@ -8,13 +8,7 @@
 
 #import "DMAPICallQueue.h"
 #import "DMAPI.h"
-
-@interface DMAPI (Cancel)
-
-- (void)cancelCall:(DMAPICall *)call;
-
-@end
-
+#import "NSDictionary+DMAdditions.h"
 
 @interface DMAPICall ()
 
@@ -32,6 +26,7 @@
 
 @property (nonatomic, assign) NSUInteger _callNextId;
 @property (nonatomic, strong) NSMutableDictionary *_callQueue;
+@property (nonatomic, strong) NSMutableDictionary *_callHandlers;
 
 @end
 
@@ -43,9 +38,12 @@
     {
         self._callNextId = 0;
         self._callQueue = [[NSMutableDictionary alloc] init];
+        self._callHandlers = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
+
+#pragma mark - Queue
 
 - (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
 {
@@ -68,7 +66,8 @@
         }
 
         self._callQueue[callId] = call;
-        
+        self._callHandlers[callId] = [NSNull null];
+
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
 
         return call;
@@ -88,6 +87,7 @@
         DMAPICall *call = [self callWithId:callId];
         [call removeObserver:self forKeyPath:@"isCancelled"];
         [self._callQueue removeObjectForKey:callId];
+        [self._callHandlers removeObjectForKey:callId];
         return call;
     }
 }
@@ -100,6 +100,7 @@
         {
             [call removeObserver:self forKeyPath:@"isCancelled"];
             [self._callQueue removeObjectForKey:call.callId];
+            [self._callHandlers removeObjectForKey:call.callId];
             return YES;
         }
         else
@@ -109,12 +110,100 @@
     }
 }
 
+
+#pragma mark - Call Handlers
+
+- (BOOL)handleCall:(DMAPICall *)call withHandler:(id)handler
+{
+    if ([self._callHandlers[call.callId] isEqual:[NSNull null]])
+    {
+        self._callHandlers[call.callId] = handler;
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+- (void)unhandleCall:(DMAPICall *)call
+{
+    self._callHandlers[call.callId] = [NSNull null];
+}
+
+- (id)handlerForCall:(DMAPICall *)call
+{
+    if ([self._callHandlers[call.callId] isEqual:[NSNull null]])
+    {
+        return nil;
+    }
+    else
+    {
+        return self._callHandlers[call.callId];
+    }
+}
+
+- (BOOL)hasUnhandledCalls
+{
+    return [[self._callHandlers allKeysForObject:[NSNull null]] count] > 0;
+}
+
+- (NSArray *)callsWithHandler:(id)handler
+{
+    return [self._callQueue objectsForExistingKeys:[self._callHandlers allKeysForObject:handler]];
+}
+
+- (NSArray *)callsWithNoHandler
+{
+    return [self callsWithHandler:[NSNull null]];
+}
+
+
+#pragma mark - Events
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"isCancelled"] && [object isKindOfClass:[DMAPICall class]] && [(DMAPICall *)object isCancelled])
     {
-        [self.delegate cancelCall:object];
+        [self cancelCall:object];
     }
 }
+
+- (void)cancelCall:(DMAPICall *)call
+{
+    id handler = [self handlerForCall:call];
+    if (!handler)
+    {
+        // The call hasn't been handled yet, just forget it
+        [self removeCall:call];
+    }
+    else if ([handler respondsToSelector:@selector(cancel)])
+    {
+        // The call has been handled and is cancellabled but it may be part of a batch request
+        BOOL requestCancellable = YES;
+        for (DMAPICall *queuedCall in [self callsWithHandler:handler])
+        {
+            if (queuedCall != call && ![queuedCall isCancelled])
+            {
+                requestCancellable = NO;
+                break;
+            }
+        }
+
+        if (requestCancellable)
+        {
+            // All sibbling calls of the cancelled call batch are cancelled
+            // => we can cancel the whole handler
+            [handler performSelector:@selector(cancel)];
+        }
+        else
+        {
+            // Some calls sibbling calls in the same batch request are not cancelled
+            // => the cancelled call will be ignored on result
+            // nothing to do here
+        }
+    }
+}
+
 
 @end
