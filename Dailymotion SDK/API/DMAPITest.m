@@ -59,7 +59,7 @@
 {
     INIT
 
-    [self.api get:@"/echo" args:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] callback:^(NSDictionary *result, NSError *error)
+    [self.api get:@"/echo" args:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         STAssertEqualObjects([result objectForKey:@"message"], @"test", @"Is valid result.");
@@ -143,7 +143,7 @@
 {
     INIT
 
-    [self.api get:@"/invalid/path" callback:^(NSDictionary *result, NSError *error)
+    [self.api get:@"/invalid/path" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNotNil(error, @"Is error response");
         STAssertNil(result, @"Result is nil");
@@ -160,7 +160,7 @@
     DMAPI *api = self.api;
     [api.oauth setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read"];
     [api.oauth clearSession];
-    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    [api get:@"/auth" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         DONE
@@ -179,7 +179,7 @@
     password = kDMPassword;
     [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
     [api.oauth clearSession];
-    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    [api get:@"/auth" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         STAssertNotNil(api.oauth.session.refreshToken, @"Got a refresh token");
@@ -188,7 +188,7 @@
         NSString *refreshToken = api.oauth.session.refreshToken;
         api.oauth.session.expires = [NSDate dateWithTimeIntervalSince1970:0];
 
-        [api get:@"/auth" callback:^(NSDictionary *result2, NSError *error2)
+        [api get:@"/auth" callback:^(NSDictionary *result2, DMAPICacheInfo *cache2, NSError *error2)
         {
             STAssertNil(error2, @"Is success response");
             STAssertEqualObjects(refreshToken, api.oauth.session.refreshToken, @"Same refresh token");
@@ -210,7 +210,7 @@
     password = kDMPassword;
     [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
     [api.oauth clearSession];
-    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    [api get:@"/auth" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         STAssertNotNil(api.oauth.session.refreshToken, @"Got a refresh token");
@@ -220,7 +220,7 @@
         api.oauth.session.expires = [NSDate dateWithTimeIntervalSince1970:0];
         api.oauth.session.refreshToken = nil;
          
-        [api get:@"/auth" callback:^(NSDictionary *result2, NSError *error2)
+        [api get:@"/auth" callback:^(NSDictionary *result2, DMAPICacheInfo *cache2, NSError *error2)
         {
             STAssertNil(error2, @"Is success response");
             STAssertFalse([accessToken isEqual:api.oauth.session.accessToken], @"Access token refreshed with no refresh_token");
@@ -242,7 +242,7 @@
     password = @"wrong_password";
     [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api.oauth clearSession];
-    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    [api get:@"/auth" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNotNil(error, @"Is error response");
         STAssertNil(result, @"Result is nil");
@@ -262,7 +262,7 @@
     password = kDMPassword;
     [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"write"];
     [api.oauth clearSession];
-    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    [api get:@"/auth" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         STAssertFalse([[result objectForKey:@"scope"] containsObject:@"read"], @"Has `read' scope.");
@@ -279,7 +279,7 @@
     username = nil; // should not ask for credentials
     password = nil;
     [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"write"];
-    [api get:@"/auth" callback:^(NSDictionary *result, NSError *error)
+    [api get:@"/auth" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         STAssertNil(error, @"Is success response");
         STAssertEqualObjects([result objectForKey:@"username"], kDMUsername, @"Is valid username.");

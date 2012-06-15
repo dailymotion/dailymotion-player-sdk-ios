@@ -23,6 +23,8 @@
 #error Dailymotion doesn't support Deployement Target version < 5.0
 #endif
 
+#define isdict(dict) [dict isKindOfClass:[NSDictionary class]]
+
 #define kDMHardMaxCallsPerRequest 10
 
 static NSString *const kDMVersion = @"2.0";
@@ -165,6 +167,10 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         {
             [callRequestBody setValue:call.args forKey:@"args"];
         }
+        if (call.cacheInfo && call.cacheInfo.etag)
+        {
+            [callRequestBody setValue:call.cacheInfo.etag forKey:@"etag"];
+        }
         [callRequestBodies addObject:callRequestBody];
     }
 
@@ -306,30 +312,45 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 NSLog(@"DMAPI BUG: API returned a result for a existing call id not supposted to be part of this batch request: %@", callId);
             }
 
+            NSDictionary *resultData = [result objectForKey:@"result"];
+            NSDictionary *resultError = [result objectForKey:@"error"];
+            NSDictionary *resultCacheInfo = [result objectForKey:@"cache"];
+
             if ([call isCancelled])
             {
                 // Just ignore the result
             }
-            else if ([result objectForKey:@"error"])
+            else if (isdict(resultError))
             {
                 NSString *code = [[result objectForKey:@"error"] objectForKey:@"code"];
                 NSString *message = [[result objectForKey:@"error"] objectForKey:@"message"];
 
                 NSError *error = [DMAPIError errorWithMessage:message domain:DailymotionApiErrorDomain type:code response:response data:responseData];
-                call.callback(nil, error);
+                call.callback(nil, nil, error);
             }
-            else if (![result objectForKey:@"result"])
+            else if (!isdict(resultData) && !isdict(resultCacheInfo))
             {
-                NSError *error = [DMAPIError errorWithMessage:@"Invalid API server response: no `result' key found."
-                                                       domain:DailymotionApiErrorDomain
-                                                         type:nil
-                                                     response:response
-                                                         data:responseData];
-                call.callback(nil, error);
+
+                NSString *msg;
+                if (resultData)
+                {
+                    msg = @"Invalid API server response: invalid `result' key.";
+                }
+                else
+                {
+                    msg = @"Invalid API server response: no `result' key found.";
+                }
+                NSError *error = [DMAPIError errorWithMessage:msg domain:DailymotionApiErrorDomain type:nil response:response data:responseData];
+                call.callback(nil, nil, error);
             }
             else
             {
-                call.callback([result objectForKey:@"result"], nil);
+                DMAPICacheInfo *cacheInfo = nil;
+                if (isdict(resultCacheInfo))
+                {
+                    cacheInfo = [[DMAPICacheInfo alloc] initWithCacheInfo:resultCacheInfo];
+                }
+                call.callback(isdict(resultData) ? resultData : nil, cacheInfo, nil);
             }
         }
 
@@ -344,7 +365,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                                          type:nil
                                                      response:response
                                                          data:responseData];
-                call.callback(nil, error);
+                call.callback(nil, nil, error);
             }
         }
     }
@@ -401,7 +422,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
             if ([self._callQueue removeCall:call])
             {
                 [self._callRequest removeObjectForKey:call.callId];
-                call.callback(nil, error);
+                call.callback(nil, nil, error);
             }
         }
     }
@@ -448,35 +469,40 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 #pragma mark public
 
-- (DMAPICall *)get:(NSString *)path callback:(void (^)(id, NSError*))callback
+- (DMAPICall *)get:(NSString *)path callback:(DMAPICallResultBlock)callback
 {
-    return [self request:path method:@"GET" args:nil callback:callback];
+    return [self request:path method:@"GET" args:nil cacheInfo:nil callback:callback];
 }
-- (DMAPICall *)post:(NSString *)path callback:(void (^)(id, NSError*))callback
+- (DMAPICall *)post:(NSString *)path callback:(DMAPICallResultBlock)callback
 {
-    return [self request:path method:@"POST" args:nil callback:callback];
+    return [self request:path method:@"POST" args:nil cacheInfo:nil callback:callback];
 }
-- (DMAPICall *)delete:(NSString *)path callback:(void (^)(id, NSError*))callback
+- (DMAPICall *)delete:(NSString *)path callback:(DMAPICallResultBlock)callback
 {
-    return [self request:path method:@"DELETE" args:nil callback:callback];
-}
-
-- (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback
-{
-    return [self request:path method:@"GET" args:args callback:callback];
-}
-- (DMAPICall *)post:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback
-{
-    return [self request:path method:@"POST" args:args callback:callback];
-}
-- (DMAPICall *)delete:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback
-{
-    return [self request:path method:@"DELETE" args:args callback:callback];
+    return [self request:path method:@"DELETE" args:nil cacheInfo:nil callback:callback];
 }
 
-- (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback
+- (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback
 {
-    DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args callback:callback];
+    return [self request:path method:@"GET" args:args cacheInfo:nil callback:callback];
+}
+- (DMAPICall *)post:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback
+{
+    return [self request:path method:@"POST" args:args cacheInfo:nil callback:callback];
+}
+- (DMAPICall *)delete:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback
+{
+    return [self request:path method:@"DELETE" args:args cacheInfo:nil callback:callback];
+}
+
+- (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback;
+{
+    return [self request:path method:@"GET" args:args cacheInfo:cacheInfo callback:callback];
+}
+
+- (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
+{
+    DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args cacheInfo:cacheInfo callback:callback];
     [self._callRequest setObject:[NSNull null] forKey:call.callId];
     [self scheduleDequeuing];
     return call;
@@ -504,7 +530,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         callback(nil, [DMAPIError errorWithMessage:@"File does not exists." domain:DailymotionApiErrorDomain type:@"404" response:nil data:nil]);
     }
 
-    [self get:@"/file/upload" callback:^(NSDictionary *result, NSError *error)
+    [self get:@"/file/upload" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         NSUInteger fileSize = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:NULL] objectForKey:NSFileSize] unsignedIntegerValue];
         NSInputStream *fileStream = [NSInputStream inputStreamWithFileAtPath:filePath];
@@ -520,9 +546,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
         DMNetRequestOperation *networkOperation;
         networkOperation = [self._uploadNetworkQueue postURL:[NSURL URLWithString:[result objectForKey:@"upload_url"]]
-                                                    payload:(NSInputStream *)payload
-                                                    headers:headers
-                                          completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
+                                                     payload:(NSInputStream *)payload
+                                                     headers:headers
+                                           completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
         {
             NSDictionary *uploadInfo = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
             if ([uploadInfo objectForKey:@"url"])

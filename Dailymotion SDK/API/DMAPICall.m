@@ -14,7 +14,8 @@
 @property (nonatomic, copy, readwrite) NSString *method;
 @property (nonatomic, copy, readwrite) NSString *path;
 @property (nonatomic, copy, readwrite) NSDictionary *args;
-@property (nonatomic, strong, readwrite) void (^callback)(id, NSError*);
+@property (nonatomic, strong, readwrite) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, strong, readwrite) DMAPICallResultBlock callback;
 @property (nonatomic, assign, readwrite) BOOL isCancelled;
 
 @end

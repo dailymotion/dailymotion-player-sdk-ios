@@ -9,6 +9,7 @@
 #import "DMOAuthClient.h"
 #import "DMAPICallQueue.h"
 #import "DMAPIError.h"
+#import "DMAPICacheInfo.h"
 
 #if TARGET_OS_IPHONE
 #import "DMPlayerViewController.h"
@@ -44,37 +45,37 @@
 @property (nonatomic, strong) DMOAuthClient *oauth;
 
 /**
- * Make a GET request to Dailymotion's API with the given method name and arguments.
+ * Perform a GET request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
  * @param callback A block taking the response as first argument and an error as second argument
  */
-- (DMAPICall *)get:(NSString *)path callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)get:(NSString *)path callback:(DMAPICallResultBlock)callback;
 
 /**
- * Make a POST request to Dailymotion's API with the given method name and arguments.
+ * Perform a POST request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
  * @param callback A block taking the response as first argument and an error as second argument
  */
-- (DMAPICall *)post:(NSString *)path callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)post:(NSString *)path callback:(DMAPICallResultBlock)callback;
 
 /**
- * Make a DELETE request to Dailymotion's API with the given method name and arguments.
+ * Perform a DELETE request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
  * @param callback A block taking the response as first argument and an error as second argument
  */
-- (DMAPICall *)delete:(NSString *)path callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)delete:(NSString *)path callback:(DMAPICallResultBlock)callback;
 
 /**
- * Make a GET request to Dailymotion's API with the given method name and arguments.
+ * Perform a GET request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
@@ -82,10 +83,10 @@
  * @param arguments An NSDictionnary with key-value pairs containing arguments
  * @param callback A block taking the response as first argument and an error as second argument
  */
-- (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback;
 
 /**
- * Make a POST request to Dailymotion's API with the given method name and arguments.
+ * Perform a POST request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
@@ -93,10 +94,10 @@
  * @param arguments An NSDictionnary with key-value pairs containing arguments
  * @param callback A block taking the response as first argument and an error as second argument
  */
-- (DMAPICall *)post:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)post:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback;
 
 /**
- * Make a DELETE request to Dailymotion's API with the given method name and arguments.
+ * Perform a DELETE request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
@@ -104,7 +105,21 @@
  * @param arguments An NSDictionnary with key-value pairs containing arguments
  * @param callback A block taking the response as first argument and an error as second argument
  */
-- (DMAPICall *)delete:(NSString *)path args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)delete:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback;
+
+/**
+ * Perform a conditional GET request to Dailymotion's API with the given method name and arguments.
+ * If the provided cache info is still fresh, callback is called with no result and a new cache info object.
+ *
+ * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
+ *
+ * @param path An API resource
+ * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param cacheInfo The cache info used to perform the conditional request
+ * @param callback A block taking the response as first argument and an error as second argument
+ */
+- (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback;
+
 
 /**
  * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
@@ -113,7 +128,7 @@
  * @param progress A block called at regular interval with upload progress information
  * @param callback A block taking the uploaded file URL string as first argument and an error as second argument
  */
-- (DMAPICall *)uploadFile:(NSString *)filePath progress:(void (^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))progress callback:(void (^)(NSString *, NSError*))callback;
+- (DMAPICall *)uploadFile:(NSString *)filePath progress:(void (^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))progress callback:(void (^)(NSString *url, NSError *error))callback;
 
 
 /**

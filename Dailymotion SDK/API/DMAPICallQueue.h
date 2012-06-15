@@ -15,7 +15,7 @@
 
 @property (nonatomic, weak) DMAPI *delegate;
 
-- (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args callback:(void (^)(id, NSError*))callback;
+- (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback;
 - (DMAPICall *)callWithId:(NSString *)callId;
 - (DMAPICall *)removeCallWithId:(NSString *)callId;
 - (BOOL)removeCall:(DMAPICall *)call;

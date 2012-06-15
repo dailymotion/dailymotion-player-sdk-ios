@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DMAPICacheInfo.h"
+
+typedef void (^DMAPICallResultBlock)(id result, DMAPICacheInfo *cacheInfo, NSError *error);
 
 @interface DMAPICall : NSObject
 
@@ -14,7 +17,8 @@
 @property (nonatomic, copy, readonly) NSString *method;
 @property (nonatomic, copy, readonly) NSString *path;
 @property (nonatomic, copy, readonly) NSDictionary *args;
-@property (nonatomic, strong, readonly) void (^callback)(id, NSError*);
+@property (nonatomic, strong, readonly) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, strong, readonly) DMAPICallResultBlock callback;
 @property (nonatomic, assign, readonly) BOOL isCancelled;
 
 - (void)cancel;

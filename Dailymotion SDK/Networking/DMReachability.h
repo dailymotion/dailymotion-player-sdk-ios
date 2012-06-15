@@ -46,9 +46,9 @@ typedef enum
 
 @class DMReachability;
 
-typedef void (^DMNetworkReachable)(DMReachability * reachability);
-typedef void (^DMNetworkUnreachable)(DMReachability * reachability);
-typedef void (^DMNetworkReachabilityChanged)(DMReachability * reachability);
+typedef void (^DMNetworkReachable)(DMReachability *reachability);
+typedef void (^DMNetworkUnreachable)(DMReachability *reachability);
+typedef void (^DMNetworkReachabilityChanged)(DMReachability *reachability);
 
 @interface DMReachability : NSObject
 
