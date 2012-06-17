@@ -7,16 +7,10 @@
 //
 
 #import "DMAPITest.h"
+#import "DMTestUtils.h"
 #import "DailymotionTestConfig.h"
 
-#define INIT dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);\
-             NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:10];
-#define REINIT semaphore = dispatch_semaphore_create(0);
-#define DONE dispatch_semaphore_signal(semaphore);
-#define WAIT while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))\
-                 [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil];\
-             dispatch_release(semaphore);
-
+#define networkRequestCount [DMNetworking totalRequestCount] - currentTotalRequestCount
 
 @implementation NSURLRequest (IgnoreSSL)
 
@@ -32,12 +26,14 @@
 {
     NSString *username;
     NSString *password;
+    NSUInteger currentTotalRequestCount;
 }
 
 - (void)setUp
 {
     username = nil;
     password = nil;
+    currentTotalRequestCount = [DMNetworking totalRequestCount];
 }
 
 - (DMAPI *)api
@@ -52,12 +48,13 @@
 #ifdef kDMOAuthTokenEndpointURL
     api.oAuthTokenEndpointURL = kDMOAuthTokenEndpointURL;
 #endif
+
     return api;
 }
 
 - (void)testSingleCall
 {
-    INIT
+    INIT(1)
 
     [self.api get:@"/echo" args:@{@"message": @"test"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
@@ -69,79 +66,86 @@
     WAIT
 }
 
-/* TODO
 - (void)testMultiCall
 {
-    Dailymotion *api = self.api;
-    [api get:@"/echo" args:[NSDictionary dictionaryWithObject:@"test" forKey:@"message"] callback:self];
-    [api get:@"/echo" delegate:self];
-    [api request:@"video.subscriptions" delegate:self];
+    INIT(3)
 
-    [self waitResponseWithTimeout:5];
+    DMAPI *api = self.api;
+    [api get:@"/echo" args:@{@"message": @"test"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        DONE
+    }];
+    [api get:@"/echo" callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+    {
+        DONE
+    }];
+    [api get:@"/videos" callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+    {
+        DONE
+    }];
 
-    STAssertEquals([results count], (NSUInteger)3, @"There's is 3 results.");
-    STAssertEqualObjects([[results objectAtIndex:0] valueForKey:@"type"], @"success", @"First result is success.");
-    STAssertEqualObjects([[[results objectAtIndex:0] objectForKey:@"result"] objectForKey:@"message"], @"test", @"First result is valid.");
-    STAssertEqualObjects([[results objectAtIndex:1] valueForKey:@"type"], @"error", @"Second result is error.");
-    STAssertEqualObjects([[results objectAtIndex:2] valueForKey:@"type"], @"auth_required", @"Third result is auth_required.");
+    WAIT
 
+    STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been aggregated into a single HTTP request");
 }
 
 - (void)testMultiCallIntermix
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call1" forKey:@"message"] delegate:self];
+    INIT(2)
+
+    DMAPI *api = self.api;
+    [api get:@"/echo" args:@{@"message": @"call1"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        STAssertEqualObjects(result[@"message"], @"call1", @"Call #1 routed correctly");
+        DONE
+    }];
 
     // Roll the runloop once in order send the request
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call2" forKey:@"message"] delegate:self];
+    [api get:@"/echo" args:@{@"message": @"call2"} callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
+    {
+        STAssertEqualObjects(result[@"message"], @"call2", @"Call #2 routed correctly");
+        DONE
+    }];
 
-    [self waitResponseWithTimeout:5];
+    WAIT
 
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 results.");
-    STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call1", @"Is first call.");
-
-    // Reinit the result queue
-    [self waitResponseWithTimeout:5];
-
-    STAssertEquals([results count], (NSUInteger)1, @"There's is 1 results.");
-    STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call2", @"Is first call.");
-
+    STAssertEquals(networkRequestCount, 2U, @"The 2 API calls in two diff event loop turns hasn't been aggregated");
 }
 
 - (void)testMultiCallLimit
 {
-    Dailymotion *api = [[Dailymotion alloc] init];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call1" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call2" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call3" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call4" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call5" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call6" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call7" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call8" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call9" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call10" forKey:@"message"] delegate:self];
-    [api request:@"test.echo" withArguments:[NSDictionary dictionaryWithObject:@"call11" forKey:@"message"] delegate:self];
+    INIT(11)
 
-    [self waitResponseWithTimeout:5];
+    DMAPI *api = self.api;
 
-    STAssertEquals([results count], (NSUInteger)10, @"There's is 10 results, not 11.");
-    STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call10", @"The last result is the 10th.");
+    void (^callback)(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) = ^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        DONE
+    };
+    [api get:@"/echo" args:@{@"message": @"call1"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call2"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call3"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call4"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call5"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call6"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call7"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call8"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call9"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call10"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call11"} callback:callback];
+    [api get:@"/echo" args:@{@"message": @"call12"} callback:callback];
 
-    // Reinit the result queue
-    [self waitResponseWithTimeout:5];
+    WAIT
 
-    STAssertEquals([results count], (NSUInteger)1, @"The 11th result made its way on a second request.");
-    STAssertEqualObjects([[[results lastObject] objectForKey:@"result"] objectForKey:@"message"], @"call11", @"It's the 11th one.");
-
+    STAssertEquals(networkRequestCount, 2U, @"The API calls have been aggregated to 2 HTTP requests to respect the 10 call per request server limit");
 }
-*/
 
 - (void)testCallInvalidMethod
 {
-    INIT
+    INIT(1)
 
     [self.api get:@"/invalid/path" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
@@ -155,7 +159,7 @@
 
 - (void)testGrantTypeClientCredentials
 {
-    INIT
+    INIT(1)
 
     DMAPI *api = self.api;
     [api.oauth setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read"];
@@ -171,7 +175,7 @@
 
 - (void)testGrantTypeClientCredentialsRefreshToken
 {
-    INIT
+    INIT(1)
 
     DMAPI *api = self.api;
     api.oauth.delegate = self;
@@ -202,7 +206,7 @@
 
 - (void)testGrantTypeClientCredentialsRefreshWithNoRefreshToken
 {
-    INIT
+    INIT(1)
 
     DMAPI *api = self.api;
     api.oauth.delegate = self;
@@ -214,12 +218,12 @@
     {
         STAssertNil(error, @"Is success response");
         STAssertNotNil(api.oauth.session.refreshToken, @"Got a refresh token");
-         
+
         NSString *accessToken = api.oauth.session.accessToken;
         api.oauth.session.accessToken = nil;
         api.oauth.session.expires = [NSDate dateWithTimeIntervalSince1970:0];
         api.oauth.session.refreshToken = nil;
-         
+
         [api get:@"/auth" callback:^(NSDictionary *result2, DMAPICacheInfo *cache2, NSError *error2)
         {
             STAssertNil(error2, @"Is success response");
@@ -227,14 +231,14 @@
             DONE
         }];
     }];
-    
+
     WAIT
 }
 
 
 - (void)testGrantTypeWrongPassword
 {
-    INIT
+    INIT(1)
 
     DMAPI *api = self.api;
     api.oauth.delegate = self;
@@ -254,7 +258,7 @@
 
 - (void)testSessionStorage
 {
-    INIT
+    INIT(1)
 
     DMAPI *api = self.api;
     api.oauth.delegate = self;
@@ -270,9 +274,9 @@
         STAssertFalse([[result objectForKey:@"scope"] containsObject:@"delete"], @"Has `delete' scope.");
         DONE
     }];
-    
+
     WAIT
-    REINIT
+    REINIT(1)
 
     api = self.api;
     api.oauth.delegate = self;
@@ -299,7 +303,7 @@
 
 - (void)testUploadFile
 {
-    INIT
+    INIT(1)
 
     DMAPI *api = self.api;
     api.oauth.delegate = self;

@@ -9,6 +9,8 @@
 #import "DMNetworking.h"
 #import "DMUDID.h"
 
+NSUInteger totalRequestCount;
+
 @interface DMNetworking ()
 
 @property (nonatomic, strong) NSOperationQueue *_queue;
@@ -17,6 +19,16 @@
 
 
 @implementation DMNetworking
+
++ (void)initialize
+{
+    totalRequestCount = 0;
+}
+
++ (NSUInteger)totalRequestCount
+{
+    return totalRequestCount;
+}
 
 - (id)init
 {
@@ -134,6 +146,7 @@
         [request setHTTPBodyStream:payload];
     }
 
+    totalRequestCount++;
     DMNetRequestOperation *operation = [[DMNetRequestOperation alloc] initWithRequest:request];
     operation.completionHandler = handler;
     [self._queue addOperation:operation];

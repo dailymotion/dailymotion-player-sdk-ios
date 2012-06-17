@@ -7,7 +7,7 @@
 //
 
 #import "DMItem.h"
-#import "NSDictionary+DMAdditions.h"
+#import "DMAdditions.h"
 
 static NSString *const DMItemCacheNamespaceInvalidatedNotification = @"DMItemCacheNamespaceInvalidatedNotification";
 static NSCache *itemInstancesCache;
@@ -73,6 +73,21 @@ static NSCache *itemInstancesCache;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSString *)description
+{
+    return [self._fieldsCache description];
+}
+
+- (void)loadInfo:(NSDictionary *)info
+{
+    __block NSMutableDictionary *fieldsCache = self._fieldsCache;
+
+    [info enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
+    {
+        fieldsCache[key] = obj;
+    }];
+}
+
 - (DMAPICacheInfo *)cacheInfo
 {
     return _cacheInfo;
@@ -92,6 +107,13 @@ static NSCache *itemInstancesCache;
 {
     [self._fieldsCache removeAllObjects];
     self.cacheInfo = nil;
+}
+
+- (BOOL)areFieldsCached:(NSArray *)fields
+{
+    fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
+    NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
+    return [data count] == [fields count];
 }
 
 - (void)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback

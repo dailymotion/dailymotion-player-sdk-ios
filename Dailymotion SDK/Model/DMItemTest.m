@@ -7,24 +7,10 @@
 //
 
 #import "DMItemTest.h"
+#import "DMTestUtils.h"
 #import "DMItem.h"
+#import "DMItemCollection.h"
 #import "DailymotionTestConfig.h"
-
-#define INIT(plannedTests) \
-    long waitResult; \
-    __block NSInteger testCount = plannedTests; \
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0); \
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:10];
-#define REINIT(plannedTests) \
-    testCount = plannedTests; \
-    semaphore = dispatch_semaphore_create(0);
-#define DONE \
-    if (--testCount == 0) dispatch_semaphore_signal(semaphore);
-#define WAIT \
-    while ((waitResult = dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW)) && loopUntil.timeIntervalSinceNow > 0) \
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]; \
-    dispatch_release(semaphore); \
-    STAssertTrue(waitResult == 0, @"All callbacks are done");
 
 @implementation DMItemTest
 
@@ -105,6 +91,36 @@
         DONE
     }];
 
+    WAIT
+}
+
+- (void)testCachedCollection
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
+    
+    INIT(1)
+    
+    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        DONE
+    }];
+    
+    WAIT
+
+    REINIT(1)
+    
+    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        DONE
+    }];
+    
     WAIT
 }
 

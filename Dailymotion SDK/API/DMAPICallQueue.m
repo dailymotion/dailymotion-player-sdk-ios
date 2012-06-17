@@ -8,7 +8,7 @@
 
 #import "DMAPICallQueue.h"
 #import "DMAPI.h"
-#import "NSDictionary+DMAdditions.h"
+#import "DMAdditions.h"
 
 @interface DMAPICall ()
 

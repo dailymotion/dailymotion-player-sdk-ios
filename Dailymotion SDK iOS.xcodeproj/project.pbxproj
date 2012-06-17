@@ -18,9 +18,9 @@
 		531580C21589F81200F25C7D /* DMReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 531580C01589F81200F25C7D /* DMReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531580C31589F81200F25C7D /* DMReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 531580C11589F81200F25C7D /* DMReachability.m */; };
 		531580C9158A21E200F25C7D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 531580C7158A21C700F25C7D /* SystemConfiguration.framework */; };
-		531580CD158A269A00F25C7D /* DMItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 531580CB158A269A00F25C7D /* DMItem.h */; };
+		531580CD158A269A00F25C7D /* DMItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 531580CB158A269A00F25C7D /* DMItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531580CE158A269A00F25C7D /* DMItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 531580CC158A269A00F25C7D /* DMItem.m */; };
-		531580D1158A473800F25C7D /* DMAPICacheInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 531580CF158A473700F25C7D /* DMAPICacheInfo.h */; };
+		531580D1158A473800F25C7D /* DMAPICacheInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 531580CF158A473700F25C7D /* DMAPICacheInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531580D2158A473800F25C7D /* DMAPICacheInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 531580D0158A473700F25C7D /* DMAPICacheInfo.m */; };
 		531580D5158A94B600F25C7D /* DMItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 531580D4158A94B600F25C7D /* DMItemTest.m */; };
 		531A6312158514F700EB269B /* DMOAuthSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A6310158514F700EB269B /* DMOAuthSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -41,11 +41,11 @@
 		53E270FE126369C100B541BE /* DMAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* DMAPI.m */; };
 		53E273C91265C23E00B541BE /* DMAPITest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E273C81265C23E00B541BE /* DMAPITest.m */; };
 		53E274201266302900B541BE /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libDailymotion SDK.a */; };
-		53E8F684158AB39D000A5BF3 /* NSDictionary+DMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F682158AB39D000A5BF3 /* NSDictionary+DMAdditions.h */; settings = {ATTRIBUTES = (); }; };
-		53E8F685158AB39D000A5BF3 /* NSDictionary+DMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F683158AB39D000A5BF3 /* NSDictionary+DMAdditions.m */; };
-		53E8F68A158B6138000A5BF3 /* DMItemCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F688158B6138000A5BF3 /* DMItemCollection.h */; };
+		53E8F684158AB39D000A5BF3 /* DMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F682158AB39D000A5BF3 /* DMAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53E8F685158AB39D000A5BF3 /* DMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F683158AB39D000A5BF3 /* DMAdditions.m */; };
+		53E8F68A158B6138000A5BF3 /* DMItemCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F688158B6138000A5BF3 /* DMItemCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E8F68B158B6138000A5BF3 /* DMItemCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F689158B6138000A5BF3 /* DMItemCollection.m */; };
-		53E8F697158B67A0000A5BF3 /* DMQueryString.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F695158B67A0000A5BF3 /* DMQueryString.h */; };
+		53E8F697158B67A0000A5BF3 /* DMQueryString.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E8F695158B67A0000A5BF3 /* DMQueryString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E8F698158B67A0000A5BF3 /* DMQueryString.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F696158B67A0000A5BF3 /* DMQueryString.m */; };
 		53F0816B15827C43000E56C4 /* DMNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 53F0816915827C43000E56C4 /* DMNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53F0816C15827C43000E56C4 /* DMNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F0816A15827C43000E56C4 /* DMNetworking.m */; };
@@ -102,12 +102,13 @@
 		53E273561265BD1C00B541BE /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E273C71265C23E00B541BE /* DMAPITest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DMAPITest.h; path = API/DMAPITest.h; sourceTree = "<group>"; };
 		53E273C81265C23E00B541BE /* DMAPITest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMAPITest.m; path = API/DMAPITest.m; sourceTree = "<group>"; };
-		53E8F682158AB39D000A5BF3 /* NSDictionary+DMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+DMAdditions.h"; sourceTree = "<group>"; };
-		53E8F683158AB39D000A5BF3 /* NSDictionary+DMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+DMAdditions.m"; sourceTree = "<group>"; };
+		53E8F682158AB39D000A5BF3 /* DMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAdditions.h; sourceTree = "<group>"; };
+		53E8F683158AB39D000A5BF3 /* DMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAdditions.m; sourceTree = "<group>"; };
 		53E8F688158B6138000A5BF3 /* DMItemCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemCollection.h; sourceTree = "<group>"; };
 		53E8F689158B6138000A5BF3 /* DMItemCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemCollection.m; sourceTree = "<group>"; };
 		53E8F695158B67A0000A5BF3 /* DMQueryString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMQueryString.h; sourceTree = "<group>"; };
 		53E8F696158B67A0000A5BF3 /* DMQueryString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMQueryString.m; sourceTree = "<group>"; };
+		53E8F6AC158E9C62000A5BF3 /* DMTestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DMTestUtils.h; sourceTree = "<group>"; };
 		53F0816915827C43000E56C4 /* DMNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMNetworking.h; sourceTree = "<group>"; };
 		53F0816A15827C43000E56C4 /* DMNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMNetworking.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Prefix.pch; sourceTree = "<group>"; };
@@ -195,8 +196,8 @@
 			children = (
 				53149E3C1587A5860068ADB7 /* DMUDID.h */,
 				53149E3D1587A5860068ADB7 /* DMUDID.m */,
-				53E8F682158AB39D000A5BF3 /* NSDictionary+DMAdditions.h */,
-				53E8F683158AB39D000A5BF3 /* NSDictionary+DMAdditions.m */,
+				53E8F682158AB39D000A5BF3 /* DMAdditions.h */,
+				53E8F683158AB39D000A5BF3 /* DMAdditions.m */,
 				53E8F695158B67A0000A5BF3 /* DMQueryString.h */,
 				53E8F696158B67A0000A5BF3 /* DMQueryString.m */,
 			);
@@ -271,6 +272,7 @@
 		53E273741265BD9700B541BE /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				53E8F6AC158E9C62000A5BF3 /* DMTestUtils.h */,
 				533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */,
 				53E273C71265C23E00B541BE /* DMAPITest.h */,
 				53E273C81265C23E00B541BE /* DMAPITest.m */,
@@ -306,7 +308,7 @@
 				531580C21589F81200F25C7D /* DMReachability.h in Headers */,
 				531580CD158A269A00F25C7D /* DMItem.h in Headers */,
 				531580D1158A473800F25C7D /* DMAPICacheInfo.h in Headers */,
-				53E8F684158AB39D000A5BF3 /* NSDictionary+DMAdditions.h in Headers */,
+				53E8F684158AB39D000A5BF3 /* DMAdditions.h in Headers */,
 				53E8F68A158B6138000A5BF3 /* DMItemCollection.h in Headers */,
 				53E8F697158B67A0000A5BF3 /* DMQueryString.h in Headers */,
 			);
@@ -436,7 +438,7 @@
 				531580C31589F81200F25C7D /* DMReachability.m in Sources */,
 				531580CE158A269A00F25C7D /* DMItem.m in Sources */,
 				531580D2158A473800F25C7D /* DMAPICacheInfo.m in Sources */,
-				53E8F685158AB39D000A5BF3 /* NSDictionary+DMAdditions.m in Sources */,
+				53E8F685158AB39D000A5BF3 /* DMAdditions.m in Sources */,
 				53E8F68B158B6138000A5BF3 /* DMItemCollection.m in Sources */,
 				53E8F698158B67A0000A5BF3 /* DMQueryString.m in Sources */,
 			);

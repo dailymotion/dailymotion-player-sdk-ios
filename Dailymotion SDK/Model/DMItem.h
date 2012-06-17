@@ -40,6 +40,11 @@
 - (void)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
 
 /**
+ * Test if fields are present in the cache
+ */
+- (BOOL)areFieldsCached:(NSArray *)fields;
+
+/**
  * Flush all previously loaded cache for this item
  */
 - (void)flushCache;

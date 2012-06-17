@@ -17,6 +17,8 @@
 @property (nonatomic, assign) NSUInteger maxConcurrency;
 @property (nonatomic, assign) NSUInteger timeout;
 
++ (NSUInteger)totalRequestCount;
+
 - (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetRequestOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
