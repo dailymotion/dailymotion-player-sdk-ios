@@ -66,12 +66,10 @@ static NSCache *itemCollectionInstancesCache;
     DMItemCollection *itemCollection = [itemCollectionInstancesCache objectForKey:cacheKey];
     if (!itemCollection)
     {
-        itemCollection = [[self alloc] init];
-        itemCollection.type = type;
-        itemCollection.params = params;
-        itemCollection._api = api;
-        itemCollection._path = [NSString stringWithFormat:@"/%@", [type stringByApplyingPluralForm]];
-        itemCollection._cache = [NSMutableArray array];
+        itemCollection = [[self alloc] initWithType:type
+                                             params:params
+                                               path:[NSString stringWithFormat:@"/%@", [type stringByApplyingPluralForm]]
+                                            fromAPI:api];
     }
 
     return itemCollection;
@@ -83,18 +81,35 @@ static NSCache *itemCollectionInstancesCache;
     DMItemCollection *itemCollection = [itemCollectionInstancesCache objectForKey:cacheKey];
     if (!itemCollection)
     {
-        itemCollection = [[self alloc] init];
-        itemCollection.type = item.type;
-        itemCollection.params = params;
-        itemCollection._api = api;
-        itemCollection._path = [NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection];
+        itemCollection = [[self alloc] initWithType:item.type
+                                             params:params
+                                               path:[NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection]
+                                            fromAPI:api];
     }
 
     return itemCollection;
 }
 
+- (id)initWithType:(NSString *)type params:(NSDictionary *)params path:(NSString *)path fromAPI:(DMAPI *)api
+{
+    if ((self = [super init]))
+    {
+        self.type = type;
+        self.params = params;
+        self._api = api;
+        self._path = path;
+        self._cache = [NSMutableArray array];
+    }
+    return self;
+}
+
 - (void)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
 {
+    if (self.cacheInfo && !self.cacheInfo.valid)
+    {
+        [self flushCache];
+    }
+
     NSNull *null = [NSNull null];
     BOOL cacheValid = YES;
     BOOL cacheStalled = self.cacheInfo ? self.cacheInfo.stalled : YES;

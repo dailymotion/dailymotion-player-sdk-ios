@@ -339,7 +339,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 DMAPICacheInfo *cacheInfo = nil;
                 if (isdict(resultCacheInfo))
                 {
-                    cacheInfo = [[DMAPICacheInfo alloc] initWithCacheInfo:resultCacheInfo];
+                    cacheInfo = [[DMAPICacheInfo alloc] initWithCacheInfo:resultCacheInfo fromAPI:self];
                 }
                 call.callback(isdict(resultData) ? resultData : nil, cacheInfo, nil);
             }

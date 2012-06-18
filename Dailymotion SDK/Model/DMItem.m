@@ -9,7 +9,6 @@
 #import "DMItem.h"
 #import "DMAdditions.h"
 
-static NSString *const DMItemCacheNamespaceInvalidatedNotification = @"DMItemCacheNamespaceInvalidatedNotification";
 static NSCache *itemInstancesCache;
 
 @interface DMItem ()
@@ -24,9 +23,6 @@ static NSCache *itemInstancesCache;
 @end
 
 @implementation DMItem
-{
-    DMAPICacheInfo *_cacheInfo;
-}
 
 + (void)initialize
 {
@@ -55,22 +51,9 @@ static NSCache *itemInstancesCache;
         self._api = api;
         self._path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
         self._fieldsCache = [[NSMutableDictionary alloc] init];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(invalidateNamespaces:)
-                                                     name:DMItemCacheNamespaceInvalidatedNotification
-                                                   object:nil];
-
-        [self._api addObserver:self forKeyPath:@"session" options:0 context:NULL];
     }
 
     return self;
-}
-
-- (void)dealloc
-{
-    [self._api removeObserver:self forKeyPath:@"session"];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (NSString *)description
@@ -90,21 +73,6 @@ static NSCache *itemInstancesCache;
     self.cacheInfo = nil;
 }
 
-- (DMAPICacheInfo *)cacheInfo
-{
-    return _cacheInfo;
-}
-
-- (void)setCacheInfo:(DMAPICacheInfo *)cacheInfo
-{
-    _cacheInfo = cacheInfo;
-    if (cacheInfo.invalidates)
-    {
-        [[NSNotificationCenter defaultCenter] postNotificationName:DMItemCacheNamespaceInvalidatedNotification
-                                                            object:cacheInfo.invalidates];
-    }
-}
-
 - (void)flushCache
 {
     [self._fieldsCache removeAllObjects];
@@ -113,6 +81,11 @@ static NSCache *itemInstancesCache;
 
 - (BOOL)areFieldsCached:(NSArray *)fields
 {
+    if (self.cacheInfo && !self.cacheInfo.valid)
+    {
+        [self flushCache];
+    }
+
     fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
     NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
     return [data count] == [fields count];
@@ -120,6 +93,11 @@ static NSCache *itemInstancesCache;
 
 - (void)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
+    if (self.cacheInfo && !self.cacheInfo.valid)
+    {
+        [self flushCache];
+    }
+
     fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
     NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
     BOOL allFieldsCached = [data count] == [fields count];
@@ -172,26 +150,6 @@ static NSCache *itemInstancesCache;
                 callback([bself._fieldsCache dictionaryForKeys:fields], NO, nil);
             }
         }];
-    }
-}
-
-#pragma mark - Event Handlers
-
-- (void)invalidateNamespaces:(NSNotification *)notification
-{
-    NSArray *invalidatedNamespaces = notification.object;
-    if ([invalidatedNamespaces containsObject:self.cacheInfo.namespace])
-    {
-        self.cacheInfo.stalled = YES;
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    // Flush cache of private objects when session change
-    if (self._api == object && self.cacheInfo && !self.cacheInfo.public && [keyPath isEqualToString:@"session"])
-    {
-        [self flushCache];
     }
 }
 

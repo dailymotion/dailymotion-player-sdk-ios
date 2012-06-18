@@ -117,7 +117,7 @@
 
 - (void)testMultiCallLimit
 {
-    INIT(11)
+    INIT(12)
 
     DMAPI *api = self.api;
 
@@ -255,6 +255,36 @@
 
     WAIT
 }
+
+- (void)testSessionChangeInvalidsCache
+{
+    INIT(1)
+
+    DMAPI *api = self.api;
+    api.oauth.delegate = self;
+    username = kDMUsername;
+    password = kDMPassword;
+    [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:nil];
+    [api.oauth clearSession];
+
+    __block DMAPICacheInfo *privateCache;
+
+    [api get:@"/me/videos" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        privateCache = cache;
+        STAssertFalse(cache.public, @"The returned data is private");
+        DONE
+    }];
+
+    WAIT
+
+    STAssertTrue(privateCache.valid, @"Cache is valid");
+
+    [api.oauth clearSession];
+
+    STAssertFalse(privateCache.valid, @"Cache is no longer valid once session changed");
+}
+
 
 - (void)testSessionStorage
 {

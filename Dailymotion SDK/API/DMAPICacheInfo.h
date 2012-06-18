@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class DMAPI;
+
 @interface DMAPICacheInfo : NSObject
 
 /**
@@ -49,6 +51,16 @@
  */
 @property (nonatomic, assign) BOOL stalled;
 
-- (id)initWithCacheInfo:(NSDictionary *)cacheInfo;
+
+/**
+ * Tells if the cache data can still be used or if its contain should be dropped immediately and
+ * refreshed from network.
+ */
+@property (nonatomic, assign) BOOL valid;
+
+/**
+ * Instanciate a new cache info object with data comming from API
+ */
+- (id)initWithCacheInfo:(NSDictionary *)cacheInfo fromAPI:(DMAPI *)api;
 
 @end
