@@ -11,6 +11,13 @@
 
 static NSCache *itemInstancesCache;
 
+@interface DMItemOperation (Private)
+
+@property (nonatomic, strong) void (^cancelBlock)();
+
+@end
+
+
 @interface DMItem ()
 
 @property (nonatomic, readwrite, copy) NSString *type;
@@ -21,6 +28,7 @@ static NSCache *itemInstancesCache;
 @property (strong) NSMutableDictionary *_fieldsCache;
 
 @end
+
 
 @implementation DMItem
 
@@ -91,13 +99,14 @@ static NSCache *itemInstancesCache;
     return [data count] == [fields count];
 }
 
-- (void)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
+- (DMItemOperation *)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
     if (self.cacheInfo && !self.cacheInfo.valid)
     {
         [self flushCache];
     }
 
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
     fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
     NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
     BOOL allFieldsCached = [data count] == [fields count];
@@ -122,11 +131,10 @@ static NSCache *itemInstancesCache;
         BOOL conditionalRequest = allFieldsCached && cacheStalled;
 
         __weak DMItem *bself = self;
-
-        [self._api get:self._path
-                  args:@{@"fields": fieldsToLoad}
-             cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
-              callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+        __weak DMAPICall *apiCall = [self._api get:self._path
+                                              args:@{@"fields": fieldsToLoad}
+                                         cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
+                                          callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
         {
             if (!error && bself.cacheInfo.etag && cache.etag && ![bself.cacheInfo.etag isEqualToString:cache.etag])
             {
@@ -150,7 +158,11 @@ static NSCache *itemInstancesCache;
                 callback([bself._fieldsCache dictionaryForKeys:fields], NO, nil);
             }
         }];
+
+        operation.cancelBlock = ^{[apiCall cancel];};
     }
+
+    return operation;
 }
 
 @end

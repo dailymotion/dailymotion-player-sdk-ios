@@ -44,7 +44,7 @@
  * request is automatically performed to retrieve fresh data. On success the block is called a second time with
  * the `stalled` parameter set to `NO`.
  */
-- (void)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback;
+- (DMItemOperation *)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback;
 
 /**
  * Flush all previously loaded cache for this collection (won't flush items cache data)

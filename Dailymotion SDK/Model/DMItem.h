@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "DMAPI.h"
+#import "DMItemOperation.h"
 
 @interface DMItem : NSObject
 
@@ -36,8 +37,10 @@
  *
  * @prarm fields A list of object fields names to load
  * @param callback The block to call with resulting field data
+ *
+ * @return A DMItemOperation instance able to cancel the request
  */
-- (void)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
+- (DMItemOperation *)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
 
 /**
  * Test if fields are present in the cache

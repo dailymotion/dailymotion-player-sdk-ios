@@ -32,6 +32,13 @@ static NSCache *itemCollectionInstancesCache;
 @end
 
 
+@interface DMItemOperation (Private)
+
+@property (nonatomic, strong) void (^cancelBlock)();
+
+@end
+
+
 @interface DMItem ()
 
 - (void)loadInfo:(NSDictionary *)info;
@@ -103,13 +110,14 @@ static NSCache *itemCollectionInstancesCache;
     return self;
 }
 
-- (void)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
+- (DMItemOperation *)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
 {
     if (self.cacheInfo && !self.cacheInfo.valid)
     {
         [self flushCache];
     }
 
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
     NSNull *null = [NSNull null];
     BOOL cacheValid = YES;
     BOOL cacheStalled = self.cacheInfo ? self.cacheInfo.stalled : YES;
@@ -179,11 +187,14 @@ static NSCache *itemCollectionInstancesCache;
 
     if (!cacheValid || cacheStalled)
     {
-        [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:callback];
+        __weak DMAPICall *apiCall = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:callback];
+        operation.cancelBlock = ^{[apiCall cancel];};
     }
+
+    return operation;
 }
 
-- (void)loadItemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
+- (DMAPICall *)loadItemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
 {
     NSMutableDictionary *params = [self.params mutableCopy];
     params[@"page"] = [NSNumber numberWithInt:page];
@@ -195,7 +206,7 @@ static NSCache *itemCollectionInstancesCache;
 
     __weak DMItemCollection *bself = self;
 
-    [self._api get:self._path args:params cacheInfo:nil callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
+    return [self._api get:self._path args:params cacheInfo:nil callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
         if (error)
         {
