@@ -139,6 +139,10 @@ static NSCache *itemCollectionInstancesCache;
                     cacheValid = NO;
                     break;
                 }
+                if (item.cacheInfo.stalled)
+                {
+                    cacheStalled = YES;
+                }
                 [items addObject:item];
             }
         }

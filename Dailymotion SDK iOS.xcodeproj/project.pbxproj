@@ -29,9 +29,9 @@
 		531A63181585670D00EB269B /* DMOAuthSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A63171585670D00EB269B /* DMOAuthSessionTest.m */; };
 		531A631B1586069B00EB269B /* DMOAuthClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A63191586069B00EB269B /* DMOAuthClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531A631C1586069B00EB269B /* DMOAuthClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A631A1586069B00EB269B /* DMOAuthClient.m */; };
-		531A631F1586175700EB269B /* DMAPIError.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A631D1586175700EB269B /* DMAPIError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		531A631F1586175700EB269B /* DMAPIError.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A631D1586175700EB269B /* DMAPIError.h */; settings = {ATTRIBUTES = (); }; };
 		531A63201586175700EB269B /* DMAPIError.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A631E1586175700EB269B /* DMAPIError.m */; };
-		531A632E15862E2E00EB269B /* DMAPICallQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A632C15862E2E00EB269B /* DMAPICallQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		531A632E15862E2E00EB269B /* DMAPICallQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 531A632C15862E2E00EB269B /* DMAPICallQueue.h */; settings = {ATTRIBUTES = (); }; };
 		531A632F15862E2E00EB269B /* DMAPICallQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 531A632D15862E2E00EB269B /* DMAPICallQueue.m */; };
 		531F0EF1126880830089FAE5 /* DMBoundableInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 531F0EEF126880830089FAE5 /* DMBoundableInputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };

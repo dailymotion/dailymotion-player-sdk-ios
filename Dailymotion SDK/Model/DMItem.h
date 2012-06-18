@@ -41,6 +41,8 @@
 
 /**
  * Test if fields are present in the cache
+ *
+ * @prarm fields A list of object fields names to test
  */
 - (BOOL)areFieldsCached:(NSArray *)fields;
 

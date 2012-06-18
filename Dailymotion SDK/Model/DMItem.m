@@ -86,6 +86,8 @@ static NSCache *itemInstancesCache;
     {
         fieldsCache[key] = obj;
     }];
+
+    self.cacheInfo = nil;
 }
 
 - (DMAPICacheInfo *)cacheInfo
@@ -148,6 +150,12 @@ static NSCache *itemInstancesCache;
              cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
               callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
         {
+            if (!error && bself.cacheInfo.etag && cache.etag && ![bself.cacheInfo.etag isEqualToString:cache.etag])
+            {
+                // If new etag is different from previous etag, clear already cached fields
+                [bself flushCache];
+            }
+
             bself.cacheInfo = cache;
 
             if (error)

@@ -10,6 +10,11 @@
 
 @interface DMUDID : NSObject
 
+/**
+ * Return a Device Identifier based on the MAC address of the first network interface
+ *
+ * Should be safely used in place of deprecated UIDevice identifier
+ */
 + (NSString *)deviceIdentifier;
 
 @end
