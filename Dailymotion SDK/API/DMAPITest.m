@@ -285,6 +285,37 @@
     STAssertFalse(privateCache.valid, @"Cache is no longer valid once session changed");
 }
 
+- (void)testConditionalRequest
+{
+    INIT(1)
+
+    DMAPI *api = self.api;
+
+    __block DMAPICacheInfo *cacheInfo;
+
+    [api get:@"/video/x12" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        cacheInfo = cache;
+        STAssertNotNil(result, @"Result has been sent");
+        STAssertNotNil(cache.etag, @"Item has an entity tag");
+        DONE
+    }];
+
+    WAIT
+
+    REINIT(1)
+
+    [api get:@"/video/x12" args:nil cacheInfo:cacheInfo callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        STAssertNotNil(cache.etag, @"Item has an entity tag");
+        STAssertEqualObjects(cache.etag, cacheInfo.etag, @"Return object has same etag");
+        STAssertNil(result, @"Result hasn't been sent because cached data is still valid");
+        STAssertNil(error, @"It's not an error");
+        DONE
+    }];
+
+    WAIT
+}
 
 - (void)testSessionStorage
 {
