@@ -20,7 +20,7 @@
 @property (nonatomic, strong) void (^progressHandler)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
 @property (nonatomic, strong) void (^completionHandler)(NSURLResponse*, NSData*, NSError*);
 
-- (id)initWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 - (void)cancel;
 - (void)cancelWithError:(NSError *)error;
 

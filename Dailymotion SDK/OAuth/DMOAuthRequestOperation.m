@@ -25,12 +25,13 @@
 
 @implementation DMOAuthRequestOperation
 
-- (id)initWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
 {
     if ((self = [super init]))
     {
         self.URL = URL;
         self.method = method;
+        self.headers = headers;
         self.payload = payload;
         self.completionHandler = handler;
         self._networkQueue = networkQueue;

@@ -155,7 +155,10 @@
 
 - (NSArray *)callsWithNoHandler
 {
-    return [self callsWithHandler:[NSNull null]];
+    return [[self callsWithHandler:[NSNull null]] sortedArrayUsingComparator:^NSComparisonResult(DMAPICall *call1, DMAPICall *call2)
+    {
+        return [call1.callId compare:call2.callId options:NSNumericSearch];
+    }];
 }
 
 

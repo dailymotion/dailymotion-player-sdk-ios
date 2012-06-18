@@ -78,6 +78,7 @@ static char callbackKey;
 {
     DMOAuthRequestOperation *request = [[DMOAuthRequestOperation alloc] initWithURL:URL
                                                                              method:method
+                                                                            headers:headers
                                                                             payload:payload
                                                                        networkQueue:self.networkQueue completionHandler:handler];
 

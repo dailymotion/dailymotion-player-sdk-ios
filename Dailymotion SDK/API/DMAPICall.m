@@ -7,6 +7,7 @@
 //
 
 #import "DMAPICall.h"
+#import "DMQueryString.h"
 
 @interface DMAPICall ()
 
@@ -30,6 +31,11 @@
         _isCancelled = NO;
     }
     return self;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"DMAPICall(%@): %@ %@?%@", self.callId, self.method, self.path, [self.args stringAsQueryString]];
 }
 
 - (void)cancel

@@ -73,6 +73,11 @@
 
 - (NSString *)stringAsQueryString
 {
+    if ([self count] == 0)
+    {
+        return @"";
+    }
+
     NSMutableArray* arguments = [NSMutableArray arrayWithCapacity:[self count]];
     [self enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *val, BOOL *stop)
     {
