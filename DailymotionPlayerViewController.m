@@ -42,7 +42,7 @@
 
 - (void)loadView
 {
-    UIWebView *webview = [[UIWebView alloc] init];
+    UIWebView *webview = [[[UIWebView alloc] init] autorelease];
     webview.delegate = self;
 
     // Remote white default background
