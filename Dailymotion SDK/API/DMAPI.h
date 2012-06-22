@@ -120,7 +120,6 @@
  */
 - (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback;
 
-
 /**
  * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
  *
@@ -147,5 +146,32 @@
  * Remove the right for the current API key to access the current user account.
  */
 - (void)logout;
+
+@end
+
+@class DMItem;
+@class DMItemCollection;
+
+@interface DMAPI (Item)
+
+/**
+ * Get an instance of DMItem for a given object type/id
+ *
+ * @param type The item type name
+ * @param objectId The item id
+ *
+ * @see DMItem
+ */
+- (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId;
+
+/**
+ * Get an instance of DMItemCollection for a given type/params
+ *
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param params Parameters to filter or sort the result
+ *
+ * @see DMItemCollection
+ */
+- (DMItemCollection *)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params;
 
 @end

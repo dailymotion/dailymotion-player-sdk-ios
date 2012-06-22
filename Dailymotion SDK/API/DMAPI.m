@@ -579,3 +579,21 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 }
 
 @end
+
+
+#import "DMItem.h"
+#import "DMItemCollection.h"
+
+@implementation DMAPI (Item)
+
+- (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId
+{
+    return [DMItem itemWithType:type forId:itemId fromAPI:self];
+}
+
+- (DMItemCollection *)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params
+{
+    return [DMItemCollection itemCollectionWithType:type forParams:params fromAPI:self];
+}
+
+@end

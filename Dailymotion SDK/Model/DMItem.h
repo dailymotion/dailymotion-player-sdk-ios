@@ -10,6 +10,8 @@
 #import "DMAPI.h"
 #import "DMItemOperation.h"
 
+@class DMItemCollection;
+
 @interface DMItem : NSObject
 
 @property (nonatomic, readonly, copy) NSString *type;
@@ -26,6 +28,17 @@
  * @return A shared instance of DMItem for the requested object
  */
 + (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api;
+
+/**
+ * Get an instance of DMItemCollection of a given connection to the item
+ *
+ * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
+ * @param item The item to load connection from
+ * @param params Optional parameters to filter/sort the result
+ *
+ * @see DMItemCollection
+ */
+- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection withParams:(NSDictionary *)params;
 
 /**
  * Load some fields from either API or cache and callback the passed block with the fields data

@@ -8,6 +8,7 @@
 
 #import "DMItem.h"
 #import "DMAdditions.h"
+#import "DMItemCollection.h"
 
 static NSCache *itemInstancesCache;
 
@@ -62,6 +63,11 @@ static NSCache *itemInstancesCache;
     }
 
     return self;
+}
+
+- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection withParams:(NSDictionary *)params
+{
+    return [DMItemCollection itemCollectionWithConnection:connection forItem:self withParams:params fromAPI:self._api];
 }
 
 - (NSString *)description
