@@ -62,6 +62,7 @@ static char callbackKey;
         self.oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];
         self.networkQueue = [[DMNetworking alloc] init];
         self.requestQueue = [[NSOperationQueue alloc] init];
+        self.requestQueue.name = @"DMOauth Request Queue";
         self._sessionLoaded = NO;
         self.autoSaveSession = YES;
     }
