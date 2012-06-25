@@ -9,11 +9,13 @@
 #import <Foundation/Foundation.h>
 
 #define INIT(plannedTests) \
+    NSUInteger currentTotalRequestCount = [DMNetworking totalRequestCount]; \
     long waitResult; \
     __block NSInteger testCount = plannedTests; \
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0); \
     NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:10];
 #define REINIT(plannedTests) \
+    currentTotalRequestCount = [DMNetworking totalRequestCount]; \
     testCount = plannedTests; \
     semaphore = dispatch_semaphore_create(0);
 #define DONE \
@@ -22,4 +24,7 @@
     while ((waitResult = dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW)) && loopUntil.timeIntervalSinceNow > 0) \
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:loopUntil]; \
     dispatch_release(semaphore); \
-    STAssertTrue(waitResult == 0, @"All callbacks are done");
+    STAssertTrue(waitResult == 0, @"All callbacks are done"); \
+    if (currentTotalRequestCount) {}; // prevent unused var warning
+
+#define networkRequestCount [DMNetworking totalRequestCount] - currentTotalRequestCount

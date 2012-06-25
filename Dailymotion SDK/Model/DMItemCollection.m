@@ -41,7 +41,7 @@ static NSCache *itemCollectionInstancesCache;
 
 @interface DMItem ()
 
-- (void)loadInfo:(NSDictionary *)info;
+- (void)loadInfo:(NSDictionary *)info withCacheInfo:(DMAPICacheInfo *)cacheInfo;
 
 @end
 
@@ -51,10 +51,13 @@ static NSCache *itemCollectionInstancesCache;
 @property (nonatomic, readwrite, copy) NSString *type;
 @property (nonatomic, readwrite, copy) NSDictionary *params;
 @property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, readwrite, assign) NSUInteger pageSize;
+@property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, strong) DMAPI *_api;
 @property (nonatomic, strong) NSString *_path;
 @property (nonatomic, strong) NSMutableArray *_cache;
 @property (nonatomic, assign) NSInteger _total;
+@property (nonatomic, strong) NSMutableDictionary *_runningRequests;
 
 @end
 
@@ -103,9 +106,12 @@ static NSCache *itemCollectionInstancesCache;
     {
         self.type = type;
         self.params = params;
+        self.pageSize = 25;
+        self.currentEstimatedTotalItemsCount = 0;
         self._api = api;
         self._path = path;
         self._cache = [NSMutableArray array];
+        self._runningRequests = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -187,8 +193,56 @@ static NSCache *itemCollectionInstancesCache;
 
     if (!cacheValid || cacheStalled)
     {
-        __weak DMAPICall *apiCall = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:callback];
-        operation.cancelBlock = ^{[apiCall cancel];};
+        // Handle situation when several requests with exactly same page/pageSize configuration are performed
+        // in parallele, ensure we only execute the request once and calls all callbacks at once once completed
+        NSString *requestKey = [NSString stringWithFormat:@"%d:%d", page, itemsPerPage];
+        NSMutableDictionary *requestInfo = self._runningRequests[requestKey];
+        __weak DMItemCollection *bself = self;
+        if (!requestInfo)
+        {
+            requestInfo = [NSMutableDictionary dictionary];
+            requestInfo[@"callbacks"] = [NSMutableArray arrayWithObject:callback];
+            requestInfo[@"operations"] = [NSMutableArray arrayWithObject:operation];
+            requestInfo[@"cleanupBlock"] = ^
+            {
+                NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                for (DMItemOperation *op in (NSMutableArray *)_requestInfo[@"operations"])
+                {
+                    // prevent retain cycles
+                    op.cancelBlock = ^{};
+                }
+                [_requestInfo removeAllObjects];
+                [bself._runningRequests removeObjectForKey:requestKey];
+            };
+            requestInfo[@"apiCall"] = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:^(NSArray *_items, BOOL _more, NSInteger _total, BOOL _stalled, NSError *_error)
+            {
+                NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
+                for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
+                {
+                    cb(_items, _more, _total, _stalled, _error);
+                }
+                ((void (^)())_requestInfo[@"cleanupBlock"])();
+            }];
+            self._runningRequests[requestKey] = requestInfo;
+        }
+        else
+        {
+            [(NSMutableArray *)requestInfo[@"callbacks"] addObject:callback];
+            [(NSMutableArray *)requestInfo[@"operations"] addObject:operation];
+        }
+
+        operation.cancelBlock = ^
+        {
+            NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+            NSMutableArray *callbacks = _requestInfo[@"callbacks"];
+            [callbacks removeObject:callback];
+            if (callbacks.count == 0)
+            {
+                [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
+                ((void (^)())_requestInfo[@"cleanupBlock"])();
+            }
+        };
     }
 
     return operation;
@@ -221,8 +275,16 @@ static NSCache *itemCollectionInstancesCache;
             return;
         }
 
-        self.cacheInfo = cacheInfo;
-        self._total = result[@"total"] ? [result[@"total"] intValue] : -1;
+        bself.cacheInfo = cacheInfo;
+        if (result[@"total"])
+        {
+            bself._total = [result[@"total"] intValue];
+            bself.currentEstimatedTotalItemsCount = bself._total;
+        }
+        else
+        {
+            bself._total = -1;
+        }
         BOOL more = [result[@"has_more"] boolValue];
         NSMutableArray *ids = [NSMutableArray arrayWithCapacity:itemsPerPage];
         NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsPerPage];
@@ -230,7 +292,9 @@ static NSCache *itemCollectionInstancesCache;
         for (NSDictionary *itemData in list)
         {
             DMItem *item = [DMItem itemWithType:bself.type forId:itemData[@"id"] fromAPI:bself._api];
-            [item loadInfo:itemData];
+            // Where we overload the item cache info by list cache info. This is not quite correct as item
+            // cache isn't list cache but it shouldn't hurt for 99.9% of the cases.
+            [item loadInfo:itemData withCacheInfo:cacheInfo];
             [items addObject:item];
             [ids addObject:itemData[@"id"]];
         }
@@ -242,6 +306,7 @@ static NSCache *itemCollectionInstancesCache;
             // Add an end-of-list marker
             NSUInteger lastCacheIndex = [bself._cache count] - 1;
             NSUInteger eolIndex = (page - 1) * itemsPerPage + [ids count];
+            bself.currentEstimatedTotalItemsCount = eolIndex;
             if (lastCacheIndex == eolIndex - 1)
             {
                 [bself._cache addObject:DMEndOfList];
@@ -260,13 +325,53 @@ static NSCache *itemCollectionInstancesCache;
                 [bself._cache shrink:eolIndex + 1];
             }
         }
-        else if (page > 1)
+        else
         {
-            // Handle when actual list raised by more than one page compared to cache
-            [self._cache removeObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)];
+            if (page > 1)
+            {
+                // Handle when actual list raised by more than one page compared to cache
+                [bself._cache removeObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)];
+            }
+
+            if (!result[@"total"])
+            {
+                // If server didn't returned an estimated total and we don't know the current list boundary,
+                // set the estimated total to current cache size + one page. It won't be accurate for the
+                // majority of the case, but this value isn't to be shown to the end user, only to help building
+                // the UI.
+                bself.currentEstimatedTotalItemsCount = [bself._cache count] + bself.pageSize;
+            }
         }
 
-        callback(items, more, self._total, NO, nil);
+        callback(items, more, bself._total, NO, nil);
+    }];
+}
+
+- (DMItemOperation *)withItemWithFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
+{
+    NSUInteger pageSize = self.pageSize;
+    NSUInteger page = floorf(index / self.pageSize) + 1;
+    return [self itemsWithFields:fields forPage:page withPageSize:pageSize do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    {
+        if (error)
+        {
+            callback(nil, NO, error);
+            return;
+        }
+
+        NSUInteger localIndex = index - ((page - 1) * pageSize);
+
+        if (items[localIndex] == DMEndOfList)
+        {
+            callback(nil, NO, error);
+        }
+
+        DMItem *item = items[localIndex];
+        [item withFields:fields do:^(NSDictionary *_data, BOOL _stalled, NSError *_error)
+        {
+            // The list cache stall info prevail on the item's on
+            callback(_data, stalled, _error);
+        }];
     }];
 }
 

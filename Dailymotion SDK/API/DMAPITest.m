@@ -10,8 +10,6 @@
 #import "DMTestUtils.h"
 #import "DailymotionTestConfig.h"
 
-#define networkRequestCount [DMNetworking totalRequestCount] - currentTotalRequestCount
-
 @implementation NSURLRequest (IgnoreSSL)
 
 // Workaround for strange SSL with SenTestCase invalid certificate bug
@@ -26,14 +24,12 @@
 {
     NSString *username;
     NSString *password;
-    NSUInteger currentTotalRequestCount;
 }
 
 - (void)setUp
 {
     username = nil;
     password = nil;
-    currentTotalRequestCount = [DMNetworking totalRequestCount];
 }
 
 - (DMAPI *)api

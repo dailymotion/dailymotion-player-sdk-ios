@@ -75,7 +75,7 @@ static NSCache *itemInstancesCache;
     return [self._fieldsCache description];
 }
 
-- (void)loadInfo:(NSDictionary *)info
+- (void)loadInfo:(NSDictionary *)info withCacheInfo:(DMAPICacheInfo *)cacheInfo
 {
     __block NSMutableDictionary *fieldsCache = self._fieldsCache;
 
@@ -84,7 +84,7 @@ static NSCache *itemInstancesCache;
         fieldsCache[key] = obj;
     }];
 
-    self.cacheInfo = nil;
+    self.cacheInfo = cacheInfo;
 }
 
 - (void)flushCache

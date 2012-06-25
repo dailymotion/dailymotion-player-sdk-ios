@@ -98,9 +98,9 @@
 {
     DMAPI *api = self.api;
     DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
-    
+
     INIT(1)
-    
+
     [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
@@ -108,11 +108,11 @@
         STAssertFalse(stalled, @"Newly loaded data is not stall");
         DONE
     }];
-    
+
     WAIT
 
     REINIT(1)
-    
+
     [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
@@ -120,8 +120,93 @@
         STAssertFalse(stalled, @"Newly loaded data is not stall");
         DONE
     }];
-    
+
     WAIT
+}
+
+- (void)testItemFromCollectionAtIndex
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
+
+    INIT(1)
+
+    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    WAIT
+}
+
+- (void)testItemsFromCollectionAtIndexWithinSamePageAreAggregated
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test2"} fromAPI:api];
+
+    INIT(2)
+
+    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    // Prevents from request aggregation, we wan't DMItemCollection aggregation
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+
+    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    WAIT
+
+    STAssertEquals(networkRequestCount, 1U, @"Two items from collection within same page generates a single request");
+}
+
+- (void)testItemsFromCollectionAtIndexWithinDiffPagesAreNotAggregated
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test1"} fromAPI:api];
+
+    INIT(2)
+
+    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:40 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    // Prevents from request aggregation, we wan't DMItemCollection aggregation
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+
+    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    WAIT
+
+    STAssertEquals(networkRequestCount, 2U, @"Two items from collection NOT within same pages generates two requests");
 }
 
 @end
