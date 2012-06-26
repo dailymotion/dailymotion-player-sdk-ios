@@ -52,7 +52,7 @@
         [self._connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
         [self._connection start];
         self._executing = YES;
-        self._timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self._request.timeoutInterval target:self selector:@selector(cancel) userInfo:nil repeats:NO];
+        self._timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self._request.timeoutInterval target:self selector:@selector(timeout) userInfo:nil repeats:NO];
         [self didChangeValueForKey:@"isExecuting"];
     });
 }
@@ -72,6 +72,18 @@
     self._responseData = nil;
     self._connection = nil;
     self._error = nil;
+}
+
+- (void)timeout
+{
+    if (self.isCancelled) return;
+    self._error = [NSError errorWithDomain:NSURLErrorDomain code:-1001 userInfo:@
+    {
+        NSLocalizedDescriptionKey: @"timed out",
+        NSURLErrorFailingURLStringErrorKey: self._request.URL.absoluteString,
+        NSURLErrorFailingURLErrorKey: self._request.URL
+    }];
+    [self done];
 }
 
 - (void)done
