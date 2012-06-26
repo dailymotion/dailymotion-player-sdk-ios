@@ -51,7 +51,7 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
     NSUInteger maxIndex = count - 1;
     NSUInteger endIndex = MIN(range.location + range.length, maxIndex);
 
-    for (i = 0; i <= range.length; i++)
+    for (i = 0; i < range.length; i++)
     {
         [objects addObject:marker];
     }

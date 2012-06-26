@@ -33,15 +33,15 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
 {
     if ((self = [super init]))
     {
-        self.date = [NSDate date];
-        self.namespace = cacheInfo[@"namespace"];
-        self.invalidates = cacheInfo[@"invalidates"];
-        self.etag = cacheInfo[@"etag"];
-        self.public = [cacheInfo[@"public"] boolValue];
-        self.maxAge = [cacheInfo[@"maxAge"] floatValue];
-        self.valid = YES;
+        _date = [NSDate date];
+        _namespace = cacheInfo[@"namespace"];
+        _invalidates = cacheInfo[@"invalidates"];
+        _etag = cacheInfo[@"etag"];
+        _public = [cacheInfo[@"public"] boolValue];
+        _maxAge = [cacheInfo[@"maxAge"] floatValue];
+        _valid = YES;
 
-        if (self.invalidates)
+        if (_invalidates)
         {
             [[NSNotificationCenter defaultCenter] postNotificationName:DMAPICacheInfoInvalidatedNotification
                                                                 object:self.invalidates];
@@ -52,10 +52,10 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
                                                      name:DMAPICacheInfoInvalidatedNotification
                                                    object:nil];
 
-        if (!self.public)
+        if (!_public)
         {
-            self._api = api;
-            [self._api addObserver:self forKeyPath:@"oauth.session" options:0 context:NULL];
+            __api = api;
+            [__api addObserver:self forKeyPath:@"oauth.session" options:0 context:NULL];
         }
     }
 
@@ -97,6 +97,10 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
     if (self._api == object && !self.public && [keyPath isEqualToString:@"oauth.session"])
     {
         self.valid = NO;
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 

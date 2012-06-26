@@ -34,8 +34,8 @@ NSUInteger totalRequestCount;
 {
     if ((self = [super init]))
     {
-        self._queue = [[NSOperationQueue alloc] init];
-        self._queue.name = @"DMNetworking Queue";
+        __queue = [[NSOperationQueue alloc] init];
+        __queue.name = @"DMNetworking Queue";
     }
     return self;
 }

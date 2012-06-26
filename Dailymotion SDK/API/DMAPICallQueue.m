@@ -36,9 +36,9 @@
 {
     if ((self = [super init]))
     {
-        self._callNextId = 0;
-        self._callQueue = [[NSMutableDictionary alloc] init];
-        self._callHandlers = [[NSMutableDictionary alloc] init];
+        __callNextId = 0;
+        __callQueue = [[NSMutableDictionary alloc] init];
+        __callHandlers = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -169,6 +169,10 @@
     if ([keyPath isEqualToString:@"isCancelled"] && [object isKindOfClass:[DMAPICall class]] && [(DMAPICall *)object isCancelled])
     {
         [self cancelCall:object];
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 

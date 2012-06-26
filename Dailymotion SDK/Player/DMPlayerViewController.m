@@ -32,20 +32,20 @@
 {
     if ((self = [super init]))
     {
-        self._video = video;
-        self._params = params;
+        __video = video;
+        __params = params;
 
-        self.autoplay = [self._params[@"autoplay"] boolValue] == YES;
-        self.currentTime = 0;
-        self.bufferedTime = 0;
-        self.duration = NAN;
-        self.seeking = false;
-        self.error = nil;
-        self.ended = false;
-        self.muted = false;
-        self.volume = 1;
-        self.paused = true;
-        self.fullscreen = false;
+        _autoplay = [self._params[@"autoplay"] boolValue] == YES;
+        _currentTime = 0;
+        _bufferedTime = 0;
+        _duration = NAN;
+        _seeking = false;
+        _error = nil;
+        _ended = false;
+        _muted = false;
+        _volume = 1;
+        _paused = true;
+        _fullscreen = false;
     }
     return self;
 }

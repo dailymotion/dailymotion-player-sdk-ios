@@ -29,14 +29,14 @@
 {
     if ((self = [super init]))
     {
-        self.URL = URL;
-        self.method = method;
-        self.headers = headers;
-        self.payload = payload;
-        self.completionHandler = handler;
-        self._networkQueue = networkQueue;
-        self._executing = NO;
-        self._finished = NO;
+        _URL = URL;
+        _method = method;
+        _headers = headers;
+        _payload = payload;
+        _completionHandler = handler;
+        __networkQueue = networkQueue;
+        __executing = NO;
+        __finished = NO;
     }
     return self;
 }
@@ -86,6 +86,7 @@
                                             completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
     {
         [bself doneWithResponse:response data:responseData error:error];
+        bself._request = nil;
     }];
     if (self.progressHandler)
     {
@@ -112,6 +113,7 @@
     [self._request cancel];
     self._executing = NO;
     self._finished = YES;
+    self._request = nil;
 }
 
 - (void)doneWithResponse:(NSURLResponse *)response data:(NSData *)responseData error:(NSError *)error

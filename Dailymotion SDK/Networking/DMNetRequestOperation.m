@@ -10,24 +10,27 @@
 
 @interface DMNetRequestOperation ()
 
+@property (nonatomic, copy) NSURLRequest *_request;
+@property (nonatomic, strong) NSMutableData *_responseData;
+@property (nonatomic, strong) NSURLResponse *_response;
+@property (nonatomic, strong) NSError *_error;
+@property (nonatomic, strong) NSURLConnection *_connection;
 @property (nonatomic, assign) BOOL _executing;
 @property (nonatomic, assign) BOOL _finished;
+@property (nonatomic, strong) NSTimer *_timeoutTimer;
 
 @end
 
 @implementation DMNetRequestOperation
-{
-    NSMutableData *_responseData;
-}
 
 - (id)initWithRequest:(NSURLRequest *)request
 {
     if ((self = [super init]))
     {
-        self.request = request;
-        self._executing = NO;
-        self._finished = NO;
-        _responseData = [[NSMutableData alloc] init];
+        __request = request;
+        __executing = NO;
+        __finished = NO;
+        __responseData = [[NSMutableData alloc] init];
     }
     return self;
 }
@@ -45,21 +48,30 @@
     dispatch_async(dispatch_get_main_queue(), ^
     {
         [self willChangeValueForKey:@"isExecuting"];
-        self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self startImmediately:NO];
-        [self.connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-        [self.connection start];
+        self._connection = [[NSURLConnection alloc] initWithRequest:self._request delegate:self startImmediately:NO];
+        [self._connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+        [self._connection start];
         self._executing = YES;
+        self._timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self._request.timeoutInterval target:self selector:@selector(cancel) userInfo:nil repeats:NO];
         [self didChangeValueForKey:@"isExecuting"];
     });
 }
 
 - (void)cancel
 {
+    [self._timeoutTimer invalidate];
+    self._timeoutTimer = nil;
     if (self.isFinished) return;
     [super cancel];
-    [self.connection cancel];
+    [self._connection cancel];
     self._executing = NO;
     self._finished = YES;
+
+    self._request = nil;
+    self._response = nil;
+    self._responseData = nil;
+    self._connection = nil;
+    self._error = nil;
 }
 
 - (void)done
@@ -69,13 +81,19 @@
     self._executing = NO;
     if (self.completionHandler && !self.isCancelled)
     {
-        self.completionHandler(self.response, _responseData, self.error);
+        self.completionHandler(self._response, self._responseData, self._error);
         self.completionHandler = nil;
     }
     self.progressHandler = nil;
     self._finished = YES;
     [self didChangeValueForKey:@"isExecuting"];
     [self didChangeValueForKey:@"isFinished"];
+
+    self._request = nil;
+    self._response = nil;
+    self._responseData = nil;
+    self._connection = nil;
+    self._error = nil;
 }
 
 - (BOOL)isConcurrent
@@ -93,16 +111,11 @@
     return self._finished;
 }
 
-- (NSData *)responseData
-{
-    return _responseData;
-}
-
 #pragma mark NSURLConnection delegate
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    [_responseData appendData:data];
+    [self._responseData appendData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
@@ -115,7 +128,9 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    self.response = response;
+    self._response = response;
+    [self._timeoutTimer invalidate];
+    self._timeoutTimer = nil;
 }
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -125,7 +140,7 @@
 
 - (void)connection:(NSURLConnection*)connection didFailWithError:(NSError *)connectionError
 {
-    self.error = connectionError;
+    self._error = connectionError;
     [self done];
 }
 

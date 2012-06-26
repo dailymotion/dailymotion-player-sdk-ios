@@ -46,6 +46,7 @@ static NSCache *itemInstancesCache;
     if (!item)
     {
         item = [[self alloc] initWithType:type forId:itemId fromAPI:api];
+        [itemInstancesCache setObject:item forKey:cacheKey];
     }
 
     return item;
@@ -55,11 +56,11 @@ static NSCache *itemInstancesCache;
 {
     if ((self = [super init]))
     {
-        self.type = type;
-        self.itemId = itemId;
-        self._api = api;
-        self._path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
-        self._fieldsCache = [[NSMutableDictionary alloc] init];
+        _type = type;
+        _itemId = itemId;
+        __api = api;
+        __path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
+        __fieldsCache = [[NSMutableDictionary alloc] init];
     }
 
     return self;

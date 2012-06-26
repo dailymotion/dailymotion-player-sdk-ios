@@ -20,7 +20,7 @@
 {
     if ((self = [super init]))
     {
-        self.cancelBlock = ^{}; // no-op by default
+        _cancelBlock = ^{}; // no-op by default
     }
     return self;
 }

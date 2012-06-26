@@ -57,18 +57,18 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                                      name:DMReachabilityChangedNotification
                                                    object:nil];
 
-        self.APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
-        self._uploadNetworkQueue = [[DMNetworking alloc] init];
-        self._uploadNetworkQueue.maxConcurrency = 1;
-        self._uploadNetworkQueue.userAgent = self.userAgent;
-        self._callQueue = [[DMAPICallQueue alloc] init];
-        self.oauth = [[DMOAuthClient alloc] init];
-        self.oauth.networkQueue.userAgent = self.userAgent;
+        _APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
+        __uploadNetworkQueue = [[DMNetworking alloc] init];
+        __uploadNetworkQueue.maxConcurrency = 1;
+        __uploadNetworkQueue.userAgent = self.userAgent;
+        __callQueue = [[DMAPICallQueue alloc] init];
+        _oauth = [[DMOAuthClient alloc] init];
+        _oauth.networkQueue.userAgent = self.userAgent;
         self.timeout = 15;
-        self._autoConcurrency = NO;
+        __autoConcurrency = NO;
         _maxConcurrency = 2; // TODO handle auto setup / network type
         _maxAggregatedCallCount = kDMHardMaxCallsPerRequest;
-        self._runningRequestCount = 0;
+        __runningRequestCount = 0;
     }
     return self;
 }

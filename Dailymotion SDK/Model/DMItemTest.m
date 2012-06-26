@@ -131,7 +131,7 @@
 
     INIT(1)
 
-    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
@@ -150,7 +150,7 @@
 
     INIT(2)
 
-    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
@@ -162,7 +162,7 @@
     // Prevents from request aggregation, we wan't DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
@@ -183,7 +183,7 @@
 
     INIT(2)
 
-    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:40 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:40 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
@@ -195,7 +195,7 @@
     // Prevents from request aggregation, we wan't DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [videoSearch withItemWithFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");

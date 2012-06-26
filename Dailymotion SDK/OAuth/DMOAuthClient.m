@@ -58,13 +58,13 @@ static char callbackKey;
 {
     if ((self = [super init]))
     {
-        self.oAuthAuthorizationEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"];
-        self.oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];
-        self.networkQueue = [[DMNetworking alloc] init];
-        self.requestQueue = [[NSOperationQueue alloc] init];
-        self.requestQueue.name = @"DMOauth Request Queue";
-        self._sessionLoaded = NO;
-        self.autoSaveSession = YES;
+        _oAuthAuthorizationEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"];
+        _oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];
+        _networkQueue = [[DMNetworking alloc] init];
+        _requestQueue = [[NSOperationQueue alloc] init];
+        _requestQueue.name = @"DMOauth Request Queue";
+        __sessionLoaded = NO;
+        _autoSaveSession = YES;
     }
     return self;
 }

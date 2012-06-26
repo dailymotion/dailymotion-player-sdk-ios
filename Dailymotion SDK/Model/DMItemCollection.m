@@ -80,6 +80,7 @@ static NSCache *itemCollectionInstancesCache;
                                              params:params
                                                path:[NSString stringWithFormat:@"/%@", [type stringByApplyingPluralForm]]
                                             fromAPI:api];
+        [itemCollectionInstancesCache setObject:itemCollection forKey:cacheKey];
     }
 
     return itemCollection;
@@ -104,14 +105,14 @@ static NSCache *itemCollectionInstancesCache;
 {
     if ((self = [super init]))
     {
-        self.type = type;
-        self.params = params;
-        self.pageSize = 25;
-        self.currentEstimatedTotalItemsCount = 0;
-        self._api = api;
-        self._path = path;
-        self._cache = [NSMutableArray array];
-        self._runningRequests = [NSMutableDictionary dictionary];
+        _type = type;
+        _params = params;
+        _pageSize = 25;
+        _currentEstimatedTotalItemsCount = 0;
+        __api = api;
+        __path = path;
+        __cache = [NSMutableArray array];
+        __runningRequests = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -132,20 +133,21 @@ static NSCache *itemCollectionInstancesCache;
 
     // Check the cache contains the end of list marker, and if this marker is not before the requested page
     NSUInteger lastItemIndex = [self._cache indexOfObject:DMEndOfList];
-    NSUInteger firstPageIndex = (page - 1) * itemsPerPage - 1;
-    NSUInteger lastPageIndex = firstPageIndex + itemsPerPage;
-    if (lastItemIndex != NSNotFound && lastItemIndex <= firstPageIndex)
+    NSUInteger pageFirstIndex = (page - 1) * itemsPerPage;
+    NSUInteger pageLastIndex = pageFirstIndex + itemsPerPage;
+    if (lastItemIndex != NSNotFound && lastItemIndex <= pageFirstIndex)
     {
         cacheValid = NO;
     }
 
     // Check if all items are loaded
+    // TODO: find a way to not have to execute this each time
     if (cacheValid)
     {
-        more = lastItemIndex == NSNotFound || lastItemIndex > lastPageIndex;
+        more = lastItemIndex == NSNotFound || lastItemIndex > pageLastIndex;
         // If the end of list marker is in this page, shrink the range to match the number or remaining pages
-        NSUInteger length = !more ? lastItemIndex - firstPageIndex - 1 : itemsPerPage;
-        NSArray *cachedItemIds = [self._cache objectsInRange:NSMakeRange(page, length) notFoundMarker:null];
+        NSUInteger length = !more ? lastItemIndex - pageFirstIndex : itemsPerPage;
+        NSArray *cachedItemIds = [self._cache objectsInRange:NSMakeRange(pageFirstIndex, length) notFoundMarker:null];
         DMItem *item;
 
         for (id itemId in cachedItemIds)
@@ -276,15 +278,7 @@ static NSCache *itemCollectionInstancesCache;
         }
 
         bself.cacheInfo = cacheInfo;
-        if (result[@"total"])
-        {
-            bself._total = [result[@"total"] intValue];
-            bself.currentEstimatedTotalItemsCount = bself._total;
-        }
-        else
-        {
-            bself._total = -1;
-        }
+        bself._total = result[@"total"] ? [result[@"total"] intValue] : -1;
         BOOL more = [result[@"has_more"] boolValue];
         NSMutableArray *ids = [NSMutableArray arrayWithCapacity:itemsPerPage];
         NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsPerPage];
@@ -299,14 +293,14 @@ static NSCache *itemCollectionInstancesCache;
             [ids addObject:itemData[@"id"]];
         }
 
-        [bself._cache replaceObjectsInRange:NSMakeRange(page, [ids count]) withObjectsFromArray:ids fillWithObject:[NSNull null]];
+        [bself._cache replaceObjectsInRange:NSMakeRange((page - 1) * itemsPerPage, [ids count]) withObjectsFromArray:ids fillWithObject:[NSNull null]];
 
         if (!more)
         {
             // Add an end-of-list marker
             NSUInteger lastCacheIndex = [bself._cache count] - 1;
             NSUInteger eolIndex = (page - 1) * itemsPerPage + [ids count];
-            bself.currentEstimatedTotalItemsCount = eolIndex;
+            bself._total = eolIndex;
             if (lastCacheIndex == eolIndex - 1)
             {
                 [bself._cache addObject:DMEndOfList];
@@ -330,24 +324,37 @@ static NSCache *itemCollectionInstancesCache;
             if (page > 1)
             {
                 // Handle when actual list raised by more than one page compared to cache
-                [bself._cache removeObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)];
+                NSUInteger oelIndex;
+                while ((oelIndex = [bself._cache indexOfObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)]) != NSNotFound)
+                {
+                    bself._cache[oelIndex] = [NSNull null];
+                }
             }
+        }
 
-            if (!result[@"total"])
+        NSUInteger maxEstimatedItemsCount = bself.pageSize * 100;
+        if (bself._total == -1)
+        {
+            // If server didn't returned an estimated total and we don't know the current list boundary,
+            // set the estimated total to current cache size + one page. It won't be accurate for the
+            // majority of the case, but this value isn't to be shown to the end user, only to help building
+            // the UI.
+            NSUInteger fakedTotal = MIN([bself._cache count] + bself.pageSize, maxEstimatedItemsCount);
+            if (bself.currentEstimatedTotalItemsCount != fakedTotal)
             {
-                // If server didn't returned an estimated total and we don't know the current list boundary,
-                // set the estimated total to current cache size + one page. It won't be accurate for the
-                // majority of the case, but this value isn't to be shown to the end user, only to help building
-                // the UI.
-                bself.currentEstimatedTotalItemsCount = [bself._cache count] + bself.pageSize;
+                bself.currentEstimatedTotalItemsCount = fakedTotal;
             }
+        }
+        else if (bself.currentEstimatedTotalItemsCount != MIN((NSUInteger)bself._total, maxEstimatedItemsCount))
+        {
+            bself.currentEstimatedTotalItemsCount = MIN(bself._total, maxEstimatedItemsCount);
         }
 
         callback(items, more, bself._total, NO, nil);
     }];
 }
 
-- (DMItemOperation *)withItemWithFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
+- (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
     NSUInteger pageSize = self.pageSize;
     NSUInteger page = floorf(index / self.pageSize) + 1;

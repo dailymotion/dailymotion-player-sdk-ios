@@ -67,7 +67,7 @@
  *
  * @return A DMItemOperation instance able to cancel the request.
  */
-- (DMItemOperation *)withItemWithFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
+- (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
 
 /**
  * Flush all previously loaded cache for this collection (won't flush items cache data)
