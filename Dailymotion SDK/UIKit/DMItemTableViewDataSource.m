@@ -51,6 +51,7 @@
     [cell.operation cancel];
     [cell prepareForLoading];
 
+    __weak DMItemTableViewDataSource *bself = self;
     cell.operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         __strong UITableViewCell <DMItemTableViewCell> *scell = cell;
@@ -60,7 +61,8 @@
 
             if (error)
             {
-                // TODO
+                bself.lastError = error;
+                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
             }
             else
             {

@@ -10,10 +10,12 @@
 #import "DMItemCollection.h"
 
 static NSString *const DMItemTableViewDataSourceUpdatedNotification = @"DMItemTableViewDataSourceUpdatedNotification";
+static NSString *const DMItemTableViewDataSourceErrorNotification = @"DMItemTableViewDataSourceErrorNotification";
 
 @interface DMItemTableViewDataSource : NSObject <UITableViewDataSource>
 
 @property (nonatomic, copy) NSString *cellIdentifier;
 @property (nonatomic, strong) DMItemCollection *itemCollection;
+@property (nonatomic, strong) NSError *lastError;
 
 @end
