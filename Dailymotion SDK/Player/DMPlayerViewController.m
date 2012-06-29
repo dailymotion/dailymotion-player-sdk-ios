@@ -16,24 +16,19 @@
 @property (nonatomic, readwrite) BOOL paused;
 @property (nonatomic, readwrite) BOOL ended;
 @property (nonatomic, readwrite) NSError *error;
-@property (nonatomic, strong) NSString *_video;
+@property (nonatomic, assign) BOOL _inited;
 @property (nonatomic, strong) NSDictionary *_params;
 
 @end
 
 
 @implementation DMPlayerViewController
-{
-    BOOL _fullscreen;
-    float _currentTime;
-}
 
-- (id)initWithVideo:(NSString *)video params:(NSDictionary *)params
+- (id)init
 {
     if ((self = [super init]))
     {
-        __video = video;
-        __params = params;
+        __params = @{};
 
         _autoplay = [self._params[@"autoplay"] boolValue] == YES;
         _currentTime = 0;
@@ -46,6 +41,25 @@
         _volume = 1;
         _paused = true;
         _fullscreen = false;
+        _webBaseURLString = @"http://www.dailymotion.com";
+    }
+    return self;
+}
+
+- (id)initWithParams:(NSDictionary *)params
+{
+    if ((self = [self initWithParams:params]))
+    {
+        __params = params;
+    }
+    return self;
+}
+
+- (id)initWithVideo:(NSString *)video params:(NSDictionary *)params
+{
+    if ((self = [self initWithParams:params]))
+    {
+        [self load:video];
     }
     return self;
 }
@@ -55,8 +69,11 @@
     return [self initWithVideo:aVideo params:nil];
 }
 
-- (void)loadView
+- (void)initPlayerWithVideo:(NSString *)video
 {
+    if (self._inited) return;
+    self._inited = YES;
+
     UIWebView *webview = [[UIWebView alloc] init];
     webview.delegate = self;
 
@@ -66,7 +83,14 @@
 
     // Allows autoplay (iOS 4+)
     if ([webview respondsToSelector:@selector(setMediaPlaybackRequiresUserAction:)])
+    {
         webview.mediaPlaybackRequiresUserAction = NO;
+    }
+
+    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)])
+    {
+        webview.allowsInlineMediaPlayback = YES;
+    }
 
     // Autoresize by default
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -83,7 +107,7 @@
     }
 
 
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, self._video];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
     for (NSString *param in [self._params keyEnumerator])
     {
         id value = self._params[param];
@@ -199,20 +223,12 @@
     return YES;
 }
 
-- (BOOL)fullscreen
-{
-    return _fullscreen;
-}
 - (void)setFullscreen:(BOOL)newFullscreen
 {
     [self api:@"fullscreen" arg:newFullscreen ? @"1" : @"0"];
     _fullscreen = newFullscreen;
 }
 
-- (float)currentTime
-{
-    return _currentTime;
-}
 - (void)setCurrentTime:(float)newTime
 {
     [self api:@"seek" arg:[NSString stringWithFormat:@"%f", newTime]];
@@ -236,12 +252,25 @@
 
 - (void)load:(NSString *)aVideo
 {
-    [self api:@"load" arg:aVideo];
+    if (!aVideo)
+    {
+        NSLog(@"Called DMPlayerViewController load: with a nil video id");
+        return;
+    }
+    if (self._inited)
+    {
+        [self api:@"load" arg:aVideo];
+    }
+    else
+    {
+        [self initPlayerWithVideo:aVideo];
+    }
 }
 
 
 - (void)api:(NSString *)method arg:(NSString *)arg
 {
+    if (!self._inited) return;
     if (!method) return;
     UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];

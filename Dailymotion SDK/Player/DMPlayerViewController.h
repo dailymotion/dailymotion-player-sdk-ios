@@ -61,21 +61,22 @@
 /**
  * Determines whether the audio content should be muted. Set this value to mute/unmute the sound.
  */
-@property (assign) BOOL muted;
+@property (nonatomic, assign) BOOL muted;
 /**
  * The volume of the video between 0 and 1.
  */
-@property (assign) float volume;
+@property (nonatomic, assign) float volume;
 /**
  * Indicates whether the video is displayed fullscreen.
  */
-@property (assign) BOOL fullscreen;
+@property (nonatomic, assign) BOOL fullscreen;
 /**
  * The last error that occurend for this player.
  */
 @property (nonatomic, readonly) NSError *error;
 
 
+- (id)initWithParams:(NSDictionary *)params;
 - (id)initWithVideo:(NSString *)aVideo;
 - (id)initWithVideo:(NSString *)aVideo params:(NSDictionary *)someParams;
 
