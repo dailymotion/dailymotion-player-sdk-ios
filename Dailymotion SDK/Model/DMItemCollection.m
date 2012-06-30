@@ -290,7 +290,6 @@ static NSCache *itemCollectionInstancesCache;
             return;
         }
 
-        bself.cacheInfo = cacheInfo;
         bself._total = result[@"total"] ? [result[@"total"] intValue] : -1;
         BOOL more = [result[@"has_more"] boolValue];
         NSMutableArray *ids = [NSMutableArray arrayWithCapacity:itemsPerPage];
@@ -308,6 +307,13 @@ static NSCache *itemCollectionInstancesCache;
 
         @synchronized(bself._cache)
         {
+            if (cacheInfo.etag && bself.cacheInfo.etag && ![cacheInfo.etag isEqualToString:bself.cacheInfo.etag])
+            {
+                // The etag as changed, clear all previously cached pages
+                [bself._cache removeAllObjects];
+            }
+            bself.cacheInfo = cacheInfo;
+
             [bself._cache replaceObjectsInRange:NSMakeRange((page - 1) * itemsPerPage, [ids count]) withObjectsFromArray:ids fillWithObject:[NSNull null]];
 
             if (!more)
