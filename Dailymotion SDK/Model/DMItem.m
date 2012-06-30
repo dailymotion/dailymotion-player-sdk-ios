@@ -37,6 +37,13 @@ static NSCache *itemInstancesCache;
 {
     itemInstancesCache = [[NSCache alloc] init];
     itemInstancesCache.countLimit = 500;
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
+                                                      object:nil
+                                                       queue:nil usingBlock:^(NSNotification *note)
+    {
+        [itemInstancesCache removeAllObjects];
+    }];
 }
 
 + (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api

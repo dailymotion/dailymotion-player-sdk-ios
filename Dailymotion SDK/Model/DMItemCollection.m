@@ -68,6 +68,13 @@ static NSCache *itemCollectionInstancesCache;
 {
     itemCollectionInstancesCache = [[NSCache alloc] init];
     itemCollectionInstancesCache.countLimit = 10;
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
+                                                      object:nil
+                                                       queue:nil usingBlock:^(NSNotification *note)
+    {
+        [itemCollectionInstancesCache removeAllObjects];
+    }];
 }
 
 + (DMItemCollection *)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api
@@ -131,61 +138,64 @@ static NSCache *itemCollectionInstancesCache;
     BOOL more = NO;
     NSMutableArray *items = [NSMutableArray array];
 
-    // Check the cache contains the end of list marker, and if this marker is not before the requested page
-    NSUInteger lastItemIndex = [self._cache indexOfObject:DMEndOfList];
-    NSUInteger pageFirstIndex = (page - 1) * itemsPerPage;
-    NSUInteger pageLastIndex = pageFirstIndex + itemsPerPage;
-    if (lastItemIndex != NSNotFound && lastItemIndex <= pageFirstIndex)
+    @synchronized(self._cache)
     {
-        cacheValid = NO;
-    }
-
-    // Check if all items are loaded
-    // TODO: find a way to not have to execute this each time
-    if (cacheValid)
-    {
-        more = lastItemIndex == NSNotFound || lastItemIndex > pageLastIndex;
-        // If the end of list marker is in this page, shrink the range to match the number or remaining pages
-        NSUInteger length = !more ? lastItemIndex - pageFirstIndex : itemsPerPage;
-        NSArray *cachedItemIds = [self._cache objectsInRange:NSMakeRange(pageFirstIndex, length) notFoundMarker:null];
-        DMItem *item;
-
-        for (id itemId in cachedItemIds)
+        // Check the cache contains the end of list marker, and if this marker is not before the requested page
+        NSUInteger lastItemIndex = [self._cache indexOfObject:DMEndOfList];
+        NSUInteger pageFirstIndex = (page - 1) * itemsPerPage;
+        NSUInteger pageLastIndex = pageFirstIndex + itemsPerPage;
+        if (lastItemIndex != NSNotFound && lastItemIndex <= pageFirstIndex)
         {
-            if (itemId == null)
+            cacheValid = NO;
+        }
+
+        // Check if all items are loaded
+        // TODO: find a way to not have to execute this each time
+        if (cacheValid)
+        {
+            more = lastItemIndex == NSNotFound || lastItemIndex > pageLastIndex;
+            // If the end of list marker is in this page, shrink the range to match the number or remaining pages
+            NSUInteger length = !more ? lastItemIndex - pageFirstIndex : itemsPerPage;
+            NSArray *cachedItemIds = [self._cache objectsInRange:NSMakeRange(pageFirstIndex, length) notFoundMarker:null];
+            DMItem *item;
+
+            for (id itemId in cachedItemIds)
             {
-                cacheValid = NO;
-                break;
-            }
-            else if (itemId == DMEndOfList)
-            {
-                NSAssert(NO, @"Unexpected present of the end-of-list marker");
-            }
-            else
-            {
-                item = [DMItem itemWithType:self.type forId:itemId fromAPI:self._api];
-                if (![item areFieldsCached:fields])
+                if (itemId == null)
                 {
-                    items = nil;
                     cacheValid = NO;
                     break;
                 }
-                if (item.cacheInfo.stalled)
+                else if (itemId == DMEndOfList)
                 {
-                    cacheStalled = YES;
+                    NSAssert(NO, @"Unexpected presence of the end-of-list marker");
                 }
-                [items addObject:item];
+                else
+                {
+                    item = [DMItem itemWithType:self.type forId:itemId fromAPI:self._api];
+                    if (![item areFieldsCached:fields])
+                    {
+                        items = nil;
+                        cacheValid = NO;
+                        break;
+                    }
+                    if (item.cacheInfo.stalled)
+                    {
+                        cacheStalled = YES;
+                    }
+                    [items addObject:item];
+                }
             }
+    #ifdef DEBUG
+            NSLog(@"CACHE-HIT %@: page:%d, itemsPerPage: %d, lastIndexItem: %d, firstPageIndex: %d, lastPageIndex: %d, length: %d, more: %@",
+                  self._path, page, itemsPerPage, lastItemIndex != NSNotFound ? lastItemIndex : -1, firstPageIndex, lastPageIndex, length, more);
         }
-#ifdef DEBUG
-        NSLog(@"CACHE-HIT %@: page:%d, itemsPerPage: %d, lastIndexItem: %d, firstPageIndex: %d, lastPageIndex: %d, length: %d, more: %@",
-              self._path, page, itemsPerPage, lastItemIndex != NSNotFound ? lastItemIndex : -1, firstPageIndex, lastPageIndex, length, more);
-    }
-    else
-    {
-        NSLog(@"CACHE-MISS %@: page:%d, itemsPerPage: %d, lastIndexItem: %d, firstPageIndex: %d, lastPageIndex: %d",
-              self._path, page, itemsPerPage, lastItemIndex != NSNotFound ? lastItemIndex : -1, firstPageIndex, lastPageIndex);
-#endif
+        else
+        {
+            NSLog(@"CACHE-MISS %@: page:%d, itemsPerPage: %d, lastIndexItem: %d, firstPageIndex: %d, lastPageIndex: %d",
+                  self._path, page, itemsPerPage, lastItemIndex != NSNotFound ? lastItemIndex : -1, firstPageIndex, lastPageIndex);
+    #endif
+        }
     }
 
     if (cacheValid)
@@ -197,54 +207,57 @@ static NSCache *itemCollectionInstancesCache;
     {
         // Handle situation when several requests with exactly same page/pageSize configuration are performed
         // in parallele, ensure we only execute the request once and calls all callbacks at once once completed
-        NSString *requestKey = [NSString stringWithFormat:@"%d:%d", page, itemsPerPage];
-        NSMutableDictionary *requestInfo = self._runningRequests[requestKey];
-        __weak DMItemCollection *bself = self;
-        if (!requestInfo)
+        @synchronized(self._runningRequests)
         {
-            requestInfo = [NSMutableDictionary dictionary];
-            requestInfo[@"callbacks"] = [NSMutableArray arrayWithObject:callback];
-            requestInfo[@"operations"] = [NSMutableArray arrayWithObject:operation];
-            requestInfo[@"cleanupBlock"] = ^
+            NSString *requestKey = [NSString stringWithFormat:@"%d:%d", page, itemsPerPage];
+            NSMutableDictionary *requestInfo = self._runningRequests[requestKey];
+            __weak DMItemCollection *bself = self;
+            if (!requestInfo)
             {
-                NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
-                for (DMItemOperation *op in (NSMutableArray *)_requestInfo[@"operations"])
+                requestInfo = [NSMutableDictionary dictionary];
+                requestInfo[@"callbacks"] = [NSMutableArray arrayWithObject:callback];
+                requestInfo[@"operations"] = [NSMutableArray arrayWithObject:operation];
+                requestInfo[@"cleanupBlock"] = ^
                 {
-                    // prevent retain cycles
-                    op.cancelBlock = ^{};
-                }
-                [_requestInfo removeAllObjects];
-                [bself._runningRequests removeObjectForKey:requestKey];
-            };
-            requestInfo[@"apiCall"] = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:^(NSArray *_items, BOOL _more, NSInteger _total, BOOL _stalled, NSError *_error)
-            {
-                NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
-                void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
-                for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
+                    NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                    for (DMItemOperation *op in (NSMutableArray *)_requestInfo[@"operations"])
+                    {
+                        // prevent retain cycles
+                        op.cancelBlock = ^{};
+                    }
+                    [_requestInfo removeAllObjects];
+                    [bself._runningRequests removeObjectForKey:requestKey];
+                };
+                requestInfo[@"apiCall"] = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:^(NSArray *_items, BOOL _more, NSInteger _total, BOOL _stalled, NSError *_error)
                 {
-                    cb(_items, _more, _total, _stalled, _error);
-                }
-                ((void (^)())_requestInfo[@"cleanupBlock"])();
-            }];
-            self._runningRequests[requestKey] = requestInfo;
-        }
-        else
-        {
-            [(NSMutableArray *)requestInfo[@"callbacks"] addObject:callback];
-            [(NSMutableArray *)requestInfo[@"operations"] addObject:operation];
-        }
-
-        operation.cancelBlock = ^
-        {
-            NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
-            NSMutableArray *callbacks = _requestInfo[@"callbacks"];
-            [callbacks removeObject:callback];
-            if (callbacks.count == 0)
-            {
-                [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
-                ((void (^)())_requestInfo[@"cleanupBlock"])();
+                    NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                    void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
+                    for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
+                    {
+                        cb(_items, _more, _total, _stalled, _error);
+                    }
+                    ((void (^)())_requestInfo[@"cleanupBlock"])();
+                }];
+                self._runningRequests[requestKey] = requestInfo;
             }
-        };
+            else
+            {
+                [(NSMutableArray *)requestInfo[@"callbacks"] addObject:callback];
+                [(NSMutableArray *)requestInfo[@"operations"] addObject:operation];
+            }
+
+            operation.cancelBlock = ^
+            {
+                NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                NSMutableArray *callbacks = _requestInfo[@"callbacks"];
+                [callbacks removeObject:callback];
+                if (callbacks.count == 0)
+                {
+                    [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
+                    ((void (^)())_requestInfo[@"cleanupBlock"])();
+                }
+            };
+        }
     }
 
     return operation;
@@ -293,61 +306,64 @@ static NSCache *itemCollectionInstancesCache;
             [ids addObject:itemData[@"id"]];
         }
 
-        [bself._cache replaceObjectsInRange:NSMakeRange((page - 1) * itemsPerPage, [ids count]) withObjectsFromArray:ids fillWithObject:[NSNull null]];
-
-        if (!more)
+        @synchronized(bself._cache)
         {
-            // Add an end-of-list marker
-            NSUInteger lastCacheIndex = [bself._cache count] - 1;
-            NSUInteger eolIndex = (page - 1) * itemsPerPage + [ids count];
-            bself._total = eolIndex;
-            if (lastCacheIndex == eolIndex - 1)
+            [bself._cache replaceObjectsInRange:NSMakeRange((page - 1) * itemsPerPage, [ids count]) withObjectsFromArray:ids fillWithObject:[NSNull null]];
+
+            if (!more)
             {
-                [bself._cache addObject:DMEndOfList];
-            }
-            else if (lastCacheIndex < eolIndex - 1)
-            {
-                // Cache was smaller than new actual size
-                [bself._cache raise:eolIndex withObject:[NSNull null]];
-                [bself._cache addObject:DMEndOfList];
+                // Add an end-of-list marker
+                NSUInteger lastCacheIndex = [bself._cache count] - 1;
+                NSUInteger eolIndex = (page - 1) * itemsPerPage + [ids count];
+                bself._total = eolIndex;
+                if (lastCacheIndex == eolIndex - 1)
+                {
+                    [bself._cache addObject:DMEndOfList];
+                }
+                else if (lastCacheIndex < eolIndex - 1)
+                {
+                    // Cache was smaller than new actual size
+                    [bself._cache raise:eolIndex withObject:[NSNull null]];
+                    [bself._cache addObject:DMEndOfList];
+                }
+                else
+                {
+                    // Cache was larger than new actual size
+                    bself._cache[eolIndex] = DMEndOfList;
+                    // Shrink the cache to the new size
+                    [bself._cache shrink:eolIndex + 1];
+                }
             }
             else
             {
-                // Cache was larger than new actual size
-                bself._cache[eolIndex] = DMEndOfList;
-                // Shrink the cache to the new size
-                [bself._cache shrink:eolIndex + 1];
-            }
-        }
-        else
-        {
-            if (page > 1)
-            {
-                // Handle when actual list raised by more than one page compared to cache
-                NSUInteger oelIndex;
-                while ((oelIndex = [bself._cache indexOfObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)]) != NSNotFound)
+                if (page > 1)
                 {
-                    bself._cache[oelIndex] = [NSNull null];
+                    // Handle when actual list raised by more than one page compared to cache
+                    NSUInteger oelIndex;
+                    while ((oelIndex = [bself._cache indexOfObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)]) != NSNotFound)
+                    {
+                        bself._cache[oelIndex] = [NSNull null];
+                    }
                 }
             }
-        }
 
-        NSUInteger maxEstimatedItemsCount = bself.pageSize * 100;
-        if (bself._total == -1)
-        {
-            // If server didn't returned an estimated total and we don't know the current list boundary,
-            // set the estimated total to current cache size + one page. It won't be accurate for the
-            // majority of the case, but this value isn't to be shown to the end user, only to help building
-            // the UI.
-            NSUInteger fakedTotal = MIN([bself._cache count] + bself.pageSize, maxEstimatedItemsCount);
-            if (bself.currentEstimatedTotalItemsCount != fakedTotal)
+            NSUInteger maxEstimatedItemsCount = bself.pageSize * 100;
+            if (bself._total == -1)
             {
-                bself.currentEstimatedTotalItemsCount = fakedTotal;
+                // If server didn't returned an estimated total and we don't know the current list boundary,
+                // set the estimated total to current cache size + one page. It won't be accurate for the
+                // majority of the case, but this value isn't to be shown to the end user, only to help building
+                // the UI.
+                NSUInteger fakedTotal = MIN([bself._cache count] + bself.pageSize, maxEstimatedItemsCount);
+                if (bself.currentEstimatedTotalItemsCount != fakedTotal)
+                {
+                    bself.currentEstimatedTotalItemsCount = fakedTotal;
+                }
             }
-        }
-        else if (bself.currentEstimatedTotalItemsCount != MIN((NSUInteger)bself._total, maxEstimatedItemsCount))
-        {
-            bself.currentEstimatedTotalItemsCount = MIN(bself._total, maxEstimatedItemsCount);
+            else if (bself.currentEstimatedTotalItemsCount != MIN((NSUInteger)bself._total, maxEstimatedItemsCount))
+            {
+                bself.currentEstimatedTotalItemsCount = MIN(bself._total, maxEstimatedItemsCount);
+            }
         }
 
         callback(items, more, bself._total, NO, nil);
@@ -384,7 +400,10 @@ static NSCache *itemCollectionInstancesCache;
 
 - (void)flushCache
 {
-    [self._cache removeAllObjects];
+    @synchronized(self._cache)
+    {
+        [self._cache removeAllObjects];
+    }
 }
 
 @end
