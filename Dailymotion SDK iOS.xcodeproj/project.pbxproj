@@ -43,6 +43,7 @@
 		539DB6A115992A8D0029B767 /* SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 539DB69F15992A8D0029B767 /* SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		539DB6B615994F5B0029B767 /* DMItemTableViewCellDefaultCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 539DB6B415994F5B0029B767 /* DMItemTableViewCellDefaultCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		539DB6B715994F5B0029B767 /* DMItemTableViewCellDefaultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */; };
+		53CAED1D15A26225007CE81B /* DMAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CAED1C15A26225007CE81B /* DMAdditionsTest.m */; };
 		53E270FD126369C100B541BE /* DMAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* DMAPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E270FE126369C100B541BE /* DMAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* DMAPI.m */; };
 		53E273C91265C23E00B541BE /* DMAPITest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E273C81265C23E00B541BE /* DMAPITest.m */; };
@@ -111,6 +112,8 @@
 		539DB69F15992A8D0029B767 /* SDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDK.h; sourceTree = "<group>"; };
 		539DB6B415994F5B0029B767 /* DMItemTableViewCellDefaultCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewCellDefaultCell.h; sourceTree = "<group>"; };
 		539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemTableViewCellDefaultCell.m; sourceTree = "<group>"; };
+		53CAED1B15A26225007CE81B /* DMAdditionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DMAdditionsTest.h; path = Utils/DMAdditionsTest.h; sourceTree = "<group>"; };
+		53CAED1C15A26225007CE81B /* DMAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMAdditionsTest.m; path = Utils/DMAdditionsTest.m; sourceTree = "<group>"; };
 		53E270FB126369C100B541BE /* DMAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPI.h; sourceTree = "<group>"; };
 		53E270FC126369C100B541BE /* DMAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPI.m; sourceTree = "<group>"; };
 		53E273561265BD1C00B541BE /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -312,6 +315,8 @@
 				531A63171585670D00EB269B /* DMOAuthSessionTest.m */,
 				531580D3158A94B500F25C7D /* DMItemTest.h */,
 				531580D4158A94B600F25C7D /* DMItemTest.m */,
+				53CAED1B15A26225007CE81B /* DMAdditionsTest.h */,
+				53CAED1C15A26225007CE81B /* DMAdditionsTest.m */,
 			);
 			name = Tests;
 			path = "Dailymotion SDK";
@@ -453,6 +458,7 @@
 				53E273C91265C23E00B541BE /* DMAPITest.m in Sources */,
 				531A63181585670D00EB269B /* DMOAuthSessionTest.m in Sources */,
 				531580D5158A94B600F25C7D /* DMItemTest.m in Sources */,
+				53CAED1D15A26225007CE81B /* DMAdditionsTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

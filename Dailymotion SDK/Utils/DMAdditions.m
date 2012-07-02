@@ -86,6 +86,7 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
 
 - (void)shrink:(NSUInteger)newSize
 {
+    if (newSize >= [self count]) return;
     [self removeObjectsInRange:NSMakeRange(newSize, [self count] - newSize)];
 }
 
