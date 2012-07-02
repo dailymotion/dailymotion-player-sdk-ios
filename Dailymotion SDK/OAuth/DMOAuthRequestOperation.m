@@ -98,12 +98,13 @@
 
 - (void)cancelWithError:(NSError *)error
 {
+    if (self.isFinished) return;
+    [self cancel];
     if (self.completionHandler)
     {
         self.completionHandler(nil, nil, error);
         self.completionHandler = nil;
     }
-    [self cancel];
 }
 
 - (void)cancel

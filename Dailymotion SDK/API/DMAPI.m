@@ -36,7 +36,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 @property (nonatomic, strong) DMNetworking *_uploadNetworkQueue;
 @property (nonatomic, strong) DMAPICallQueue *_callQueue;
 @property (nonatomic, assign) BOOL _autoConcurrency;
-@property (nonatomic, assign) NSUInteger _runningRequestCount;
 
 @end
 
@@ -62,13 +61,13 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         __uploadNetworkQueue.maxConcurrency = 1;
         __uploadNetworkQueue.userAgent = self.userAgent;
         __callQueue = [[DMAPICallQueue alloc] init];
+        [__callQueue addObserver:self forKeyPath:@"count" options:0 context:NULL];
         _oauth = [[DMOAuthClient alloc] init];
         _oauth.networkQueue.userAgent = self.userAgent;
         self.timeout = 15;
         __autoConcurrency = NO;
         _maxConcurrency = 2; // TODO handle auto setup / network type
         _maxAggregatedCallCount = kDMHardMaxCallsPerRequest;
-        __runningRequestCount = 0;
     }
     return self;
 }
@@ -78,6 +77,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
     [self._uploadNetworkQueue cancelAllConnections];
+    [__callQueue removeObserver:self forKeyPath:@"count"];
 }
 
 - (void)reachabilityChanged:(DMReachability *)reach
@@ -121,7 +121,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 {
     @synchronized(self)
     {
-        while (self._runningRequestCount < self.maxConcurrency && [self._callQueue hasUnhandledCalls])
+        while ([[self._callQueue handlersOfKind:[DMOAuthRequestOperation class]] count] < self.maxConcurrency && [self._callQueue hasUnhandledCalls])
         {
             NSMutableArray *calls = [[NSMutableArray alloc] init];
             // Process calls in FIFO order
@@ -168,7 +168,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         [callRequestBodies addObject:callRequestBody];
     }
 
-    self._runningRequestCount++;
     DMOAuthRequestOperation *request;
     request = [self.oauth performRequestWithURL:self.APIBaseURL
                                          method:@"POST"
@@ -177,7 +176,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                     cachePolicy:NSURLRequestUseProtocolCachePolicy
                               completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
     {
-        self._runningRequestCount--;
         [self handleAPIResponse:response data:responseData error:connectionError calls:calls];
     }];
 
@@ -450,8 +448,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 - (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
 {
     DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args cacheInfo:cacheInfo callback:callback];
-    [self._callQueue unhandleCall:call];
-    [self scheduleDequeuing];
     return call;
 }
 
@@ -538,6 +534,20 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     return [[DMPlayerViewController alloc] initWithVideo:video];
 }
 #endif
+
+#pragma mark - Events
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"count"] && [object isKindOfClass:[DMAPICallQueue class]])
+    {
+        [self scheduleDequeuing];
+    }
+    else
+    {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
 
 #pragma mark - Utils
 

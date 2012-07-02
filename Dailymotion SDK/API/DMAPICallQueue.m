@@ -36,6 +36,7 @@
 {
     if ((self = [super init]))
     {
+        _count = 0;
         __callNextId = 0;
         __callQueue = [[NSMutableDictionary alloc] init];
         __callHandlers = [[NSMutableDictionary alloc] init];
@@ -70,6 +71,7 @@
 
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
 
+        self.count = [self._callQueue.allValues count];
         return call;
     }
 }
@@ -88,6 +90,7 @@
         [call removeObserver:self forKeyPath:@"isCancelled"];
         [self._callQueue removeObjectForKey:callId];
         [self._callHandlers removeObjectForKey:callId];
+        self.count = [self._callQueue.allValues count];
         return call;
     }
 }
@@ -101,6 +104,7 @@
             [call removeObserver:self forKeyPath:@"isCancelled"];
             [self._callQueue removeObjectForKey:call.callId];
             [self._callHandlers removeObjectForKey:call.callId];
+            self.count = [self._callQueue.allValues count];
             return YES;
         }
         else
@@ -141,6 +145,19 @@
     {
         return self._callHandlers[call.callId];
     }
+}
+
+- (NSSet *)handlersOfKind:(Class)kind
+{
+    NSMutableSet *handlers = [NSMutableSet set];
+    [self._callHandlers.allValues enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+    {
+        if ([obj isKindOfClass:kind])
+        {
+            [handlers addObject:obj];
+        }
+    }];
+    return handlers;
 }
 
 - (BOOL)hasUnhandledCalls
@@ -202,6 +219,10 @@
             // All sibbling calls of the cancelled call batch are cancelled
             // => we can cancel the whole handler
             [handler performSelector:@selector(cancel)];
+            for (DMAPICall *canceledCall in [self callsWithHandler:handler])
+            {
+                [self removeCall:canceledCall];
+            }
         }
         else
         {

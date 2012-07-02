@@ -13,6 +13,8 @@
 
 @interface DMAPICallQueue : NSObject
 
+@property (nonatomic, assign) NSUInteger count;
+
 /**
  * Queue an API call and return a DMAPICall object
  */
@@ -51,6 +53,11 @@
  * Get the handler object for a particular API call if any
  */
 - (id)handlerForCall:(DMAPICall *)call;
+
+/**
+ * Get all handlers with the given kind
+ */
+- (NSSet *)handlersOfKind:(Class)kind;
 
 /**
  * Ask the queue if there is some API call not yet handled
