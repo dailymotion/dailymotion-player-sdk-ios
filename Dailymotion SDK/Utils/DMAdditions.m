@@ -49,7 +49,7 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
     NSMutableArray *objects = [NSMutableArray arrayWithCapacity:range.length];
     NSUInteger count = [self count];
     NSUInteger maxIndex = count - 1;
-    NSUInteger endIndex = MIN(range.location + range.length, maxIndex);
+    NSUInteger endIndex = MIN(range.location + range.length - 1, maxIndex);
 
     for (i = 0; i < range.length; i++)
     {
