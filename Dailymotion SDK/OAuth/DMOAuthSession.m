@@ -166,7 +166,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
         (__bridge id)kSecAttrService: @"Dailymotion",
 
 #if !TARGET_IPHONE_SIMULATOR
-        (__bridge id)kSecAttrAccessGroup: kDMKeychainAccessGroup
+        (__bridge id)kSecAttrAccessGroup: kDMKeychainAccessGroup,
 #endif
 
         // Return the attributes of the first match only:
