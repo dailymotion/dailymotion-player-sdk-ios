@@ -33,7 +33,7 @@ Add headers
 
 - Open the "Build Settings" tab
 - Locate the "Other Linker Flags" setting and add the ``-ObjC`` and ``-all_load`` flags
-- Locate "Header Search Paths" (and not "User Header Search Paths") and add two settings: ``"$(TARGET_BUILD_DIR)/usr/local/lib/include”`` and ``”$(OBJROOT)/UninstalledProducts/include”``. Make sure to include the quotes here.
+- Locate "Header Search Paths" (and not "User Header Search Paths") and add two settings: ``"$(TARGET_BUILD_DIR)/usr/local/lib/include"`` and ``"$(OBJROOT)/UninstalledProducts/include"``. Make sure to include the quotes here and are plain double quote (not typographic quotes).
 
 Import headers in your source files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
