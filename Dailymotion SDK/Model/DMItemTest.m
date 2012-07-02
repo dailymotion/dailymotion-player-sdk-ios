@@ -159,7 +159,7 @@
         DONE
     }];
 
-    // Prevents from request aggregation, we wan't DMItemCollection aggregation
+    // Prevents from request aggregation, we want to test DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
     [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -192,7 +192,7 @@
         DONE
     }];
 
-    // Prevents from request aggregation, we wan't DMItemCollection aggregation
+    // Prevents from request aggregation, we want to test DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
     [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -208,5 +208,68 @@
 
     STAssertEquals(networkRequestCount, 2U, @"Two items from collection NOT within same pages generates two requests");
 }
+
+- (void)testItemsFromCollectionAtIndexWithinSameCachedPageButUncachedItemAreAccumulated
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test3"} fromAPI:api];
+
+    INIT(1)
+
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+
+        // Force this item invalid so next collection request with have to refresh to data
+        [DMItem itemWithType:@"video" forId:data[@"id"] fromAPI:api].cacheInfo.valid = NO;
+        DONE
+    }];
+
+    WAIT
+
+    STAssertEquals(networkRequestCount, 1U, @"One request for the first uncached page");
+
+    REINIT(2)
+
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    // Prevents from request aggregation, we want to test DMItemCollection aggregation
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:1 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    WAIT
+
+    STAssertEquals(networkRequestCount, 1U, @"Refreshes of items contained in the same page of an already cached id list is accumulated");
+
+    REINIT(1)
+
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertNotNil(data[@"id"], @"Got an id field");
+        DONE
+    }];
+
+    WAIT
+
+    STAssertEquals(networkRequestCount, 0U, @"Other objects on the same page are already cached");
+}
+
 
 @end

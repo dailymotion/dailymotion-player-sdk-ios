@@ -211,12 +211,14 @@ static NSCache *itemCollectionInstancesCache;
         {
             NSString *requestKey = [NSString stringWithFormat:@"%d:%d", page, itemsPerPage];
             NSMutableDictionary *requestInfo = self._runningRequests[requestKey];
+            __block void (^bcallback)(NSArray *, BOOL, NSInteger, BOOL, NSError *) = callback;
+            __weak DMItemOperation *boperation = operation;
             __weak DMItemCollection *bself = self;
             if (!requestInfo)
             {
                 requestInfo = [NSMutableDictionary dictionary];
-                requestInfo[@"callbacks"] = [NSMutableArray arrayWithObject:callback];
-                requestInfo[@"operations"] = [NSMutableArray arrayWithObject:operation];
+                requestInfo[@"callbacks"] = [NSMutableArray arrayWithObject:bcallback];
+                requestInfo[@"operations"] = [NSMutableArray arrayWithObject:boperation];
                 requestInfo[@"cleanupBlock"] = ^
                 {
                     NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
@@ -230,31 +232,39 @@ static NSCache *itemCollectionInstancesCache;
                 };
                 requestInfo[@"apiCall"] = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:^(NSArray *_items, BOOL _more, NSInteger _total, BOOL _stalled, NSError *_error)
                 {
-                    NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
-                    void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
-                    for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
+                    @synchronized(bself._runningRequests)
                     {
-                        cb(_items, _more, _total, _stalled, _error);
+                        NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                        void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
+                        for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
+                        {
+                            cb(_items, _more, _total, _stalled, _error);
+                        }
+                        ((void (^)())_requestInfo[@"cleanupBlock"])();
                     }
-                    ((void (^)())_requestInfo[@"cleanupBlock"])();
                 }];
                 self._runningRequests[requestKey] = requestInfo;
             }
             else
             {
-                [(NSMutableArray *)requestInfo[@"callbacks"] addObject:callback];
-                [(NSMutableArray *)requestInfo[@"operations"] addObject:operation];
+                [(NSMutableArray *)requestInfo[@"callbacks"] addObject:bcallback];
+                [(NSMutableArray *)requestInfo[@"operations"] addObject:boperation];
             }
 
             operation.cancelBlock = ^
             {
-                NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
-                NSMutableArray *callbacks = _requestInfo[@"callbacks"];
-                [callbacks removeObject:callback];
-                if (callbacks.count == 0)
+                @synchronized(bself._runningRequests)
                 {
-                    [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
-                    ((void (^)())_requestInfo[@"cleanupBlock"])();
+                    NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                    [(NSMutableArray *)_requestInfo[@"operations"] removeObject:boperation];
+                    boperation.cancelBlock = ^{};
+                    NSMutableArray *callbacks = _requestInfo[@"callbacks"];
+                    [callbacks removeObject:bcallback];
+                    if (callbacks.count == 0)
+                    {
+                        [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
+                        ((void (^)())_requestInfo[@"cleanupBlock"])();
+                    }
                 }
             };
         }
