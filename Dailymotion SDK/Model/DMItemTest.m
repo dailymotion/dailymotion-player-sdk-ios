@@ -143,6 +143,24 @@
     WAIT
 }
 
+- (void)testItemFromCollectionAtOutOfBoundIndex
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
+
+    INIT(1)
+
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:videoSearch.pageSize * 100 - 1 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+     {
+         if (error) NSLog(@"ERROR: %@", error);
+         STAssertNil(error, @"No error");
+         STAssertNil(data, @"No item");
+         DONE
+     }];
+
+    WAIT
+}
+
 - (void)testItemsFromCollectionAtIndexWithinSamePageAreAggregated
 {
     DMAPI *api = self.api;

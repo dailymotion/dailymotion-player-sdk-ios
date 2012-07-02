@@ -400,9 +400,10 @@ static NSCache *itemCollectionInstancesCache;
 
         NSUInteger localIndex = index - ((page - 1) * pageSize);
 
-        if (items[localIndex] == DMEndOfList)
+        if (localIndex >= [items count] || items[localIndex] == DMEndOfList)
         {
             callback(nil, NO, error);
+            return;
         }
 
         DMItem *item = items[localIndex];
