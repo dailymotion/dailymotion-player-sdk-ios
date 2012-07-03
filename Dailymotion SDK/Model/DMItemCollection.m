@@ -388,6 +388,20 @@ static NSCache *itemCollectionInstancesCache;
 
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
+    if (self.cacheInfo && self.cacheInfo.valid && !self.cacheInfo.stalled && index < [self._cache count] && self._cache[index] != DMEndOfList)
+    {
+        DMItem *item = [DMItem itemWithType:self.type forId:self._cache[index] fromAPI:self._api];
+        if (!item.cacheInfo.stalled && [item areFieldsCached:fields])
+        {
+            return [item withFields:fields do:^(NSDictionary *data, BOOL _stalled, NSError *error)
+            {
+                // Shortcut to return fully cached, not stalled items
+                callback(data, NO, error);
+            }];
+        }
+    }
+
+    // If item isn't full cached or list is stalled, bulk load items of the same page
     NSUInteger pageSize = self.pageSize;
     NSUInteger page = floorf(index / self.pageSize) + 1;
     return [self itemsWithFields:fields forPage:page withPageSize:pageSize do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
