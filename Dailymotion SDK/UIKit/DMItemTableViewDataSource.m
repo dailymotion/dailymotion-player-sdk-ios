@@ -7,7 +7,7 @@
 //
 
 #import "DMItemTableViewDataSource.h"
-#import "DMItemTableViewCell.h"
+#import "DMItemDataSourceItem.h"
 #import "objc/runtime.h"
 
 static char operationKey;
@@ -42,9 +42,9 @@ static char operationKey;
     {
         if (!self._loaded)
         {
-            UITableViewCell <DMItemTableViewCell> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+            UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
             NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
-            NSAssert([cell conformsToProtocol:@protocol(DMItemTableViewCell)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
+            NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
 
             [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
             [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
@@ -72,7 +72,7 @@ static char operationKey;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    __weak UITableViewCell <DMItemTableViewCell> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+    __weak UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
 
     DMItemOperation *previousOperation = objc_getAssociatedObject(cell, &operationKey);
     [previousOperation cancel];
@@ -82,7 +82,7 @@ static char operationKey;
     __weak DMItemTableViewDataSource *bself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
-        __strong UITableViewCell <DMItemTableViewCell> *scell = cell;
+        __strong UITableViewCell <DMItemDataSourceItem> *scell = cell;
         if (scell)
         {
             objc_setAssociatedObject(scell, &operationKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

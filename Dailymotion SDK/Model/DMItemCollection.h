@@ -71,6 +71,12 @@
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
 
 /**
+ * Get the index of a given item in the collection. If the given item hasn't been gathered yet or if the item
+ * isn't part of the collection, NSNotFound is returned.
+ */
+- (NSUInteger)indexOfItemWithId:(NSString *)itemId;
+
+/**
  * Flush all previously loaded cache for this collection (won't flush items cache data)
  */
 - (void)flushCache;

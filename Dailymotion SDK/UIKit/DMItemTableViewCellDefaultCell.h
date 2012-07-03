@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DMItemTableViewCell.h"
+#import "DMItemDataSourceItem.h"
 
 /**
  * Example implementation of DMItemTableViewCell protocol.
  */
-@interface DMItemTableViewDefaultCell : UITableViewCell <DMItemTableViewCell>
+@interface DMItemTableViewDefaultCell : UITableViewCell <DMItemDataSourceItem>
 
 - (NSArray *)fieldsNeeded;
 - (void)prepareForLoading;

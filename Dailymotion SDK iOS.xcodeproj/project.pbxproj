@@ -37,7 +37,9 @@
 		531F0EF2126880830089FAE5 /* DMBoundableInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 531F0EF0126880830089FAE5 /* DMBoundableInputStream.m */; };
 		53670FD81598DD6800180094 /* DMItemTableViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 53670FD61598DD6800180094 /* DMItemTableViewDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53670FD91598DD6800180094 /* DMItemTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 53670FD71598DD6800180094 /* DMItemTableViewDataSource.m */; };
-		5367100E15991FFF00180094 /* DMItemTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 5367100C15991FFF00180094 /* DMItemTableViewCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5367100E15991FFF00180094 /* DMItemDataSourceItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5367100C15991FFF00180094 /* DMItemDataSourceItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53706B0115A3280200D29386 /* DMItemPageViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 53706AFF15A3280200D29386 /* DMItemPageViewDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53706B0215A3280200D29386 /* DMItemPageViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 53706B0015A3280200D29386 /* DMItemPageViewDataSource.m */; };
 		5397428615872ED000ABF402 /* DMOAuthRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 5397428415872ED000ABF402 /* DMOAuthRequestOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5397428715872ED000ABF402 /* DMOAuthRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5397428515872ED000ABF402 /* DMOAuthRequestOperation.m */; };
 		539DB6A115992A8D0029B767 /* SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 539DB69F15992A8D0029B767 /* SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -108,7 +110,9 @@
 		533B5E5E1267483D00D3A924 /* DailymotionTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionTestConfig.h; sourceTree = "<group>"; };
 		53670FD61598DD6800180094 /* DMItemTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewDataSource.h; sourceTree = "<group>"; };
 		53670FD71598DD6800180094 /* DMItemTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemTableViewDataSource.m; sourceTree = "<group>"; };
-		5367100C15991FFF00180094 /* DMItemTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewCell.h; sourceTree = "<group>"; };
+		5367100C15991FFF00180094 /* DMItemDataSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemDataSourceItem.h; sourceTree = "<group>"; };
+		53706AFF15A3280200D29386 /* DMItemPageViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemPageViewDataSource.h; sourceTree = "<group>"; };
+		53706B0015A3280200D29386 /* DMItemPageViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemPageViewDataSource.m; sourceTree = "<group>"; };
 		5397428415872ED000ABF402 /* DMOAuthRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthRequestOperation.h; sourceTree = "<group>"; };
 		5397428515872ED000ABF402 /* DMOAuthRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMOAuthRequestOperation.m; sourceTree = "<group>"; };
 		539DB69F15992A8D0029B767 /* SDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDK.h; sourceTree = "<group>"; };
@@ -301,13 +305,31 @@
 		53670FD41598DC6C00180094 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
+				5367100C15991FFF00180094 /* DMItemDataSourceItem.h */,
+				53706AFE15A327BF00D29386 /* UIPageViewController */,
+				53706AFC15A327AE00D29386 /* UITableViewController */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		53706AFC15A327AE00D29386 /* UITableViewController */ = {
+			isa = PBXGroup;
+			children = (
 				53670FD61598DD6800180094 /* DMItemTableViewDataSource.h */,
 				53670FD71598DD6800180094 /* DMItemTableViewDataSource.m */,
-				5367100C15991FFF00180094 /* DMItemTableViewCell.h */,
 				539DB6B415994F5B0029B767 /* DMItemTableViewCellDefaultCell.h */,
 				539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */,
 			);
-			path = UIKit;
+			name = UITableViewController;
+			sourceTree = "<group>";
+		};
+		53706AFE15A327BF00D29386 /* UIPageViewController */ = {
+			isa = PBXGroup;
+			children = (
+				53706AFF15A3280200D29386 /* DMItemPageViewDataSource.h */,
+				53706B0015A3280200D29386 /* DMItemPageViewDataSource.m */,
+			);
+			name = UIPageViewController;
 			sourceTree = "<group>";
 		};
 		53E273741265BD9700B541BE /* Tests */ = {
@@ -356,10 +378,11 @@
 				53E8F697158B67A0000A5BF3 /* DMQueryString.h in Headers */,
 				53E8F6B7158F5EA2000A5BF3 /* DMItemOperation.h in Headers */,
 				53670FD81598DD6800180094 /* DMItemTableViewDataSource.h in Headers */,
-				5367100E15991FFF00180094 /* DMItemTableViewCell.h in Headers */,
+				5367100E15991FFF00180094 /* DMItemDataSourceItem.h in Headers */,
 				539DB6A115992A8D0029B767 /* SDK.h in Headers */,
 				539DB6B615994F5B0029B767 /* DMItemTableViewCellDefaultCell.h in Headers */,
 				53CAED2115A2F422007CE81B /* DMAlert.h in Headers */,
+				53706B0115A3280200D29386 /* DMItemPageViewDataSource.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,6 +518,7 @@
 				53670FD91598DD6800180094 /* DMItemTableViewDataSource.m in Sources */,
 				539DB6B715994F5B0029B767 /* DMItemTableViewCellDefaultCell.m in Sources */,
 				53CAED2215A2F422007CE81B /* DMAlert.m in Sources */,
+				53706B0215A3280200D29386 /* DMItemPageViewDataSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
