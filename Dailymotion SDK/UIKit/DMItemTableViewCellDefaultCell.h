@@ -14,8 +14,6 @@
  */
 @interface DMItemTableViewDefaultCell : UITableViewCell <DMItemTableViewCell>
 
-@property (nonatomic, weak) DMItemOperation *operation;
-
 - (NSArray *)fieldsNeeded;
 - (void)prepareForLoading;
 - (void)setFieldsData:(NSDictionary *)data;

@@ -21,13 +21,28 @@
     if ((self = [super init]))
     {
         _cancelBlock = ^{}; // no-op by default
+        _isCancelled = NO;
+        _isFinished = NO;
     }
     return self;
 }
 
+- (void)setIsFinished:(BOOL)isFinished
+{
+    if (isFinished)
+    {
+        self.cancelBlock = ^{};
+    }
+    _isFinished = isFinished;
+}
+
 - (void)cancel
 {
+    if (self.isFinished) return;
     self.cancelBlock();
+    _cancelBlock = ^{};
+    self.isCancelled = YES;
+    self.isFinished = YES;
 }
 
 @end

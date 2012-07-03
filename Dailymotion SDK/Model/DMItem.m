@@ -171,9 +171,15 @@ static NSCache *itemInstancesCache;
 
                 callback([bself._fieldsCache dictionaryForKeys:fields], NO, nil);
             }
+
+            operation.isFinished = YES;
         }];
 
         operation.cancelBlock = ^{[apiCall cancel];};
+    }
+    else
+    {
+        operation.isFinished = YES;
     }
 
     return operation;

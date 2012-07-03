@@ -18,4 +18,6 @@ static NSString *const DMItemTableViewDataSourceErrorNotification = @"DMItemTabl
 @property (nonatomic, strong) DMItemCollection *itemCollection;
 @property (nonatomic, strong) NSError *lastError;
 
+- (void)cancelAllOperations;
+
 @end

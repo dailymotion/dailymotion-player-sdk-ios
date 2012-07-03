@@ -10,6 +10,9 @@
 
 @interface DMItemOperation : NSObject
 
+@property (nonatomic, assign) BOOL isFinished;
+@property (nonatomic, assign) BOOL isCancelled;
+
 - (void)cancel;
 
 @end

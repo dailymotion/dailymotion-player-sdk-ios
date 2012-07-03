@@ -222,11 +222,6 @@ static NSCache *itemCollectionInstancesCache;
                 requestInfo[@"cleanupBlock"] = ^
                 {
                     NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
-                    for (DMItemOperation *op in (NSMutableArray *)_requestInfo[@"operations"])
-                    {
-                        // prevent retain cycles
-                        op.cancelBlock = ^{};
-                    }
                     [_requestInfo removeAllObjects];
                     [bself._runningRequests removeObjectForKey:requestKey];
                 };
@@ -239,6 +234,10 @@ static NSCache *itemCollectionInstancesCache;
                         for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
                         {
                             cb(_items, _more, _total, _stalled, _error);
+                        }
+                        for (DMItemOperation *op in (NSMutableArray *)_requestInfo[@"operations"])
+                        {
+                            op.isFinished = YES;
                         }
                         ((void (^)())_requestInfo[@"cleanupBlock"])();
                     }
@@ -257,7 +256,6 @@ static NSCache *itemCollectionInstancesCache;
                 {
                     NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
                     [(NSMutableArray *)_requestInfo[@"operations"] removeObject:boperation];
-                    boperation.cancelBlock = ^{};
                     NSMutableArray *callbacks = _requestInfo[@"callbacks"];
                     [callbacks removeObject:bcallback];
                     if (callbacks.count == 0)
@@ -268,6 +266,10 @@ static NSCache *itemCollectionInstancesCache;
                 }
             };
         }
+    }
+    else
+    {
+        operation.isFinished = YES;
     }
 
     return operation;
