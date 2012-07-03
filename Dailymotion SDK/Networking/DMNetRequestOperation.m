@@ -76,7 +76,7 @@
 
 - (void)timeout
 {
-    if (self.isCancelled) return;
+    if (self.isCancelled || self.isFinished) return;
     self._error = [NSError errorWithDomain:NSURLErrorDomain code:-1001 userInfo:@
     {
         NSLocalizedDescriptionKey: @"timed out",
@@ -153,6 +153,8 @@
 - (void)connection:(NSURLConnection*)connection didFailWithError:(NSError *)connectionError
 {
     self._error = connectionError;
+    [self._timeoutTimer invalidate];
+    self._timeoutTimer = nil;
     [self done];
 }
 

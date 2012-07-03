@@ -9,3 +9,4 @@
 #import <DailymotionSDK/DMAPI.h>
 #import <DailymotionSDK/DMItemTableViewDataSource.h>
 #import <DailymotionSDK/DMPlayerViewController.h>
+#import <DailymotionSDK/DMAlert.h>

@@ -24,7 +24,7 @@ static NSCache *itemInstancesCache;
 @property (nonatomic, readwrite, copy) NSString *type;
 @property (nonatomic, readwrite, copy) NSString *itemId;
 @property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
-@property (nonatomic, strong) DMAPI *_api;
+@property (nonatomic, readwrite, strong) DMAPI *api;
 @property (nonatomic, strong) NSString *_path;
 @property (strong) NSMutableDictionary *_fieldsCache;
 
@@ -65,7 +65,7 @@ static NSCache *itemInstancesCache;
     {
         _type = type;
         _itemId = itemId;
-        __api = api;
+        _api = api;
         __path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
         __fieldsCache = [[NSMutableDictionary alloc] init];
     }
@@ -75,7 +75,7 @@ static NSCache *itemInstancesCache;
 
 - (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection withParams:(NSDictionary *)params
 {
-    return [DMItemCollection itemCollectionWithConnection:connection forItem:self withParams:params fromAPI:self._api];
+    return [DMItemCollection itemCollectionWithConnection:connection forItem:self withParams:params fromAPI:self.api];
 }
 
 - (NSString *)description
@@ -145,10 +145,10 @@ static NSCache *itemInstancesCache;
         BOOL conditionalRequest = allFieldsCached && cacheStalled;
 
         __weak DMItem *bself = self;
-        __weak DMAPICall *apiCall = [self._api get:self._path
-                                              args:@{@"fields": fieldsToLoad}
-                                         cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
-                                          callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+        __weak DMAPICall *apiCall = [self.api get:self._path
+                                             args:@{@"fields": fieldsToLoad}
+                                        cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
+                                         callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
         {
             if (!error && bself.cacheInfo.etag && cache.etag && ![bself.cacheInfo.etag isEqualToString:cache.etag])
             {

@@ -45,10 +45,23 @@ static char operationKey;
             UITableViewCell <DMItemTableViewCell> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
             NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
             NSAssert([cell conformsToProtocol:@protocol(DMItemTableViewCell)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
+
             [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
-            DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error){}];
+            [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
+
+            __weak DMItemTableViewDataSource *bself = self;
+            DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+            {
+                if (error)
+                {
+                    bself.lastError = error;
+                    bself._loaded = NO;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                }
+            }];
             self._operations = [NSMutableArray arrayWithObject:operation];
             [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
+
             self._loaded = YES;
         }
         return self.itemCollection.currentEstimatedTotalItemsCount;
@@ -76,11 +89,16 @@ static char operationKey;
 
             if (error)
             {
+                BOOL notify = !bself.lastError; // prevents from error storms
                 bself.lastError = error;
-                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                if (notify)
+                {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                }
             }
             else
             {
+                bself.lastError = nil;
                 [scell setFieldsData:data];
             }
         }
@@ -101,6 +119,19 @@ static char operationKey;
     if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
+    }
+    else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
+    {
+        DMNetworkStatus previousRechabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
+        if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousRechabilityStatus == DMNotReachable)
+        {
+            // Became recheable: notify table view controller that it should reload table data
+            [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
+        }
+        else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousRechabilityStatus != DMNotReachable)
+        {
+            [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceOfflineNotification object:self];
+        }
     }
     else if ([keyPath isEqualToString:@"isFinished"] && [object isKindOfClass:DMItemOperation.class])
     {

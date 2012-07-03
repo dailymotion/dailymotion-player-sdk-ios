@@ -15,6 +15,7 @@
 
 @property (nonatomic, readonly, copy) NSString *type;
 @property (nonatomic, readonly, copy) NSDictionary *params;
+@property (nonatomic, readonly, strong) DMAPI *api;
 @property (nonatomic, readonly, assign) NSUInteger pageSize;
 @property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
 

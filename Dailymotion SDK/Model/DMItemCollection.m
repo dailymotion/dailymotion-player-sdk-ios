@@ -50,10 +50,10 @@ static NSCache *itemCollectionInstancesCache;
 
 @property (nonatomic, readwrite, copy) NSString *type;
 @property (nonatomic, readwrite, copy) NSDictionary *params;
+@property (nonatomic, readwrite, strong) DMAPI *api;
 @property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
 @property (nonatomic, readwrite, assign) NSUInteger pageSize;
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
-@property (nonatomic, strong) DMAPI *_api;
 @property (nonatomic, strong) NSString *_path;
 @property (nonatomic, strong) NSMutableArray *_cache;
 @property (nonatomic, assign) NSInteger _total;
@@ -114,9 +114,9 @@ static NSCache *itemCollectionInstancesCache;
     {
         _type = type;
         _params = params;
+        _api = api;
         _pageSize = 25;
         _currentEstimatedTotalItemsCount = 0;
-        __api = api;
         __path = path;
         __cache = [NSMutableArray array];
         __runningRequests = [NSMutableDictionary dictionary];
@@ -172,7 +172,7 @@ static NSCache *itemCollectionInstancesCache;
                 }
                 else
                 {
-                    item = [DMItem itemWithType:self.type forId:itemId fromAPI:self._api];
+                    item = [DMItem itemWithType:self.type forId:itemId fromAPI:self.api];
                     if (![item areFieldsCached:fields])
                     {
                         items = nil;
@@ -287,7 +287,7 @@ static NSCache *itemCollectionInstancesCache;
 
     __weak DMItemCollection *bself = self;
 
-    return [self._api get:self._path args:params cacheInfo:nil callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
+    return [self.api get:self._path args:params cacheInfo:nil callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
         if (error)
         {
@@ -309,7 +309,7 @@ static NSCache *itemCollectionInstancesCache;
 
         for (NSDictionary *itemData in list)
         {
-            DMItem *item = [DMItem itemWithType:bself.type forId:itemData[@"id"] fromAPI:bself._api];
+            DMItem *item = [DMItem itemWithType:bself.type forId:itemData[@"id"] fromAPI:bself.api];
             // Where we overload the item cache info by list cache info. This is not quite correct as item
             // cache isn't list cache but it shouldn't hurt for 99.9% of the cases.
             [item loadInfo:itemData withCacheInfo:cacheInfo];
@@ -392,7 +392,7 @@ static NSCache *itemCollectionInstancesCache;
 {
     if (self.cacheInfo && self.cacheInfo.valid && !self.cacheInfo.stalled && index < [self._cache count] && self._cache[index] != DMEndOfList)
     {
-        DMItem *item = [DMItem itemWithType:self.type forId:self._cache[index] fromAPI:self._api];
+        DMItem *item = [DMItem itemWithType:self.type forId:self._cache[index] fromAPI:self.api];
         if (!item.cacheInfo.stalled && [item areFieldsCached:fields])
         {
             return [item withFields:fields do:^(NSDictionary *data, BOOL _stalled, NSError *error)

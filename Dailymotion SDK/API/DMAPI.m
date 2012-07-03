@@ -8,7 +8,6 @@
 
 #import "DMAPI.h"
 #import "DMNetworking.h"
-#import "DMReachability.h"
 #import "DMBoundableInputStream.h"
 
 #ifdef __OBJC_GC__
@@ -32,6 +31,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 @interface DMAPI ()
 
+@property (nonatomic, readwrite, assign) DMNetworkStatus currentReachabilityStatus;
 @property (nonatomic, strong) DMReachability *_reach;
 @property (nonatomic, strong) DMNetworking *_uploadNetworkQueue;
 @property (nonatomic, strong) DMAPICallQueue *_callQueue;
@@ -57,6 +57,8 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                                    object:nil];
 
         _APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
+        self._reach = [DMReachability reachabilityWithHostname:_APIBaseURL.host];
+        [self._reach startNotifier];
         __uploadNetworkQueue = [[DMNetworking alloc] init];
         __uploadNetworkQueue.maxConcurrency = 1;
         __uploadNetworkQueue.userAgent = self.userAgent;
@@ -80,8 +82,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     [__callQueue removeObserver:self forKeyPath:@"count"];
 }
 
-- (void)reachabilityChanged:(DMReachability *)reach
+- (void)reachabilityChanged:(NSNotification *)notification
 {
+    DMReachability *reach = notification.object;
     if (self._reach != reach)
     {
         return;
@@ -113,6 +116,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         }
     }
 
+    self.currentReachabilityStatus = self._reach.currentReachabilityStatus;
 }
 
 #pragma mark - API
@@ -191,7 +195,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     {
         NSError *error = [DMAPIError errorWithMessage:connectionError.localizedDescription
                                                domain:DailymotionTransportErrorDomain
-                                                 type:nil
+                                                 type:[NSNumber numberWithInt:connectionError.code]
                                              response:response
                                                  data:responseData];
         [self raiseErrorToCalls:calls error:error];
@@ -470,7 +474,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 {
     if (![[NSFileManager defaultManager] fileExistsAtPath:filePath])
     {
-        callback(nil, [DMAPIError errorWithMessage:@"File does not exists." domain:DailymotionApiErrorDomain type:@"404" response:nil data:nil]);
+        callback(nil, [DMAPIError errorWithMessage:@"File does not exists." domain:DailymotionApiErrorDomain type:@404 response:nil data:nil]);
     }
 
     [self get:@"/file/upload" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)

@@ -44,6 +44,8 @@
 		539DB6B615994F5B0029B767 /* DMItemTableViewCellDefaultCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 539DB6B415994F5B0029B767 /* DMItemTableViewCellDefaultCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		539DB6B715994F5B0029B767 /* DMItemTableViewCellDefaultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */; };
 		53CAED1D15A26225007CE81B /* DMAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CAED1C15A26225007CE81B /* DMAdditionsTest.m */; };
+		53CAED2115A2F422007CE81B /* DMAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CAED1F15A2F422007CE81B /* DMAlert.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53CAED2215A2F422007CE81B /* DMAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 53CAED2015A2F422007CE81B /* DMAlert.m */; };
 		53E270FD126369C100B541BE /* DMAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 53E270FB126369C100B541BE /* DMAPI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53E270FE126369C100B541BE /* DMAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E270FC126369C100B541BE /* DMAPI.m */; };
 		53E273C91265C23E00B541BE /* DMAPITest.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E273C81265C23E00B541BE /* DMAPITest.m */; };
@@ -114,6 +116,8 @@
 		539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemTableViewCellDefaultCell.m; sourceTree = "<group>"; };
 		53CAED1B15A26225007CE81B /* DMAdditionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DMAdditionsTest.h; path = Utils/DMAdditionsTest.h; sourceTree = "<group>"; };
 		53CAED1C15A26225007CE81B /* DMAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DMAdditionsTest.m; path = Utils/DMAdditionsTest.m; sourceTree = "<group>"; };
+		53CAED1F15A2F422007CE81B /* DMAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAlert.h; sourceTree = "<group>"; };
+		53CAED2015A2F422007CE81B /* DMAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAlert.m; sourceTree = "<group>"; };
 		53E270FB126369C100B541BE /* DMAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPI.h; sourceTree = "<group>"; };
 		53E270FC126369C100B541BE /* DMAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPI.m; sourceTree = "<group>"; };
 		53E273561265BD1C00B541BE /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -221,6 +225,8 @@
 				53E8F683158AB39D000A5BF3 /* DMAdditions.m */,
 				53E8F695158B67A0000A5BF3 /* DMQueryString.h */,
 				53E8F696158B67A0000A5BF3 /* DMQueryString.m */,
+				53CAED1F15A2F422007CE81B /* DMAlert.h */,
+				53CAED2015A2F422007CE81B /* DMAlert.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -353,6 +359,7 @@
 				5367100E15991FFF00180094 /* DMItemTableViewCell.h in Headers */,
 				539DB6A115992A8D0029B767 /* SDK.h in Headers */,
 				539DB6B615994F5B0029B767 /* DMItemTableViewCellDefaultCell.h in Headers */,
+				53CAED2115A2F422007CE81B /* DMAlert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,6 +494,7 @@
 				53E8F6B8158F5EA2000A5BF3 /* DMItemOperation.m in Sources */,
 				53670FD91598DD6800180094 /* DMItemTableViewDataSource.m in Sources */,
 				539DB6B715994F5B0029B767 /* DMItemTableViewCellDefaultCell.m in Sources */,
+				53CAED2215A2F422007CE81B /* DMAlert.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

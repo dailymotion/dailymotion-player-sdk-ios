@@ -17,6 +17,7 @@
 @property (nonatomic, readonly, copy) NSString *type;
 @property (nonatomic, readonly, copy) NSString *itemId;
 @property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, readonly, strong) DMAPI *api;
 
 /**
  * Get an DMItem for a given object name (i.e.: video, user, playlist) and an object id

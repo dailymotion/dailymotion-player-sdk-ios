@@ -14,6 +14,6 @@ extern NSString * const DailymotionApiErrorDomain;
 
 @interface DMAPIError : NSObject
 
-+ (NSError *)errorWithMessage:(NSString *)message domain:(NSString *)domain type:(NSString *)type response:(NSURLResponse *)response data:(NSData *)data;
++ (NSError *)errorWithMessage:(NSString *)message domain:(NSString *)domain type:(id)type response:(NSURLResponse *)response data:(NSData *)data;
 
 @end

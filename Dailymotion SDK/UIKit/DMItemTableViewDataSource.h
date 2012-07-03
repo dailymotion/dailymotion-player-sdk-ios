@@ -11,6 +11,7 @@
 
 static NSString *const DMItemTableViewDataSourceUpdatedNotification = @"DMItemTableViewDataSourceUpdatedNotification";
 static NSString *const DMItemTableViewDataSourceErrorNotification = @"DMItemTableViewDataSourceErrorNotification";
+static NSString *const DMItemTableViewDataSourceOfflineNotification = @"DMItemTableViewDataSourceOfflineNotification";
 
 @interface DMItemTableViewDataSource : NSObject <UITableViewDataSource>
 

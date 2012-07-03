@@ -10,6 +10,7 @@
 #import "DMAPICallQueue.h"
 #import "DMAPIError.h"
 #import "DMAPICacheInfo.h"
+#import "DMReachability.h"
 
 #if TARGET_OS_IPHONE
 #import "DMPlayerViewController.h"
@@ -21,6 +22,11 @@
 @property (nonatomic, assign) NSTimeInterval timeout;
 
 @property (nonatomic, copy) NSURL *APIBaseURL;
+
+/**
+ * Report the current reachability of the API. You may use KVO to react to reachability changes.
+ */
+@property (nonatomic, readonly, assign) DMNetworkStatus currentReachabilityStatus;
 
 /**
  * Maximum number of allowed concurrent API calls. By default, this property is automatically
