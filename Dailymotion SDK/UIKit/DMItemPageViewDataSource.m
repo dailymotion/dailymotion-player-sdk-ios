@@ -29,7 +29,6 @@ static char indexKey;
     UIViewController<DMItemDataSourceItem> *viewController = self.createViewControllerBlock();
     NSAssert(viewController != nil, @"The createViewControllerBlock must return a valid view controller");
 
-    NSLog(@"set index: %@", [NSNumber numberWithUnsignedInt:index]);
     objc_setAssociatedObject(viewController, &indexKey, [NSNumber numberWithUnsignedInt:index], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [viewController prepareForLoading];
 
