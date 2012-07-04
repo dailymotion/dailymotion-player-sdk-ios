@@ -22,10 +22,14 @@ static char operationKey;
 
 @implementation DMItemTableViewDataSource
 
-- (void)cancelAllOperations
+- (id)init
 {
-    [self._operations makeObjectsPerformSelector:@selector(cancel)];
-    [self._operations removeAllObjects];
+    if ((self = [super init]))
+    {
+        [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
+        [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
+    }
+    return self;
 }
 
 - (void)dealloc
@@ -34,7 +38,14 @@ static char operationKey;
     {
         [self cancelAllOperations];
         [self removeObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount"];
+        [self removeObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus"];
     }
+}
+
+- (void)cancelAllOperations
+{
+    [self._operations makeObjectsPerformSelector:@selector(cancel)];
+    [self._operations removeAllObjects];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -46,9 +57,6 @@ static char operationKey;
             UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
             NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
             NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
-
-            [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
-            [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
 
             __weak DMItemTableViewDataSource *bself = self;
             DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -119,10 +127,12 @@ static char operationKey;
 {
     if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
+        if (!self._loaded) return;
         [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
+        if (!self._loaded) return;
         DMNetworkStatus previousRechabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
         if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousRechabilityStatus == DMNotReachable)
         {
