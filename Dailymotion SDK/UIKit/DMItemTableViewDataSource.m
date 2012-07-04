@@ -26,6 +26,7 @@ static char operationKey;
 {
     if ((self = [super init]))
     {
+        [self addObserver:self forKeyPath:@"itemCollection" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
     }
@@ -37,7 +38,7 @@ static char operationKey;
     if (self._loaded)
     {
         [self cancelAllOperations];
-        [self removeObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount"];
+        [self removeObserver:self forKeyPath:@"itemCollection"];
         [self removeObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus"];
     }
 }
@@ -52,11 +53,13 @@ static char operationKey;
 {
     if (section == 0)
     {
-        if (!self._loaded)
+        if (!self._loaded && self.itemCollection)
         {
             UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
             NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
             NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceLoadingNotification object:self];
 
             __weak DMItemTableViewDataSource *bself = self;
             DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -125,7 +128,12 @@ static char operationKey;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
+    if ([keyPath isEqualToString:@"itemCollection"] && object == self)
+    {
+        self._loaded = NO;
+        [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
+    }
+    else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
         [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];

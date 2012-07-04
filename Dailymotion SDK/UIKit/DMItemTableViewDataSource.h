@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "DMItemCollection.h"
 
+static NSString *const DMItemTableViewDataSourceLoadingNotification = @"DMItemTableViewDataSourceLoadingNotification";
 static NSString *const DMItemTableViewDataSourceUpdatedNotification = @"DMItemTableViewDataSourceUpdatedNotification";
 static NSString *const DMItemTableViewDataSourceErrorNotification = @"DMItemTableViewDataSourceErrorNotification";
 static NSString *const DMItemTableViewDataSourceOfflineNotification = @"DMItemTableViewDataSourceOfflineNotification";

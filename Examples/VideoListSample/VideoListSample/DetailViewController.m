@@ -59,6 +59,11 @@
         self.descriptionTextView.text = nil;
         [self.playerViewController pause];
     }
+
+    if (self.masterPopoverController != nil)
+    {
+        [self.masterPopoverController dismissPopoverAnimated:YES];
+    }
 }
 
 - (void)viewDidLoad

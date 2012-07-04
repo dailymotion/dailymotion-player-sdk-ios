@@ -10,7 +10,6 @@
 		536DA17B15A48D4B00941F43 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536DA17A15A48D4B00941F43 /* UIKit.framework */; };
 		536DA17D15A48D4B00941F43 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536DA17C15A48D4B00941F43 /* Foundation.framework */; };
 		536DA17F15A48D4B00941F43 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536DA17E15A48D4B00941F43 /* CoreGraphics.framework */; };
-		536DA18515A48D4B00941F43 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 536DA18315A48D4B00941F43 /* InfoPlist.strings */; };
 		536DA18715A48D4B00941F43 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 536DA18615A48D4B00941F43 /* main.m */; };
 		536DA18B15A48D4B00941F43 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 536DA18A15A48D4B00941F43 /* AppDelegate.m */; };
 		536DA18E15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 536DA18C15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard */; };
@@ -52,7 +51,6 @@
 		536DA17C15A48D4B00941F43 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		536DA17E15A48D4B00941F43 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		536DA18215A48D4B00941F43 /* VideoListSample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VideoListSample-Info.plist"; sourceTree = "<group>"; };
-		536DA18415A48D4B00941F43 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		536DA18615A48D4B00941F43 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		536DA18815A48D4B00941F43 /* VideoListSample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoListSample-Prefix.pch"; sourceTree = "<group>"; };
 		536DA18915A48D4B00941F43 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -135,7 +133,6 @@
 			isa = PBXGroup;
 			children = (
 				536DA18215A48D4B00941F43 /* VideoListSample-Info.plist */,
-				536DA18315A48D4B00941F43 /* InfoPlist.strings */,
 				536DA18615A48D4B00941F43 /* main.m */,
 				536DA18815A48D4B00941F43 /* VideoListSample-Prefix.pch */,
 			);
@@ -226,7 +223,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				536DA18515A48D4B00941F43 /* InfoPlist.strings in Resources */,
 				536DA18E15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard in Resources */,
 				536DA19115A48D4B00941F43 /* MainStoryboard_iPad.storyboard in Resources */,
 			);
@@ -257,14 +253,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		536DA18315A48D4B00941F43 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				536DA18415A48D4B00941F43 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		536DA18C15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
