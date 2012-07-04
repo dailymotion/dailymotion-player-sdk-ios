@@ -37,23 +37,24 @@
 {
     [super viewDidLoad];
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
-    {
-        self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-    }
-
     self.api = [[DMAPI alloc] init];
     self.tableDataSource = [[DMItemTableViewDataSource alloc] init];
     self.tableDataSource.cellIdentifier = @"Cell";
     self.tableView.dataSource = self.tableDataSource;
 
-    self.pageViewDataSource = [[DMItemPageViewDataSource alloc] init];
-    self.pageViewDataSource.itemCollection = self.tableDataSource.itemCollection;
-    UIStoryboard *storyboard = self.storyboard;
-    self.pageViewDataSource.createViewControllerBlock = ^
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
-        return [storyboard instantiateViewControllerWithIdentifier:@"DetailViewController"];
-    };
+        self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    }
+    else
+    {
+        self.pageViewDataSource = [[DMItemPageViewDataSource alloc] init];
+        UIStoryboard *storyboard = self.storyboard;
+        self.pageViewDataSource.createViewControllerBlock = ^
+        {
+            return [storyboard instantiateViewControllerWithIdentifier:@"DetailViewController"];
+        };
+    }
 
     // Init loading overlay view
     self._overlayView = [[UIView alloc] initWithFrame:CGRectMake(0 ,49, self.view.frame.size.width, self.tableView.frame.size.height)];
@@ -70,10 +71,14 @@
 
     __weak MasterViewController *bself = self;
 
+    // Handle DMItemTableViewDataSource notifications
     [[NSNotificationCenter defaultCenter] addObserverForName:DMItemTableViewDataSourceLoadingNotification
                                                       object:self.tableDataSource
                                                        queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note) {[bself setLoading:YES];}];
+                                                  usingBlock:^(NSNotification *note)
+    {
+        [bself setLoading:YES];
+    }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:DMItemTableViewDataSourceUpdatedNotification
                                                       object:self.tableDataSource
@@ -144,7 +149,12 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
         DMItemCollection *itemCollection = self.tableDataSource.itemCollection;
+        // Cancel the previous operation if any
         [self._itemOperation cancel];
+
+        [self.detailViewController prepareForLoading];
+
+        // Load eventual additional needed fields and show them
         self._itemOperation = [itemCollection withItemFields:self.detailViewController.fieldsNeeded atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
             if (error)
@@ -170,7 +180,12 @@
     {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         UIPageViewController *pageViewController = [segue destinationViewController];
+
+        // Pass the table view data source's current itemCollection to the page view controller's datasource
+        self.pageViewDataSource.itemCollection = self.tableDataSource.itemCollection;
         pageViewController.dataSource = self.pageViewDataSource;
+
+        // Ask the datasource for the initial view controller (for the selected video) to be shown
         UIViewController <DMItemDataSourceItem> *viewController = [self.pageViewDataSource viewControllerAtIndex:indexPath.row];
         [pageViewController setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
@@ -181,6 +196,8 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+    // Change the table view itemCollection with a new video list query
+    // The DMItemTableViewDataSource will handle the change and send notifications to show loading and refresh the table view when necessary
     self.tableDataSource.itemCollection = [DMItemCollection itemCollectionWithType:@"video"
                                                                          forParams:@{@"sort": @"relevance", @"search": searchBar.text}
                                                                            fromAPI:self.api];
