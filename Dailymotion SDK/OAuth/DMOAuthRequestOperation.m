@@ -8,6 +8,7 @@
 
 #import "DMOAuthRequestOperation.h"
 #import "DMNetworking.h"
+#import "DMSubscriptingSupport.h"
 
 @interface DMOAuthRequestOperation ()
 

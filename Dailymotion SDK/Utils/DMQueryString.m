@@ -7,6 +7,7 @@
 //
 
 #import "DMQueryString.h"
+#import "DMSubscriptingSupport.h"
 
 @implementation NSString (DMQueryString)
 
@@ -14,7 +15,7 @@
 {
     // Encode all the reserved characters, per RFC 3986 (<http://www.ietf.org/rfc/rfc3986.txt>)
     return (__bridge_transfer NSString *)(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                  (CFStringRef)self,
+                                                                                  (__bridge CFStringRef)self,
                                                                                   NULL,
                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
                                                                                   kCFStringEncodingUTF8));

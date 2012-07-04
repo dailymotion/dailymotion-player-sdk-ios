@@ -9,6 +9,7 @@
 #import "DMItem.h"
 #import "DMAdditions.h"
 #import "DMItemCollection.h"
+#import "DMSubscriptingSupport.h"
 
 static NSCache *itemInstancesCache;
 

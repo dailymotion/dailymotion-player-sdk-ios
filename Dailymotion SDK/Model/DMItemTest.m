@@ -11,6 +11,7 @@
 #import "DMItem.h"
 #import "DMItemCollection.h"
 #import "DailymotionTestConfig.h"
+#import "DMSubscriptingSupport.h"
 
 @implementation DMItemTest
 

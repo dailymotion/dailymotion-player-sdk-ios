@@ -7,6 +7,7 @@
 //
 
 #import "DMPlayerViewController.h"
+#import "DMSubscriptingSupport.h"
 
 @interface DMPlayerViewController ()
 @property (nonatomic, readwrite) BOOL autoplay;

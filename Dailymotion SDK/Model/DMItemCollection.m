@@ -10,6 +10,7 @@
 #import "DMAPI.h"
 #import "DMQueryString.h"
 #import "DMAdditions.h"
+#import "DMSubscriptingSupport.h"
 
 static NSString *const DMEndOfList = @"DMEndOfList";
 static NSCache *itemCollectionInstancesCache;

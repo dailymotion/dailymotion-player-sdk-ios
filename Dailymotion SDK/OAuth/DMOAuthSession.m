@@ -7,6 +7,7 @@
 //
 
 #import "DMOAuthSession.h"
+#import "DMSubscriptingSupport.h"
 
 NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
 

@@ -9,6 +9,7 @@
 #import "DMAPICallQueue.h"
 #import "DMAPI.h"
 #import "DMAdditions.h"
+#import "DMSubscriptingSupport.h"
 
 @interface DMAPICall ()
 

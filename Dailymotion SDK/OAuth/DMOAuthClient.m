@@ -8,6 +8,7 @@
 
 #import "DMOAuthClient.h"
 #import "DMAPIError.h"
+#import "DMSubscriptingSupport.h"
 #import <objc/runtime.h>
 #import <CommonCrypto/CommonDigest.h>
 

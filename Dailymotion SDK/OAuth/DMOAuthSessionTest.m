@@ -7,6 +7,7 @@
 //
 
 #import "DMOAuthSessionTest.h"
+#import "DMSubscriptingSupport.h"
 
 @implementation DMOAuthSessionTest
 

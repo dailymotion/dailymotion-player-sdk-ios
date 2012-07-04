@@ -111,6 +111,7 @@
 		53670FD61598DD6800180094 /* DMItemTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewDataSource.h; sourceTree = "<group>"; };
 		53670FD71598DD6800180094 /* DMItemTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemTableViewDataSource.m; sourceTree = "<group>"; };
 		5367100C15991FFF00180094 /* DMItemDataSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemDataSourceItem.h; sourceTree = "<group>"; };
+		536DA16915A48B1500941F43 /* DMSubscriptingSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DMSubscriptingSupport.h; sourceTree = "<group>"; };
 		53706AFF15A3280200D29386 /* DMItemPageViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemPageViewDataSource.h; sourceTree = "<group>"; };
 		53706B0015A3280200D29386 /* DMItemPageViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemPageViewDataSource.m; sourceTree = "<group>"; };
 		5397428415872ED000ABF402 /* DMOAuthRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMOAuthRequestOperation.h; sourceTree = "<group>"; };
@@ -231,6 +232,7 @@
 				53E8F696158B67A0000A5BF3 /* DMQueryString.m */,
 				53CAED1F15A2F422007CE81B /* DMAlert.h */,
 				53CAED2015A2F422007CE81B /* DMAlert.m */,
+				536DA16915A48B1500941F43 /* DMSubscriptingSupport.h */,
 			);
 			path = Utils;
 			sourceTree = "<group>";

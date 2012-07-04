@@ -8,6 +8,7 @@
 
 #import "DMAPICacheInfo.h"
 #import "DMAPI.h"
+#import "DMSubscriptingSupport.h"
 
 static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalidatedNotification";
 

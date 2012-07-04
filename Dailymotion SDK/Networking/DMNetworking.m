@@ -8,6 +8,7 @@
 
 #import "DMNetworking.h"
 #import "DMUDID.h"
+#import "DMSubscriptingSupport.h"
 
 NSUInteger totalRequestCount;
 
