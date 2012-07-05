@@ -49,7 +49,7 @@
 
 - (id)initWithParams:(NSDictionary *)params
 {
-    if ((self = [self initWithParams:params]))
+    if ((self = [self init]))
     {
         __params = params;
     }
@@ -88,7 +88,7 @@
         webview.mediaPlaybackRequiresUserAction = NO;
     }
 
-    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)])
+    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)] && self._params[@"webkit-playsinline"])
     {
         webview.allowsInlineMediaPlayback = YES;
     }
