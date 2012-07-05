@@ -150,6 +150,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         __total = [coder decodeIntegerForKey:@"_total"];
 
         NSDictionary *itemCache = [coder decodeObjectForKey:@"_itemCache"];
+#warning TOFIX something here seems to crash the unit test with EXEC_BAD_ACCESS - certainly an ARC issue
         [itemCache enumerateKeysAndObjectsUsingBlock:^(NSString *itemId, DMItem *item, BOOL *stop)
         {
             [__itemCache setObject:item forKey:itemId];
