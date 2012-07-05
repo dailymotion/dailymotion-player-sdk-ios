@@ -11,7 +11,7 @@
 
 @class DMAPI;
 
-@interface DMItemCollection : NSObject
+@interface DMItemCollection : NSObject <NSCoding>
 
 @property (nonatomic, readonly, copy) NSString *type;
 @property (nonatomic, readonly, copy) NSDictionary *params;
@@ -46,6 +46,26 @@
  * @param api The DMAPI object to use to retrieve data
  */
 + (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
+
+/**
+ * Load a collection from a previously archived collection file.
+ *
+ * NOTE: This method is synchrone, you must not call it from main thread
+ *
+ * @param filePath Path to the archive file
+ * @param api The DMAPI object to use with the unarchived collection
+ */
++ (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api;
+
+/**
+ * Persists the collection with currenly cached items data to disk
+ *
+ * NOTE: This method is synchrone, you must not call it from main thread
+ *
+ * @param filePath Path to the archive file
+ * @return Return YES on success
+ */
+- (BOOL)saveToFile:(NSString *)filePath;
 
 /**
  * Get an item instance with the given id from the cache of the collection.

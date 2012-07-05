@@ -59,8 +59,6 @@ static char operationKey;
             NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
             NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
 
-            [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceLoadingNotification object:self];
-
             __weak DMItemTableViewDataSource *bself = self;
             DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
             {
@@ -71,8 +69,15 @@ static char operationKey;
                     [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
                 }
             }];
-            self._operations = [NSMutableArray arrayWithObject:operation];
-            [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
+            self._operations = [NSMutableArray array];
+            if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
+            {
+                [self._operations addObject:operation];
+                [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
+
+                // Only notify about loading if we have something to load on the network
+                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceLoadingNotification object:self];
+            }
 
             self._loaded = YES;
         }

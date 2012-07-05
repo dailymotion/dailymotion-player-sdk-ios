@@ -290,5 +290,53 @@
     STAssertEquals(networkRequestCount, 0U, @"Other objects on the same page are already cached");
 }
 
+- (void)testItemCollectionArchiving
+{
+    DMAPI *api = self.api;
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test archiving"} fromAPI:api];
+
+    INIT(1)
+
+    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        DONE
+    }];
+
+    WAIT
+
+    NSString *archivePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"videoCollectionTest.archive"];
+    [[NSFileManager defaultManager] removeItemAtPath:archivePath error:NULL];
+    [videoSearch saveToFile:archivePath];
+
+    STAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:archivePath], @"Archive file have been created");
+
+    DMAPI *api2 = self.api;
+    DMItemCollection *videoSearchUnarchived = [DMItemCollection itemCollectionFromFile:archivePath withAPI:api2];
+
+    STAssertTrue(videoSearch != videoSearchUnarchived, @"Got different instance");
+    STAssertEqualObjects(videoSearch.cacheInfo.etag, videoSearchUnarchived.cacheInfo.etag, @"Etags are equal");
+    STAssertEquals(videoSearch.currentEstimatedTotalItemsCount, videoSearchUnarchived.currentEstimatedTotalItemsCount, @"Current estimated total item are equal");
+    STAssertTrue(videoSearch.api != videoSearchUnarchived.api, @"Unarchived collection doesn't get the same API instance as original");
+    STAssertEquals(videoSearchUnarchived.api, api2, @"Unarchived collection got the new API object instance");
+
+    REINIT(1)
+
+    [videoSearchUnarchived itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertFalse(stalled, @"Newly loaded data is not stall");
+        DONE
+    }];
+
+    WAIT
+
+    STAssertEquals(networkRequestCount, 0U, @"First page of the unarchived collection is already cached");
+
+    [[NSFileManager defaultManager] removeItemAtPath:archivePath error:NULL];
+}
 
 @end

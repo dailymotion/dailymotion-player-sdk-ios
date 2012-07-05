@@ -18,10 +18,12 @@
 @property (nonatomic, strong) DMItemOperation *_itemOperation;
 @property (nonatomic, strong) UIView *_overlayView;
 @property (nonatomic, strong) UIActivityIndicatorView *_loadingIndicatorView;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @end
 
 @implementation MasterViewController
+@synthesize searchBar;
 
 - (void)awakeFromNib
 {
@@ -101,6 +103,34 @@
                           otherButtonTitles:nil
                                dismissBlock:nil
                                 cancelBlock:nil];
+    }];
+
+    // Handle auto resuming
+    NSString *resumeCollectionPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"resumeVideoCollection.archive"];
+
+    dispatch_async(dispatch_get_current_queue(), ^
+    {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:resumeCollectionPath] && !self.tableDataSource.itemCollection)
+        {
+            DMItemCollection *resumedItemCollection = [DMItemCollection itemCollectionFromFile:resumeCollectionPath withAPI:self.api];
+            if (!self.tableDataSource.itemCollection)
+            {
+                self.tableDataSource.itemCollection = resumedItemCollection;
+                self.searchBar.text = resumedItemCollection.params[@"search"];
+            }
+            //[[NSFileManager defaultManager] removeItemAtPath:resumeCollectionPath error:NULL];
+        }
+    });
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillResignActiveNotification
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *note)
+    {
+        if (bself.tableDataSource.itemCollection)
+        {
+            [bself.tableDataSource.itemCollection saveToFile:resumeCollectionPath];
+        }
     }];
 }
 
@@ -204,4 +234,8 @@
     [searchBar resignFirstResponder];
 }
 
+- (void)viewDidUnload {
+    [self setSearchBar:nil];
+    [super viewDidUnload];
+}
 @end

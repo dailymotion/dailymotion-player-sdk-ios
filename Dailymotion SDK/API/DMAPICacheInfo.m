@@ -63,6 +63,35 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    NSMutableDictionary *cacheInfo = [NSMutableDictionary dictionary];
+    if (_namespace) cacheInfo[@"namespace"] = _namespace;
+    if (_invalidates) cacheInfo[@"invalidates"] = _invalidates;
+    if (_etag) cacheInfo[@"etag"] = _etag;
+    cacheInfo[@"public"] = [NSNumber numberWithBool:_public];
+    cacheInfo[@"maxAge"] = [NSNumber numberWithFloat:_maxAge];
+    [coder encodeObject:cacheInfo forKey:@"cacheInfo"];
+    [coder encodeObject:_date forKey:@"date"];
+    [coder encodeBool:_valid forKey:@"valid"];
+    [coder encodeBool:_stalled forKey:@"stalled"];
+    [coder encodeObject:__api forKey:@"_api"];
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    NSDictionary *cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
+    DMAPI *api = [coder decodeObjectForKey:@"_api"];
+
+    if ((self = [self initWithCacheInfo:cacheInfo fromAPI:api]))
+    {
+        _date = [coder decodeObjectForKey:@"date"];
+        _valid = [coder decodeBoolForKey:@"valid"];
+        _stalled = [coder decodeBoolForKey:@"stalled"];
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

@@ -51,6 +51,29 @@
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject:_type forKey:@"type"];
+    [coder encodeObject:_itemId forKey:@"itemId"];
+    [coder encodeObject:_cacheInfo forKey:@"cacheInfo"];
+    [coder encodeObject:_api forKey:@"api"];
+    [coder encodeObject:__fieldsCache forKey:@"_fieldsCache"];
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    NSString *type = [coder decodeObjectForKey:@"type"];
+    NSString *itemId = [coder decodeObjectForKey:@"itemId"];
+    DMAPI *api = [coder decodeObjectForKey:@"api"];
+
+    if ((self = [self initWithType:type forId:itemId fromAPI:api]))
+    {
+        _cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
+        __fieldsCache = [coder decodeObjectForKey:@"_fieldsCache"];
+    }
+    return self;
+}
+
 - (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection withParams:(NSDictionary *)params
 {
     return [DMItemCollection itemCollectionWithConnection:connection forItem:self withParams:params fromAPI:self.api];

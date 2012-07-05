@@ -11,6 +11,7 @@
 #import "DMQueryString.h"
 #import "DMAdditions.h"
 #import "DMSubscriptingSupport.h"
+#import "DMAPIArchiverDelegate.h"
 
 static NSString *const DMEndOfList = @"DMEndOfList";
 
@@ -65,6 +66,8 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 @implementation DMItemCollection
 
+#pragma mark - Initializers
+
 + (DMItemCollection *)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api
 {
     return [[self alloc] initWithType:type
@@ -94,19 +97,98 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         __cache = [NSMutableArray array];
         __itemCache = [[NSCache alloc] init];
         __itemCache.countLimit = 500;
+        __total = -1;
         __runningRequests = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
+#pragma mark - Archiving
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject:_type forKey:@"type"];
+    [coder encodeObject:_params forKey:@"params"];
+    [coder encodeObject:__path forKey:@"_path"];
+    [coder encodeObject:_api forKey:@"api"];
+
+    [coder encodeObject:_cacheInfo forKey:@"cacheInfo"];
+    [coder encodeInteger:_pageSize forKey:@"pageSize"];
+    [coder encodeInteger:_currentEstimatedTotalItemsCount forKey:@"currentEstimatedTotalItemsCount"];
+    [coder encodeObject:__cache forKey:@"_cache"];
+    [coder encodeInteger:__total forKey:@"_total"];
+
+    NSMutableDictionary *itemCache = [NSMutableDictionary dictionary];
+    for (NSString *itemId in __cache)
+    {
+        if (![itemId isKindOfClass:NSString.class])
+        {
+            continue;
+        }
+        DMItem *item = [__itemCache objectForKey:itemId];
+        if (item)
+        {
+            [itemCache setObject:item forKey:itemId];
+        }
+    }
+    [coder encodeObject:itemCache forKey:@"_itemCache"];
+}
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+    NSString *type = [coder decodeObjectForKey:@"type"];
+    NSDictionary *params = [coder decodeObjectForKey:@"params"];
+    NSString *path = [coder decodeObjectForKey:@"_path"];
+    DMAPI *api = [coder decodeObjectForKey:@"api"];
+
+    if ((self = [self initWithType:type params:params path:path fromAPI:api]))
+    {
+        _cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
+        _pageSize = [coder decodeIntegerForKey:@"pageSize"];
+        _currentEstimatedTotalItemsCount = [coder decodeIntegerForKey:@"currentEstimatedTotalItemsCount"];
+        __cache = [coder decodeObjectForKey:@"_cache"];
+        __total = [coder decodeIntegerForKey:@"_total"];
+
+        NSDictionary *itemCache = [coder decodeObjectForKey:@"_itemCache"];
+        [itemCache enumerateKeysAndObjectsUsingBlock:^(NSString *itemId, DMItem *item, BOOL *stop)
+        {
+            [__itemCache setObject:item forKey:itemId];
+        }];
+    }
+    return self;
+}
+
+- (BOOL)saveToFile:(NSString *)filePath
+{
+    NSMutableData *data = [NSMutableData data];
+    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+    DMAPIArchiverDelegate *archiverDelegate = [[DMAPIArchiverDelegate alloc] initWithAPI:self.api];
+    archiver.delegate = archiverDelegate;
+    [archiver encodeObject:self forKey:@"collection"];
+    [archiver finishEncoding];
+    return [data writeToFile:filePath atomically:YES];
+}
+
++ (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api
+{
+    NSData *data = [NSData dataWithContentsOfFile:filePath];
+    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+    DMAPIArchiverDelegate *archiverDelegate = [[DMAPIArchiverDelegate alloc] initWithAPI:api];
+    unarchiver.delegate = archiverDelegate;
+    DMItemCollection *itemCollection = [unarchiver decodeObjectForKey:@"collection"];
+    [unarchiver finishDecoding];
+    return itemCollection;
+}
+
+#pragma mark - Implementation
+
 - (DMItem *)itemWithId:(NSString *)itemId
 {
-    NSString *itemCacheKey = [NSString stringWithFormat:@"%@:%@", self.type, itemId];
-    DMItem *item = [self._itemCache objectForKey:itemCacheKey];
+    DMItem *item = [self._itemCache objectForKey:itemId];
     if (!item)
     {
         item = [DMItem itemWithType:self.type forId:itemId fromAPI:self.api];
-        [self._itemCache setObject:item forKey:itemCacheKey];
+        [self._itemCache setObject:item forKey:itemId];
     }
     return item;
 }

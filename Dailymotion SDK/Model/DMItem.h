@@ -12,7 +12,7 @@
 
 @class DMItemCollection;
 
-@interface DMItem : NSObject
+@interface DMItem : NSObject <NSCoding>
 
 @property (nonatomic, readonly, copy) NSString *type;
 @property (nonatomic, readonly, copy) NSString *itemId;

@@ -133,6 +133,9 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Master" id="40"/>
+                    <connections>
+                        <outlet property="searchBar" destination="Mfl-aR-oys" id="KWD-Sw-P4o"/>
+                    </connections>
                 </tableViewController>
             </objects>
             <point key="canvasLocation" x="859" y="-631"/>
@@ -153,22 +156,6 @@
             <point key="canvasLocation" x="-366" y="248"/>
         </scene>
     </scenes>
-    <classes>
-        <class className="DMItemTableViewDefaultCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/DMItemTableViewDefaultCell.h"/>
-        </class>
-        <class className="DetailViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/DetailViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="descriptionTextView" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="playerContainerView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="titleLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="MasterViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/MasterViewController.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>

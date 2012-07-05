@@ -10,7 +10,7 @@
 
 @class DMAPI;
 
-@interface DMAPICacheInfo : NSObject
+@interface DMAPICacheInfo : NSObject <NSCoding>
 
 /**
  * The date when the cache info as been issued
