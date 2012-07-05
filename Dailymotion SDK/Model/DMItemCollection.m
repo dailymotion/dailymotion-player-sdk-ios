@@ -13,7 +13,6 @@
 #import "DMSubscriptingSupport.h"
 
 static NSString *const DMEndOfList = @"DMEndOfList";
-static NSCache *itemCollectionInstancesCache;
 
 @implementation NSString (Plural)
 
@@ -57,6 +56,7 @@ static NSCache *itemCollectionInstancesCache;
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, strong) NSString *_path;
 @property (nonatomic, strong) NSMutableArray *_cache;
+@property (nonatomic, strong) NSCache *_itemCache;
 @property (nonatomic, assign) NSInteger _total;
 @property (nonatomic, strong) NSMutableDictionary *_runningRequests;
 
@@ -65,48 +65,20 @@ static NSCache *itemCollectionInstancesCache;
 
 @implementation DMItemCollection
 
-+ (void)initialize
-{
-    itemCollectionInstancesCache = [[NSCache alloc] init];
-    itemCollectionInstancesCache.countLimit = 10;
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
-                                                      object:nil
-                                                       queue:nil usingBlock:^(NSNotification *note)
-    {
-        [itemCollectionInstancesCache removeAllObjects];
-    }];
-}
-
 + (DMItemCollection *)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", type, [params stringAsQueryString]];
-    DMItemCollection *itemCollection = [itemCollectionInstancesCache objectForKey:cacheKey];
-    if (!itemCollection)
-    {
-        itemCollection = [[self alloc] initWithType:type
-                                             params:params
-                                               path:[NSString stringWithFormat:@"/%@", [type stringByApplyingPluralForm]]
-                                            fromAPI:api];
-        [itemCollectionInstancesCache setObject:itemCollection forKey:cacheKey];
-    }
-
-    return itemCollection;
+    return [[self alloc] initWithType:type
+                               params:params
+                                 path:[NSString stringWithFormat:@"/%@", [type stringByApplyingPluralForm]]
+                              fromAPI:api];
 }
 
 + (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@:%@:%@", item.type, item.itemId, connection, [params stringAsQueryString]];
-    DMItemCollection *itemCollection = [itemCollectionInstancesCache objectForKey:cacheKey];
-    if (!itemCollection)
-    {
-        itemCollection = [[self alloc] initWithType:item.type
-                                             params:params
-                                               path:[NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection]
-                                            fromAPI:api];
-    }
-
-    return itemCollection;
+    return [[self alloc] initWithType:item.type
+                               params:params
+                                 path:[NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection]
+                              fromAPI:api];
 }
 
 - (id)initWithType:(NSString *)type params:(NSDictionary *)params path:(NSString *)path fromAPI:(DMAPI *)api
@@ -120,9 +92,23 @@ static NSCache *itemCollectionInstancesCache;
         _currentEstimatedTotalItemsCount = 0;
         __path = path;
         __cache = [NSMutableArray array];
+        __itemCache = [[NSCache alloc] init];
+        __itemCache.countLimit = 500;
         __runningRequests = [NSMutableDictionary dictionary];
     }
     return self;
+}
+
+- (DMItem *)itemWithId:(NSString *)itemId
+{
+    NSString *itemCacheKey = [NSString stringWithFormat:@"%@:%@", self.type, itemId];
+    DMItem *item = [self._itemCache objectForKey:itemCacheKey];
+    if (!item)
+    {
+        item = [DMItem itemWithType:self.type forId:itemId fromAPI:self.api];
+        [self._itemCache setObject:item forKey:itemCacheKey];
+    }
+    return item;
 }
 
 - (DMItemOperation *)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
@@ -173,7 +159,7 @@ static NSCache *itemCollectionInstancesCache;
                 }
                 else
                 {
-                    item = [DMItem itemWithType:self.type forId:itemId fromAPI:self.api];
+                    item = [self itemWithId:itemId];
                     if (![item areFieldsCached:fields])
                     {
                         items = nil;
@@ -310,9 +296,7 @@ static NSCache *itemCollectionInstancesCache;
 
         for (NSDictionary *itemData in list)
         {
-            DMItem *item = [DMItem itemWithType:bself.type forId:itemData[@"id"] fromAPI:bself.api];
-            // Where we overload the item cache info by list cache info. This is not quite correct as item
-            // cache isn't list cache but it shouldn't hurt for 99.9% of the cases.
+            DMItem *item = [bself itemWithId:itemData[@"id"]];
             [item loadInfo:itemData withCacheInfo:cacheInfo];
             [items addObject:item];
             [ids addObject:itemData[@"id"]];
@@ -393,7 +377,7 @@ static NSCache *itemCollectionInstancesCache;
 {
     if (self.cacheInfo && self.cacheInfo.valid && !self.cacheInfo.stalled && index < [self._cache count] && self._cache[index] != DMEndOfList)
     {
-        DMItem *item = [DMItem itemWithType:self.type forId:self._cache[index] fromAPI:self.api];
+        DMItem *item = [self itemWithId:self._cache[index]];
         if (!item.cacheInfo.stalled && [item areFieldsCached:fields])
         {
             return [item withFields:fields do:^(NSDictionary *data, BOOL _stalled, NSError *error)
@@ -437,6 +421,7 @@ static NSCache *itemCollectionInstancesCache;
     @synchronized(self._cache)
     {
         [self._cache removeAllObjects];
+        [self._itemCache removeAllObjects];
     }
 }
 

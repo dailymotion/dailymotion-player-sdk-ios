@@ -48,6 +48,14 @@
 + (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
 
 /**
+ * Get an item instance with the given id from the cache of the collection.
+ *
+ * @param itemId The item id
+ * @return An item instance from the collection cache (if wasn't previously cached, new instance is created and cached empty)
+ */
+- (DMItem *)itemWithId:(NSString *)itemId;
+
+/**
  * Retrieve items with specified pre-cached fields on the current collection with given pagination information.
  *
  * The data may come from cache or network. If cached data are stalled, the block will be called twice. First time
@@ -69,12 +77,6 @@
  * @return A DMItemOperation instance able to cancel the request.
  */
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
-
-/**
- * Get the index of a given item in the collection. If the given item hasn't been gathered yet or if the item
- * isn't part of the collection, NSNotFound is returned.
- */
-- (NSUInteger)indexOfItemWithId:(NSString *)itemId;
 
 /**
  * Flush all previously loaded cache for this collection (won't flush items cache data)

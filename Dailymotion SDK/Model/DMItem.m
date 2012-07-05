@@ -11,8 +11,6 @@
 #import "DMItemCollection.h"
 #import "DMSubscriptingSupport.h"
 
-static NSCache *itemInstancesCache;
-
 @interface DMItemOperation (Private)
 
 @property (nonatomic, strong) void (^cancelBlock)();
@@ -34,30 +32,9 @@ static NSCache *itemInstancesCache;
 
 @implementation DMItem
 
-+ (void)initialize
-{
-    itemInstancesCache = [[NSCache alloc] init];
-    itemInstancesCache.countLimit = 500;
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
-                                                      object:nil
-                                                       queue:nil usingBlock:^(NSNotification *note)
-    {
-        [itemInstancesCache removeAllObjects];
-    }];
-}
-
 + (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", type, itemId];
-    DMItem *item = [itemInstancesCache objectForKey:cacheKey];
-    if (!item)
-    {
-        item = [[self alloc] initWithType:type forId:itemId fromAPI:api];
-        [itemInstancesCache setObject:item forKey:cacheKey];
-    }
-
-    return item;
+    return [[self alloc] initWithType:type forId:itemId fromAPI:api];
 }
 
 - (id)initWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api

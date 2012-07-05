@@ -242,7 +242,7 @@
         STAssertNotNil(data[@"id"], @"Got an id field");
 
         // Force this item invalid so next collection request with have to refresh to data
-        [DMItem itemWithType:@"video" forId:data[@"id"] fromAPI:api].cacheInfo.valid = NO;
+        [videoSearch itemWithId:data[@"id"]].cacheInfo.valid = NO;
         DONE
     }];
 
