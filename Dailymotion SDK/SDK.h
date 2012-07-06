@@ -7,6 +7,7 @@
 //
 
 #import <DailymotionSDK/DMAPI.h>
+#import <DailymotionSDK/DMItemRemoteCollection.h>
 #import <DailymotionSDK/DMItemTableViewDataSource.h>
 #import <DailymotionSDK/DMItemPageViewDataSource.h>
 #import <DailymotionSDK/DMPlayerViewController.h>

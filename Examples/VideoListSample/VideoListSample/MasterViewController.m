@@ -23,7 +23,6 @@
 @end
 
 @implementation MasterViewController
-@synthesize searchBar;
 
 - (void)awakeFromNib
 {
@@ -116,7 +115,7 @@
             if (!self.tableDataSource.itemCollection)
             {
                 self.tableDataSource.itemCollection = resumedItemCollection;
-                self.searchBar.text = resumedItemCollection.params[@"search"];
+                self.searchBar.text = ((DMItemRemoteCollection *)resumedItemCollection).params[@"search"];
             }
             //[[NSFileManager defaultManager] removeItemAtPath:resumeCollectionPath error:NULL];
         }
@@ -234,8 +233,4 @@
     [searchBar resignFirstResponder];
 }
 
-- (void)viewDidUnload {
-    [self setSearchBar:nil];
-    [super viewDidUnload];
-}
 @end

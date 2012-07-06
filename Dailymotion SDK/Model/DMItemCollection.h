@@ -9,24 +9,28 @@
 #import <Foundation/Foundation.h>
 #import "DMItem.h"
 
-@class DMAPI;
-
 @interface DMItemCollection : NSObject <NSCoding>
 
 @property (nonatomic, readonly, copy) NSString *type;
-@property (nonatomic, readonly, copy) NSDictionary *params;
 @property (nonatomic, readonly, strong) DMAPI *api;
-@property (nonatomic, readonly, assign) NSUInteger pageSize;
-@property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
 
 /**
- * Return the current view of the object on the number of item that may be present in the list. This number
- * is an estimation that may be either be returned by the server or computed by the class when end of the
- * list is hit. When server doesn't return estimation on total items in the collection and client didn't
- * hit the end of the list, the estimated count is equal to the current number of cached item + `pageSize`,
- * which may be incorrect if the next page isn't full. When no item are cached yet, this field returns 0.
+ * Return the current view of the object on the number of item that may be present in the list.
+ *
+ * This number is an estimation that may be either returned by the server or computed by the class.
+ * You may use KVO on this property to know when the collection content has changed so you can refresh
+ * the UI.
  */
 @property (nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
+
+/**
+ * Return a local collection of items with the given ids
+ *
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param ids The list of item ids to store in the collection
+ * @param api The DMAPI object to use to retrieve data
+ */
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSArray *)ids fromAPI:(DMAPI *)api;
 
 /**
  * Instanciate an item collection for a given object type with some optional paramters
@@ -35,7 +39,7 @@
  * @param params Parameters to filter or sort the result
  * @param api The DMAPI object to use to retrieve data
  */
-+ (DMItemCollection *)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
++ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
 
 /**
  * Instanciate an item collection for an item connection
@@ -45,7 +49,7 @@
  * @param params Optional parameters to filter/sort the result
  * @param api The DMAPI object to use to retrieve data
  */
-+ (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
++ (id)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
 
 /**
  * Load a collection from a previously archived collection file.
@@ -68,28 +72,7 @@
 - (BOOL)saveToFile:(NSString *)filePath;
 
 /**
- * Get an item instance with the given id from the cache of the collection.
- *
- * @param itemId The item id
- * @return An item instance from the collection cache (if wasn't previously cached, new instance is created and cached empty)
- */
-- (DMItem *)itemWithId:(NSString *)itemId;
-
-/**
- * Retrieve items with specified pre-cached fields on the current collection with given pagination information.
- *
- * The data may come from cache or network. If cached data are stalled, the block will be called twice. First time
- * the data will come from the stalled cache, the `stalled` parameter is then set to `YES`. In parallele, an API
- * request is automatically performed to retrieve fresh data. On success the block is called a second time with
- * the `stalled` parameter set to `NO`.
- */
-- (DMItemOperation *)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback;
-
-/**
- * Gather the fields data for the item located at the given index in the collection. If colleciton as no information
- * for the given index yet, a list request is performed for a page of `pageSize` items. This pervents from
- * generating too many small requests.
- *
+ * Gather the fields data for the item located at the given index in the collection.
  * @prarm fields A list of object fields names to load
  * @param index The index of the requested item in the collection
  * @param callback The block to call with resulting field data
@@ -104,3 +87,4 @@
 - (void)flushCache;
 
 @end
+
