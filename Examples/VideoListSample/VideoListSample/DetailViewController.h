@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <DailymotionSDK/SDK.h>
 
-@interface DetailViewController : UIViewController <UIScrollViewDelegate, UISplitViewControllerDelegate, DMItemDataSourceItem>
+@interface DetailViewController : UIViewController <UIScrollViewDelegate, UISplitViewControllerDelegate, DMItemDataSourceItem, DMPlayerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *playerContainerView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;

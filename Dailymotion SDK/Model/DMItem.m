@@ -42,6 +42,10 @@
 
 - (id)initWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
 {
+    NSAssert(type != nil, @"The type cannot be nil");
+    NSAssert(itemId != nil, @"The item id cannot be nil");
+    NSAssert(api != nil, @"The api cannot be nil");
+
     if ((self = [super init]))
     {
         _type = type;
@@ -74,9 +78,8 @@
     {
         _cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
         __fieldsCache = [coder decodeObjectForKey:@"_fieldsCache"];
+        _hash = [[NSString stringWithFormat:@"%@-%@", _type, _itemId] hash];
     }
-
-    _hash = [[NSString stringWithFormat:@"%@-%@", _type, _itemId] hash];
 
     return self;
 }

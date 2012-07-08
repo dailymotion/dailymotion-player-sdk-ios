@@ -1,28 +1,24 @@
 //
-//  MasterViewController.m
+//  VideoTableViewController.m
 //  VideoListSample
 //
-//  Created by Olivier Poitrey on 04/07/12.
+//  Created by Olivier Poitrey on 08/07/12.
 //  Copyright (c) 2012 Olivier Poitrey. All rights reserved.
 //
 
-#import "MasterViewController.h"
-#import <DailymotionSDK/SDK.h>
+#import "VideoTableViewController.h"
 #import "DetailViewController.h"
 
-@interface MasterViewController ()
+@interface VideoTableViewController ()
 
-@property (nonatomic, strong) DMAPI *api;
-@property (nonatomic, strong) DMItemTableViewDataSource *tableDataSource;
 @property (nonatomic, strong) DMItemPageViewDataSource *pageViewDataSource;
 @property (nonatomic, strong) DMItemOperation *_itemOperation;
 @property (nonatomic, strong) UIView *_overlayView;
 @property (nonatomic, strong) UIActivityIndicatorView *_loadingIndicatorView;
-@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @end
 
-@implementation MasterViewController
+@implementation VideoTableViewController
 
 - (void)awakeFromNib
 {
@@ -38,7 +34,6 @@
 {
     [super viewDidLoad];
 
-    self.api = [[DMAPI alloc] init];
     self.tableDataSource = [[DMItemTableViewDataSource alloc] init];
     self.tableDataSource.cellIdentifier = @"Cell";
     self.tableView.dataSource = self.tableDataSource;
@@ -70,7 +65,7 @@
     [self._overlayView addSubview:self._loadingIndicatorView];
     [self.view addSubview:self._overlayView];
 
-    __weak MasterViewController *bself = self;
+    __weak VideoTableViewController *bself = self;
 
     // Handle DMItemTableViewDataSource notifications
     [[NSNotificationCenter defaultCenter] addObserverForName:DMItemTableViewDataSourceLoadingNotification
@@ -104,33 +99,7 @@
                                 cancelBlock:nil];
     }];
 
-    // Handle auto resuming
-    NSString *resumeCollectionPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"resumeVideoCollection.archive"];
 
-    dispatch_async(dispatch_get_current_queue(), ^
-    {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:resumeCollectionPath] && !self.tableDataSource.itemCollection)
-        {
-            DMItemCollection *resumedItemCollection = [DMItemCollection itemCollectionFromFile:resumeCollectionPath withAPI:self.api];
-            if (!self.tableDataSource.itemCollection)
-            {
-                self.tableDataSource.itemCollection = resumedItemCollection;
-                self.searchBar.text = ((DMItemRemoteCollection *)resumedItemCollection).params[@"search"];
-            }
-            //[[NSFileManager defaultManager] removeItemAtPath:resumeCollectionPath error:NULL];
-        }
-    });
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillResignActiveNotification
-                                                      object:nil
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note)
-    {
-        if (bself.tableDataSource.itemCollection)
-        {
-            [bself.tableDataSource.itemCollection saveToFile:resumeCollectionPath];
-        }
-    }];
 }
 
 - (void)dealloc
@@ -142,6 +111,7 @@
 {
     [self.view bringSubviewToFront:self._overlayView];
 }
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -219,18 +189,6 @@
         [pageViewController setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
     }
-}
-
-#pragma mark - Search Bar
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    // Change the table view itemCollection with a new video list query
-    // The DMItemTableViewDataSource will handle the change and send notifications to show loading and refresh the table view when necessary
-    self.tableDataSource.itemCollection = [DMItemCollection itemCollectionWithType:@"video"
-                                                                         forParams:@{@"sort": @"relevance", @"search": searchBar.text}
-                                                                           fromAPI:self.api];
-    [searchBar resignFirstResponder];
 }
 
 @end

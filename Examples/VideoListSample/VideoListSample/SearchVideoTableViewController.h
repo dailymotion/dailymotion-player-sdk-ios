@@ -7,11 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "VideoTableViewController.h"
 
-@class DetailViewController;
+@interface SearchVideoTableViewController : VideoTableViewController <UISearchBarDelegate>
 
-@interface MasterViewController : UITableViewController <UISearchBarDelegate>
-
-@property (strong, nonatomic) DetailViewController *detailViewController;
 
 @end

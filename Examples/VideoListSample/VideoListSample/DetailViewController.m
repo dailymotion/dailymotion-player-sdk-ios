@@ -7,6 +7,7 @@
 //
 
 #import "DetailViewController.h"
+#import "HistoryVideoCollection.h"
 
 @interface DetailViewController ()
 
@@ -72,6 +73,7 @@
 
     // Init the player
     self.playerViewController = [[DMPlayerViewController alloc] init];
+    self.playerViewController.delegate = self;
     [self addChildViewController:self.playerViewController];
     self.playerViewController.view.frame = self.playerContainerView.bounds;
     [self.playerContainerView addSubview:self.playerViewController.view];
@@ -93,6 +95,20 @@
     else
     {
         return YES;
+    }
+}
+
+#pragma mark - Player
+
+- (void)dailymotionPlayer:(DMPlayerViewController *)player didReceiveEvent:(NSString *)eventName
+{
+    if ([eventName isEqualToString:@"play"])
+    {
+        DMItem *item = [DMItem itemWithType:@"video" forId:self._fieldsData[@"id"] fromAPI:DMAPI.sharedAPI];
+        [HistoryVideoCollection historyCollectionWithAPI:DMAPI.sharedAPI callback:^(DMItemLocalCollection *historyVideoCollection)
+        {
+            [historyVideoCollection insertItem:item atIndex:0];
+        }];
     }
 }
 

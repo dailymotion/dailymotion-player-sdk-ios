@@ -64,11 +64,7 @@
 {
     if (index < [self._items count])
     {
-        return [(DMItem *)self._items[index] withFields:fields do:^(NSDictionary *data, BOOL _stalled, NSError *error)
-        {
-            // Shortcut to return fully cached, not stalled items
-            callback(data, NO, error);
-        }];
+        return [(DMItem *)self._items[index] withFields:fields do:callback];
     }
     else
     {
@@ -84,7 +80,7 @@
     NSAssert([item.type isEqual:self.type], @"Item type must match collection type");
 }
 
-- (void)appendItem:(DMItem *)item
+- (void)addItem:(DMItem *)item
 {
     [self checkItem:item];
     [self._items addObject:item];

@@ -75,6 +75,9 @@
 
 - (id)initWithType:(NSString *)type api:(DMAPI *)api
 {
+    NSAssert(type != nil, @"The type cannot be nil");
+    NSAssert(api != nil, @"The api cannot be nil");
+
     if ((self = [super init]))
     {
         _type = type;

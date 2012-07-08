@@ -8,6 +8,7 @@
 
 #import "DMItemTableViewDataSource.h"
 #import "DMItemDataSourceItem.h"
+#import "DMItemLocalCollection.h"
 #import "DMSubscriptingSupport.h"
 #import "objc/runtime.h"
 
@@ -136,6 +137,11 @@ static char operationKey;
     if ([keyPath isEqualToString:@"itemCollection"] && object == self)
     {
         self._loaded = NO;
+        if ([self.itemCollection isKindOfClass:DMItemLocalCollection.class])
+        {
+            // Local connection doesn't need pre-loading of the list
+            self._loaded = YES;
+        }
         [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)

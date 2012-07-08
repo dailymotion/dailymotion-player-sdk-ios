@@ -14,10 +14,13 @@
 		536DA18B15A48D4B00941F43 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 536DA18A15A48D4B00941F43 /* AppDelegate.m */; };
 		536DA18E15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 536DA18C15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard */; };
 		536DA19115A48D4B00941F43 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 536DA18F15A48D4B00941F43 /* MainStoryboard_iPad.storyboard */; };
-		536DA19415A48D4B00941F43 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 536DA19315A48D4B00941F43 /* MasterViewController.m */; };
+		536DA19415A48D4B00941F43 /* SearchVideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 536DA19315A48D4B00941F43 /* SearchVideoTableViewController.m */; };
 		536DA19715A48D4B00941F43 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 536DA19615A48D4B00941F43 /* DetailViewController.m */; };
 		536DA1AD15A48DB400941F43 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536DA1AC15A48DB400941F43 /* Security.framework */; };
 		536DA1AF15A48DBB00941F43 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536DA1AE15A48DBB00941F43 /* SystemConfiguration.framework */; };
+		5394B9F615A9E29500332C14 /* VideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5394B9F515A9E29500332C14 /* VideoTableViewController.m */; };
+		5394B9F915A9E53F00332C14 /* HistoryVideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5394B9F815A9E53F00332C14 /* HistoryVideoTableViewController.m */; };
+		5394B9FC15A9E77100332C14 /* HistoryVideoCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 5394B9FB15A9E77100332C14 /* HistoryVideoCollection.m */; };
 		53AE4FB115A4EF5E0083E085 /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53AE4FAC15A4EF3F0083E085 /* libDailymotion SDK.a */; };
 /* End PBXBuildFile section */
 
@@ -57,12 +60,18 @@
 		536DA18A15A48D4B00941F43 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		536DA18D15A48D4B00941F43 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
 		536DA19015A48D4B00941F43 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
-		536DA19215A48D4B00941F43 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		536DA19315A48D4B00941F43 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
+		536DA19215A48D4B00941F43 /* SearchVideoTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchVideoTableViewController.h; sourceTree = "<group>"; };
+		536DA19315A48D4B00941F43 /* SearchVideoTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchVideoTableViewController.m; sourceTree = "<group>"; };
 		536DA19515A48D4B00941F43 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		536DA19615A48D4B00941F43 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		536DA1AC15A48DB400941F43 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		536DA1AE15A48DBB00941F43 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		5394B9F415A9E29500332C14 /* VideoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoTableViewController.h; sourceTree = "<group>"; };
+		5394B9F515A9E29500332C14 /* VideoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoTableViewController.m; sourceTree = "<group>"; };
+		5394B9F715A9E53F00332C14 /* HistoryVideoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryVideoTableViewController.h; sourceTree = "<group>"; };
+		5394B9F815A9E53F00332C14 /* HistoryVideoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryVideoTableViewController.m; sourceTree = "<group>"; };
+		5394B9FA15A9E77100332C14 /* HistoryVideoCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryVideoCollection.h; sourceTree = "<group>"; };
+		5394B9FB15A9E77100332C14 /* HistoryVideoCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryVideoCollection.m; sourceTree = "<group>"; };
 		53AE4FA315A4EF3F0083E085 /* Dailymotion SDK iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Dailymotion SDK iOS.xcodeproj"; path = "../../Dailymotion SDK iOS.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,8 +129,14 @@
 				536DA18A15A48D4B00941F43 /* AppDelegate.m */,
 				536DA18C15A48D4B00941F43 /* MainStoryboard_iPhone.storyboard */,
 				536DA18F15A48D4B00941F43 /* MainStoryboard_iPad.storyboard */,
-				536DA19215A48D4B00941F43 /* MasterViewController.h */,
-				536DA19315A48D4B00941F43 /* MasterViewController.m */,
+				5394B9FA15A9E77100332C14 /* HistoryVideoCollection.h */,
+				5394B9FB15A9E77100332C14 /* HistoryVideoCollection.m */,
+				5394B9F415A9E29500332C14 /* VideoTableViewController.h */,
+				5394B9F515A9E29500332C14 /* VideoTableViewController.m */,
+				536DA19215A48D4B00941F43 /* SearchVideoTableViewController.h */,
+				536DA19315A48D4B00941F43 /* SearchVideoTableViewController.m */,
+				5394B9F715A9E53F00332C14 /* HistoryVideoTableViewController.h */,
+				5394B9F815A9E53F00332C14 /* HistoryVideoTableViewController.m */,
 				536DA19515A48D4B00941F43 /* DetailViewController.h */,
 				536DA19615A48D4B00941F43 /* DetailViewController.m */,
 				536DA18115A48D4B00941F43 /* Supporting Files */,
@@ -237,8 +252,11 @@
 			files = (
 				536DA18715A48D4B00941F43 /* main.m in Sources */,
 				536DA18B15A48D4B00941F43 /* AppDelegate.m in Sources */,
-				536DA19415A48D4B00941F43 /* MasterViewController.m in Sources */,
+				536DA19415A48D4B00941F43 /* SearchVideoTableViewController.m in Sources */,
 				536DA19715A48D4B00941F43 /* DetailViewController.m in Sources */,
+				5394B9F615A9E29500332C14 /* VideoTableViewController.m in Sources */,
+				5394B9F915A9E53F00332C14 /* HistoryVideoTableViewController.m in Sources */,
+				5394B9FC15A9E77100332C14 /* HistoryVideoCollection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
