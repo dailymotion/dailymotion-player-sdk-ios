@@ -27,6 +27,7 @@
 
 #define kDMHardMaxCallsPerRequest 10
 
+static DMAPI *sharedInstance;
 static NSString *const kDMVersion = @"2.0";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
@@ -46,6 +47,15 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     NSUInteger _maxConcurrency;
     NSUInteger _maxAggregatedCallCount;
     NSURL *_APIBaseURL;
+}
+
++ (id)sharedAPI
+{
+    if (!sharedInstance)
+    {
+        sharedInstance = [[self alloc] init];
+    }
+    return sharedInstance;
 }
 
 - (id)init

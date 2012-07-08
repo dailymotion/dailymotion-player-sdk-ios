@@ -51,6 +51,11 @@
 @property (nonatomic, strong) DMOAuthClient *oauth;
 
 /**
+ * Get the shared DM API instance for the current application.
+ */
++ (id)sharedAPI;
+
+/**
  * Perform a GET request to Dailymotion's API with the given method name and arguments.
  *
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
