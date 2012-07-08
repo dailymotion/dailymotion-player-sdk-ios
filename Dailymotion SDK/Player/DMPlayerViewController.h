@@ -10,7 +10,7 @@
 
 @class DMPlayerViewController;
 
-@protocol DailymotionPlayerDelegate <NSObject>
+@protocol DMPlayerDelegate <NSObject>
 
 @optional
 
@@ -28,7 +28,7 @@
 
 @property (nonatomic, copy) NSString *webBaseURLString;
 
-@property (nonatomic, weak) id<DailymotionPlayerDelegate>delegate;
+@property (nonatomic, weak) id<DMPlayerDelegate>delegate;
 
 /**
  * Determines whether the media resource plays automatically when available (read-only).

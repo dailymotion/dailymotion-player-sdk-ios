@@ -8,8 +8,10 @@
 
 #import "DMPlayerViewController.h"
 #import "DMSubscriptingSupport.h"
+#import "DMAlert.h"
 
 @interface DMPlayerViewController ()
+
 @property (nonatomic, readwrite) BOOL autoplay;
 @property (nonatomic, readwrite) float bufferedTime;
 @property (nonatomic, readwrite) float duration;
@@ -159,7 +161,9 @@
         {
             if ([eventName isEqualToString:@"timeupdate"])
             {
-                self.currentTime = [data[@"time"] floatValue];
+                [self willChangeValueForKey:@"currentTime"];
+                _currentTime = [data[@"time"] floatValue];
+                [self didChangeValueForKey:@"currentTime"];
             }
             else if ([eventName isEqualToString:@"progress"])
             {
@@ -171,7 +175,9 @@
             }
             else if ([eventName isEqualToString:@"fullscreenchange"])
             {
-                self.fullscreen = [data[@"fullscreen"] boolValue];
+                [self willChangeValueForKey:@"fullscreen"];
+                _fullscreen = [data[@"fullscreen"] boolValue];
+                [self didChangeValueForKey:@"fullscreen"];
             }
             else if ([eventName isEqualToString:@"volumechange"])
             {
@@ -221,7 +227,22 @@
 
         return NO;
     }
-    return YES;
+    else if ([request.URL.path hasPrefix:@"/embed/video/"])
+    {
+        return YES;
+    }
+    else
+    {
+        [UIAlertView showAlertViewWithTitle:[NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil),
+                                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"]]
+                                    message:[NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil),
+                                             request.URL.host]
+                          cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                          otherButtonTitles:@[NSLocalizedString(@"Open", nil)]
+                               dismissBlock:^(NSInteger buttonIndex) {[[UIApplication sharedApplication] openURL:request.URL];}
+                                cancelBlock:nil];
+        return NO;
+    }
 }
 
 - (void)setFullscreen:(BOOL)newFullscreen
