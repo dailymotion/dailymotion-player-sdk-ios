@@ -7,7 +7,6 @@
 //
 
 #import "HistoryVideoCollection.h"
-#import <DailymotionSDK/SDK.h>
 
 static DMItemLocalCollection *historyCollection;
 

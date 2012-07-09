@@ -52,6 +52,7 @@
         self.titleLabel.text = self._fieldsData[@"title"];
         self.descriptionTextView.text = self._fieldsData[@"description"];
         [self.playerViewController load:self._fieldsData[@"id"]];
+        [self pushToHistory]; // faster for testing but should be only done on play event
     }
     else
     {
@@ -98,17 +99,25 @@
     }
 }
 
-#pragma mark - Player
-
-- (void)dailymotionPlayer:(DMPlayerViewController *)player didReceiveEvent:(NSString *)eventName
+- (void)pushToHistory
 {
-    if ([eventName isEqualToString:@"play"])
+    if (self._fieldsData[@"id"])
     {
         DMItem *item = [DMItem itemWithType:@"video" forId:self._fieldsData[@"id"] fromAPI:DMAPI.sharedAPI];
         [HistoryVideoCollection historyCollectionWithAPI:DMAPI.sharedAPI callback:^(DMItemLocalCollection *historyVideoCollection)
         {
             [historyVideoCollection pushItem:item];
         }];
+    }
+}
+
+#pragma mark - Player
+
+- (void)dailymotionPlayer:(DMPlayerViewController *)player didReceiveEvent:(NSString *)eventName
+{
+    if ([eventName isEqualToString:@"play"])
+    {
+        [self pushToHistory];
     }
 }
 

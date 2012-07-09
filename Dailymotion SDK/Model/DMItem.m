@@ -89,9 +89,14 @@
     return [object isKindOfClass:self.class] && [self.type isEqualToString:object.type] && [self.itemId isEqualToString:object.itemId];
 }
 
+- (NSUInteger)hash
+{
+    return self.type.hash ^ self.itemId.hash;
+}
+
 - (NSString *)description
 {
-    return [self._fieldsCache description];
+    return [NSString stringWithFormat:@"%@(%@): %@", self.type, self.itemId, [self._fieldsCache description]];
 }
 
 - (void)loadInfo:(NSDictionary *)info withCacheInfo:(DMAPICacheInfo *)cacheInfo

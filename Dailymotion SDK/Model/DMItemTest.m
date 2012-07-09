@@ -108,6 +108,13 @@
     [array addObject:video1];
     [array removeObject:video1bis];
     STAssertEquals(array.count, 0U, @"Different instance of the same item are seen equal by NSArray");
+
+    NSMutableOrderedSet *set = NSMutableOrderedSet.orderedSet;
+    [set addObject:video1];
+    [set addObject:video1bis];
+    STAssertEquals(set.count, 1U, @"Different instances of same item are not duplicated in set");
+    [set addObject:video2];
+    STAssertEquals(set.count, 2U, @"An instance of different item doesn't collide");
 }
 
 @end

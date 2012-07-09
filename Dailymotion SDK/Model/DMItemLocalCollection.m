@@ -36,7 +36,7 @@
             [__items addObject:[DMItem itemWithType:type forId:itemId fromAPI:api]];
         }
         _countLimit = countLimit;
-        self.currentEstimatedTotalItemsCount = ids.count;
+        self.currentEstimatedTotalItemsCount = __items.count;
     }
     return self;
 }
@@ -47,7 +47,9 @@
 {
     if ((self = [super initWithCoder:coder]))
     {
-        __items = [coder decodeObjectForKey:@"_items"];
+        __items = [[coder decodeObjectForKey:@"_items"] mutableCopy];
+        _countLimit = [coder decodeIntegerForKey:@"countLimit"];
+        self.currentEstimatedTotalItemsCount = __items.count;
     }
     return self;
 }
@@ -56,6 +58,7 @@
 {
     [super encodeWithCoder:coder];
     [coder encodeObject:__items forKey:@"_items"];
+    [coder encodeInteger:_countLimit forKey:@"countLimit"];
 }
 
 #pragma mark - Implementation
@@ -64,7 +67,7 @@
 {
     if (index < [self._items count])
     {
-        return [(DMItem *)self._items[index] withFields:fields do:callback];
+        return [(DMItem *)[self._items objectAtIndex:index] withFields:fields do:callback];
     }
     else
     {
@@ -82,8 +85,11 @@
 
 - (void)addItem:(DMItem *)item
 {
+    if ([self._items containsObject:item])
+    {
+        return;
+    }
     [self checkItem:item];
-    [self._items removeObject:item];
     [self._items addObject:item];
     if (self._items.count > self.countLimit)
     {
@@ -94,8 +100,11 @@
 
 - (void)pushItem:(DMItem *)item
 {
+    if ([self._items containsObject:item])
+    {
+        return;
+    }
     [self checkItem:item];
-    [self._items removeObject:item];
     [self._items insertObject:item atIndex:0];
     if (self._items.count > self.countLimit)
     {
@@ -115,6 +124,12 @@
 {
     [self._items removeObjectAtIndex:index];
     self.currentEstimatedTotalItemsCount = self._items.count;
+}
+
+- (void)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
+{
+    [self._items moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:toIndex];
+    self.currentEstimatedTotalItemsCount = self._items.count; // generate KVO notification to indicate the list changed
 }
 
 @end

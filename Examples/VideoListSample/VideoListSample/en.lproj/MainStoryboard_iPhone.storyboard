@@ -234,6 +234,9 @@
         </class>
         <class className="HistoryVideoTableViewController" superclassName="VideoTableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/HistoryVideoTableViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="edit:"/>
+            </relationships>
         </class>
         <class className="SearchVideoTableViewController" superclassName="VideoTableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/SearchVideoTableViewController.h"/>

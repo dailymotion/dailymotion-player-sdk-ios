@@ -20,17 +20,16 @@
 - (id)initWithType:(NSString *)type withItemIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api;
 
 /**
- * Add the given item to the end of the local collection. If the item is already in the collection,
- * the item is moved to the end of the collection.
+ * Add the given item to the end of the local collection if not already present in the collection.
+ * If the collection hit the `countLimit`, the item at the beginning of the collection is removed.
  *
  * @param item The item to add
  */
 - (void)addItem:(DMItem *)item;
 
 /**
- * Insert an item at the beginning of the collection. If the item is already in the collection,
- * the item is moved to the new location. If the collection hit the `countLimit`, the item at the
- * end of the collection is removed.
+ * Insert an item at the beginning of the collection if not already present.
+ * If the collection hit the `countLimit`, the item at the end of the collection is removed.
  *
  * @param item The item to insert
  */
@@ -49,5 +48,13 @@
  * @param index The index of the item to remove
  */
 - (void)removeItemAtIndex:(NSUInteger)index;
+
+/**
+ * Move an item from an index to another
+ *
+ * @param fromIndex Index of the item to move
+ * @param toIndex Index to move the item to
+ */
+- (void)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex;
 
 @end

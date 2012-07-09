@@ -15,6 +15,8 @@
 {
     [super viewDidLoad];
 
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+
     [HistoryVideoCollection historyCollectionWithAPI:DMAPI.sharedAPI callback:^(DMItemCollection *historyVideoCollection)
     {
         self.tableDataSource.itemCollection = historyVideoCollection;

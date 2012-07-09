@@ -11,6 +11,7 @@
 #import "DMItemLocalCollection.h"
 #import "DMSubscriptingSupport.h"
 #import "objc/runtime.h"
+#import "objc/message.h"
 
 static char operationKey;
 
@@ -49,6 +50,8 @@ static char operationKey;
     [self._operations makeObjectsPerformSelector:@selector(cancel)];
     [self._operations removeAllObjects];
 }
+
+#pragma Table Data Source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -131,6 +134,37 @@ static char operationKey;
 
     return cell;
 }
+
+#pragma mark - Table Editing
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self.itemCollection respondsToSelector:@selector(removeItemAtIndex:)];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete && [self.itemCollection respondsToSelector:@selector(removeItemAtIndex:)])
+    {
+        objc_msgSend(self.itemCollection, @selector(removeItemAtIndex:), indexPath.row);
+    }
+}
+
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self.itemCollection respondsToSelector:@selector(moveItemAtIndex:toIndex:)];
+}
+
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+{
+    if ([self.itemCollection respondsToSelector:@selector(moveItemAtIndex:toIndex:)])
+    {
+        objc_msgSend(self.itemCollection, @selector(moveItemAtIndex:toIndex:), fromIndexPath.row, toIndexPath.row);
+    }
+}
+
+
+#pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
