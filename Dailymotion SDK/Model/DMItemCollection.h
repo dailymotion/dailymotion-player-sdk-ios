@@ -24,13 +24,23 @@
 @property (nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
 
 /**
+ * Return an empty local collection of items
+ *
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param countLimit The maximum number of item allowed in the collection
+ * @param api The DMAPI object to use to retrieve data
+ */
++ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api;
+
+/**
  * Return a local collection of items with the given ids
  *
  * @param type The item type name (i.e.: video, user, playlist)
  * @param ids The list of item ids to store in the collection
+ * @param countLimit The maximum number of item allowed in the collection
  * @param api The DMAPI object to use to retrieve data
  */
-+ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSArray *)ids fromAPI:(DMAPI *)api;
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api;
 
 /**
  * Instanciate an item collection for a given object type with some optional paramters

@@ -11,5 +11,4 @@
 
 @interface SearchVideoTableViewController : VideoTableViewController <UISearchBarDelegate>
 
-
 @end

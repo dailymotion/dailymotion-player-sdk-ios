@@ -19,24 +19,24 @@
 @interface DMItemLocalCollection ()
 
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
-
-@property (nonatomic, strong) NSMutableArray *_items;
+@property (nonatomic, strong) NSMutableOrderedSet *_items;
 
 @end
 
 
 @implementation DMItemLocalCollection
 
-- (id)initWithType:(NSString *)type withItemIds:(NSArray *)ids fromAPI:(DMAPI *)api
+- (id)initWithType:(NSString *)type withItemIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
 {
     if ((self = [self initWithType:type api:api]))
     {
-        __items = [NSMutableArray array];
+        __items = NSMutableOrderedSet.orderedSet;
         for (NSString *itemId in ids)
         {
             [__items addObject:[DMItem itemWithType:type forId:itemId fromAPI:api]];
         }
-        self.currentEstimatedTotalItemsCount = [ids count];
+        _countLimit = countLimit;
+        self.currentEstimatedTotalItemsCount = ids.count;
     }
     return self;
 }
@@ -83,28 +83,38 @@
 - (void)addItem:(DMItem *)item
 {
     [self checkItem:item];
+    [self._items removeObject:item];
     [self._items addObject:item];
-    self.currentEstimatedTotalItemsCount = [self._items count];
+    if (self._items.count > self.countLimit)
+    {
+        [self._items removeObjectsInRange:NSMakeRange(0, self._items.count - self.countLimit)];
+    }
+    self.currentEstimatedTotalItemsCount = self._items.count;
 }
 
-- (void)insertItem:(DMItem *)item atIndex:(NSUInteger)index
+- (void)pushItem:(DMItem *)item
 {
     [self checkItem:item];
-    [self._items insertObject:item atIndex:index];
-    self.currentEstimatedTotalItemsCount = [self._items count];
+    [self._items removeObject:item];
+    [self._items insertObject:item atIndex:0];
+    if (self._items.count > self.countLimit)
+    {
+        [self._items removeObjectsInRange:NSMakeRange(self.countLimit, self._items.count - self.countLimit)];
+    }
+    self.currentEstimatedTotalItemsCount = self._items.count;
 }
 
 - (void)removeItem:(DMItem *)item
 {
     [self checkItem:item];
     [self._items removeObject:item];
-    self.currentEstimatedTotalItemsCount = [self._items count];
+    self.currentEstimatedTotalItemsCount = self._items.count;
 }
 
 - (void)removeItemAtIndex:(NSUInteger)index
 {
     [self._items removeObjectAtIndex:index];
-    self.currentEstimatedTotalItemsCount = [self._items count];
+    self.currentEstimatedTotalItemsCount = self._items.count;
 }
 
 @end

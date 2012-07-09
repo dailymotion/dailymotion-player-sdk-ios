@@ -41,9 +41,14 @@
 
 #pragma mark - Initializers
 
-+ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSArray *)ids fromAPI:(DMAPI *)api
++ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
 {
-    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids fromAPI:api];
+    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:nil countLimit:(NSUInteger)countLimit fromAPI:api];
+}
+
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
+{
+    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids countLimit:(NSUInteger)countLimit fromAPI:api];
 }
 
 + (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api

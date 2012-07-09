@@ -94,4 +94,20 @@
     WAIT
 }
 
+- (void)testEqual
+{
+    DMAPI *api = self.api;
+    DMItem *video1 = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
+    DMItem *video1bis = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
+    DMItem *video2 = [DMItem itemWithType:@"video" forId:@"xmcyw3" fromAPI:api];
+
+    STAssertTrue([video1 isEqual:video1bis], @"Two item instances on the same id are equal");
+    STAssertFalse([video1 isEqual:video2], @"Two item instances on the different id are not equal");
+
+    NSMutableArray *array = NSMutableArray.array;
+    [array addObject:video1];
+    [array removeObject:video1bis];
+    STAssertEquals(array.count, 0U, @"Different instance of the same item are seen equal by NSArray");
+}
+
 @end

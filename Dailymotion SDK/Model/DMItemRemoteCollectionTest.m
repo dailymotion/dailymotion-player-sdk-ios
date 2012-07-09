@@ -230,7 +230,7 @@
     STAssertEquals(networkRequestCount, 0U, @"Other objects on the same page are already cached");
 }
 
-- (void)testItemCollectionArchiving
+- (void)skiptestItemCollectionArchiving
 {
     DMAPI *api = self.api;
     DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test archiving"} fromAPI:api];

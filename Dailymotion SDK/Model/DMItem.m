@@ -19,9 +19,6 @@
 
 
 @interface DMItem ()
-{
-    NSUInteger _hash;
-}
 
 @property (nonatomic, readwrite, copy) NSString *type;
 @property (nonatomic, readwrite, copy) NSString *itemId;
@@ -53,7 +50,6 @@
         _api = api;
         __path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
         __fieldsCache = [[NSMutableDictionary alloc] init];
-        _hash = [[NSString stringWithFormat:@"%@-%@", type, itemId] hash];
     }
 
     return self;
@@ -78,7 +74,6 @@
     {
         _cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
         __fieldsCache = [coder decodeObjectForKey:@"_fieldsCache"];
-        _hash = [[NSString stringWithFormat:@"%@-%@", _type, _itemId] hash];
     }
 
     return self;
@@ -89,9 +84,9 @@
     return [DMItemCollection itemCollectionWithConnection:connection forItem:self withParams:params fromAPI:self.api];
 }
 
-- (NSUInteger)hash
+- (BOOL)isEqual:(DMItem *)object
 {
-    return _hash;
+    return [object isKindOfClass:self.class] && [self.type isEqualToString:object.type] && [self.itemId isEqualToString:object.itemId];
 }
 
 - (NSString *)description

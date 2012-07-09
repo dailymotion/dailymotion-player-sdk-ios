@@ -31,7 +31,7 @@ static DMItemLocalCollection *historyCollection;
             }
             else
             {
-                historyCollection = [DMItemCollection itemLocalConnectionWithType:@"video" withIds:@[] fromAPI:api];
+                historyCollection = [DMItemCollection itemLocalConnectionWithType:@"video" countLimit:100 fromAPI:api];
             }
 
             callback(historyCollection);
