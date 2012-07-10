@@ -106,7 +106,7 @@
         DMItem *item = [DMItem itemWithType:@"video" forId:self._fieldsData[@"id"] fromAPI:DMAPI.sharedAPI];
         [HistoryVideoCollection historyCollectionWithAPI:DMAPI.sharedAPI callback:^(DMItemLocalCollection *historyVideoCollection)
         {
-            [historyVideoCollection pushItem:item];
+            [historyVideoCollection addItem:item done:^(NSError *error) {}];
         }];
     }
 }

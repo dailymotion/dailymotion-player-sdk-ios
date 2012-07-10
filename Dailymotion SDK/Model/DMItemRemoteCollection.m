@@ -446,4 +446,105 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }
 }
 
+- (BOOL)canEdit
+{
+    // TODO: handle rights
+    return YES;
+}
+
+- (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
+{
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+    if ([self._idsCache containsObject:item.itemId])
+    {
+        callback(nil);
+        operation.isFinished = YES;
+    }
+    else
+    {
+        __weak DMItemRemoteCollection *bself = self;
+        DMAPICall *apiCall = [self.api post:[self._path stringByAppendingFormat:@"/%@", item.itemId] callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+        {
+            bself.cacheInfo.stalled = NO;
+            callback(error);
+        }];
+
+        operation.cancelBlock = ^
+        {
+            [apiCall cancel];
+        };
+    }
+
+    return operation;
+}
+
+- (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *))callback
+{
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+    __weak DMItemRemoteCollection *bself = self;
+    DMAPICall *apiCall = [self.api delete:[self._path stringByAppendingFormat:@"/%@", item.itemId] callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+    {
+        bself.cacheInfo.stalled = NO;
+        callback(error);
+    }];
+
+    operation.cancelBlock = ^
+    {
+        [apiCall cancel];
+    };
+
+    return operation;
+}
+
+- (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback
+{
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+    if (index < [self._idsCache count] && self._idsCache[index] != DMEndOfList)
+    {
+        DMItem *item = [self itemWithId:self._idsCache[index]];
+        return [self removeItem:item done:callback];
+    }
+    else
+    {
+        __weak DMItemRemoteCollection *bself = self;
+        __block DMItemOperation *subOperation = [self withItemFields:@[] atIndex:index do:^(NSDictionary *data, BOOL stalled, NSError *error)
+        {
+            if (error)
+            {
+                callback(error);
+                operation.isFinished = YES;
+            }
+            else if (index < [bself._idsCache count] && bself._idsCache[index] != DMEndOfList)
+            {
+                DMItem *item = [bself itemWithId:bself._idsCache[index]];
+                subOperation = [bself removeItem:item done:^(NSError *error2)
+                {
+                    callback(error2);
+                    operation.isFinished = YES;
+                }];
+            }
+            else
+            {
+                callback(nil);
+                operation.isFinished = YES;
+            }
+        }];
+
+        operation.cancelBlock = ^
+        {
+            [subOperation cancel];
+        };
+    }
+
+    return operation;
+}
+
+- (BOOL)canReorder
+{
+    return NO; // TODO
+}
+
 @end

@@ -96,5 +96,47 @@
  */
 - (void)flushCache;
 
-@end
+/**
+ * Indicates if the collection can be edited by adding or deleting items.
+ */
+- (BOOL)canEdit;
 
+/**
+ * Insert an item at the head of the collection if not already present.
+ * If the collection hit the `countLimit`, the item at the end of the collection is removed.
+ *
+ * @param item The item to insert
+ * @param callback A block called when the operation is completed
+ */
+- (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *error))callback;
+
+/**
+ * Remove the item from the collection.
+ *
+ * @param item The item to remove
+ */
+- (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *error))callback;
+
+/**
+ * Remove the item a the given location
+ *
+ * @param index The index of the item to remove
+ * @param callback A block called when the operation is completed
+ */
+- (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback;
+
+/**
+ * Indicates if the item if the collection can be reordered using `moveItemAtIndex:toIndex:` method.
+ */
+- (BOOL)canReorder;
+
+/**
+ * Move an item from an index to another
+ *
+ * @param fromIndex Index of the item to move
+ * @param toIndex Index to move the item to
+ * @param callback A block called when the operation is completed
+ */
+- (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *error))callback;
+
+@end

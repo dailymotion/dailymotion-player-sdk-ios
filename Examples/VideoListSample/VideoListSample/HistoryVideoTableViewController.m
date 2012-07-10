@@ -16,6 +16,8 @@
     [super viewDidLoad];
 
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    ((DMItemTableViewDataSource *)self.tableDataSource).editable = YES;
+    ((DMItemTableViewDataSource *)self.tableDataSource).reorderable = YES;
 
     [HistoryVideoCollection historyCollectionWithAPI:DMAPI.sharedAPI callback:^(DMItemCollection *historyVideoCollection)
     {

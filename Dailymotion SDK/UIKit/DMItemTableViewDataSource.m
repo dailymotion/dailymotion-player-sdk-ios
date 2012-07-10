@@ -139,30 +139,53 @@ static char operationKey;
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.itemCollection respondsToSelector:@selector(removeItemAtIndex:)];
+    return [self.itemCollection canEdit] && self.editable;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete && [self.itemCollection respondsToSelector:@selector(removeItemAtIndex:)])
+    if (editingStyle == UITableViewCellEditingStyleDelete && [self.itemCollection canEdit] && self.editable)
     {
-        objc_msgSend(self.itemCollection, @selector(removeItemAtIndex:), indexPath.row);
+        __weak DMItemTableViewDataSource *bself = self;
+        [self.itemCollection removeItemAtIndex:indexPath.row done:^(NSError *error)
+        {
+            if (error)
+            {
+                bself.lastError = error;
+                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+            }
+            else
+            {
+                bself.lastError = nil;
+            }
+        }];
     }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.itemCollection respondsToSelector:@selector(moveItemAtIndex:toIndex:)];
+    return [self.itemCollection canReorder] && self.reorderable;
 }
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    if ([self.itemCollection respondsToSelector:@selector(moveItemAtIndex:toIndex:)])
+    if ([self.itemCollection canReorder] && self.reorderable)
     {
-        objc_msgSend(self.itemCollection, @selector(moveItemAtIndex:toIndex:), fromIndexPath.row, toIndexPath.row);
+        __weak DMItemTableViewDataSource *bself = self;
+        [self.itemCollection moveItemAtIndex:fromIndexPath.row toIndex:toIndexPath.row done:^(NSError *error)
+        {
+            if (error)
+            {
+                bself.lastError = error;
+                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+            }
+            else
+            {
+                bself.lastError = nil;
+            }
+        }];
     }
 }
-
 
 #pragma mark - KVO
 

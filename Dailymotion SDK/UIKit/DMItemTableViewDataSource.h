@@ -19,6 +19,8 @@ static NSString *const DMItemTableViewDataSourceOfflineNotification = @"DMItemTa
 @property (nonatomic, copy) NSString *cellIdentifier;
 @property (nonatomic, strong) DMItemCollection *itemCollection;
 @property (nonatomic, strong) NSError *lastError;
+@property (nonatomic, assign) BOOL editable;
+@property (nonatomic, assign) BOOL reorderable;
 
 - (void)cancelAllOperations;
 

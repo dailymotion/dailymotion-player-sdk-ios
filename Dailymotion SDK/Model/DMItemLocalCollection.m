@@ -9,6 +9,14 @@
 #import "DMItemLocalCollection.h"
 #import "DMSubscriptingSupport.h"
 
+static DMItemOperation *fakeOperation()
+{
+    DMItemOperation *finishedOperation = [[DMItemOperation alloc] init];
+    finishedOperation.isFinished = YES;
+    return finishedOperation;
+}
+
+
 @interface DMItemCollection (Private)
 
 - (id)initWithType:(NSString *)type api:(DMAPI *)api;
@@ -83,53 +91,59 @@
     NSAssert([item.type isEqual:self.type], @"Item type must match collection type");
 }
 
-- (void)addItem:(DMItem *)item
+- (BOOL)canEdit
 {
-    if ([self._items containsObject:item])
-    {
-        return;
-    }
-    [self checkItem:item];
-    [self._items addObject:item];
-    if (self._items.count > self.countLimit)
-    {
-        [self._items removeObjectsInRange:NSMakeRange(0, self._items.count - self.countLimit)];
-    }
-    self.currentEstimatedTotalItemsCount = self._items.count;
+    return YES;
 }
 
-- (void)pushItem:(DMItem *)item
+- (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
 {
-    if ([self._items containsObject:item])
+    if (![self._items containsObject:item])
     {
-        return;
+        [self checkItem:item];
+        [self._items insertObject:item atIndex:0];
+        if (self._items.count > self.countLimit)
+        {
+            [self._items removeObjectsInRange:NSMakeRange(self.countLimit, self._items.count - self.countLimit)];
+        }
+        self.currentEstimatedTotalItemsCount = self._items.count;
     }
-    [self checkItem:item];
-    [self._items insertObject:item atIndex:0];
-    if (self._items.count > self.countLimit)
-    {
-        [self._items removeObjectsInRange:NSMakeRange(self.countLimit, self._items.count - self.countLimit)];
-    }
-    self.currentEstimatedTotalItemsCount = self._items.count;
+
+    callback(nil);
+    return fakeOperation();
 }
 
-- (void)removeItem:(DMItem *)item
+- (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *))callback
 {
     [self checkItem:item];
     [self._items removeObject:item];
     self.currentEstimatedTotalItemsCount = self._items.count;
+
+    callback(nil);
+    return fakeOperation();
 }
 
-- (void)removeItemAtIndex:(NSUInteger)index
+- (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback
 {
     [self._items removeObjectAtIndex:index];
     self.currentEstimatedTotalItemsCount = self._items.count;
+
+    callback(nil);
+    return fakeOperation();
 }
 
-- (void)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
+- (BOOL)canReorder
+{
+    return YES;
+}
+
+- (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
 {
     [self._items moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:toIndex];
     self.currentEstimatedTotalItemsCount = self._items.count; // generate KVO notification to indicate the list changed
+
+    callback(nil);
+    return fakeOperation();
 }
 
 @end

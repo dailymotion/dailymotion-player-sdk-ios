@@ -132,4 +132,38 @@
 {
 }
 
+- (BOOL)canEdit
+{
+    return NO;
+}
+
+- (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+- (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+- (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+- (BOOL)canReorder
+{
+    return NO;
+}
+
+- (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 @end
