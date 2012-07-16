@@ -67,7 +67,8 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
 {
     NSMutableDictionary *cacheInfo = [NSMutableDictionary dictionary];
     if (_namespace) cacheInfo[@"namespace"] = _namespace;
-    if (_invalidates) cacheInfo[@"invalidates"] = _invalidates;
+    // Do not archive invalidates as we don't want to invalidate current cached data on unarchiving
+    // if (_invalidates) cacheInfo[@"invalidates"] = _invalidates;
     if (_etag) cacheInfo[@"etag"] = _etag;
     cacheInfo[@"public"] = [NSNumber numberWithBool:_public];
     cacheInfo[@"maxAge"] = [NSNumber numberWithFloat:_maxAge];
