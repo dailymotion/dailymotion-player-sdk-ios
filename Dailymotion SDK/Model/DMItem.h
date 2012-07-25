@@ -34,12 +34,13 @@
  * Get an instance of DMItemCollection of a given connection to the item
  *
  * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
+ * @param type The connection type name
  * @param item The item to load connection from
  * @param params Optional parameters to filter/sort the result
  *
  * @see DMItemCollection
  */
-- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection withParams:(NSDictionary *)params;
+- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type withParams:(NSDictionary *)params;
 
 /**
  * Load some fields from either API or cache and callback the passed block with the fields data

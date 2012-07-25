@@ -79,9 +79,9 @@
     return self;
 }
 
-- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection withParams:(NSDictionary *)params
+- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type withParams:(NSDictionary *)params
 {
-    return [DMItemCollection itemCollectionWithConnection:connection forItem:self withParams:params fromAPI:self.api];
+    return [DMItemCollection itemCollectionWithConnection:connection ofType:type forItem:self withParams:params];
 }
 
 - (BOOL)isEqual:(DMItem *)object

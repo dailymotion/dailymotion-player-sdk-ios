@@ -59,12 +59,12 @@
                                                 fromAPI:api];
 }
 
-+ (id)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
++ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item withParams:(NSDictionary *)params
 {
-    return [[DMItemRemoteCollection alloc] initWithType:item.type
+    return [[DMItemRemoteCollection alloc] initWithType:type
                                                  params:params
                                                    path:[NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection]
-                                                fromAPI:api];
+                                                fromAPI:item.api];
 }
 
 + (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api

@@ -54,12 +54,12 @@
 /**
  * Instanciate an item collection for an item connection
  *
- * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
+ * @param connection The name of the item's connection (i.e.: videos, playlists, feeds)
+ * @param type The item type name (i.e.: video, user, playlist)
  * @param item The item to load connection from
  * @param params Optional parameters to filter/sort the result
- * @param api The DMAPI object to use to retrieve data
  */
-+ (id)itemCollectionWithConnection:(NSString *)connection forItem:(DMItem *)item withParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
++ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item withParams:(NSDictionary *)params;
 
 /**
  * Load a collection from a previously archived collection file.

@@ -236,6 +236,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                     @synchronized(bself._runningRequests)
                     {
                         NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                        if (!_requestInfo) return;
                         void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
                         for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
                         {
@@ -261,6 +262,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                 @synchronized(bself._runningRequests)
                 {
                     NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                    if (!_requestInfo) return;
                     [(NSMutableArray *)_requestInfo[@"operations"] removeObject:boperation];
                     NSMutableArray *callbacks = _requestInfo[@"callbacks"];
                     [callbacks removeObject:bcallback];
@@ -283,7 +285,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (DMAPICall *)loadItemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback
 {
-    NSMutableDictionary *params = [self.params mutableCopy];
+    NSMutableDictionary *params = self.params ? self.params.mutableCopy : NSMutableDictionary.dictionary;
     params[@"page"] = [NSNumber numberWithInt:page];
     params[@"limit"] = [NSNumber numberWithInt:itemsPerPage];
 
