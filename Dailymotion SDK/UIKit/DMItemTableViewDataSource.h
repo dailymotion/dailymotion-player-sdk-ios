@@ -9,13 +9,23 @@
 #import <Foundation/Foundation.h>
 #import "DMItemCollection.h"
 
-static NSString *const DMItemTableViewDataSourceLoadingNotification = @"DMItemTableViewDataSourceLoadingNotification";
-static NSString *const DMItemTableViewDataSourceUpdatedNotification = @"DMItemTableViewDataSourceUpdatedNotification";
-static NSString *const DMItemTableViewDataSourceErrorNotification = @"DMItemTableViewDataSourceErrorNotification";
-static NSString *const DMItemTableViewDataSourceOfflineNotification = @"DMItemTableViewDataSourceOfflineNotification";
+@class DMItemTableViewDataSource;
+
+@protocol DMItemTableViewDataSourceDelegate <NSObject>
+
+@optional
+
+- (void)itemTableViewDataSourceStartedLoadingData:(DMItemTableViewDataSource *)dataSource;
+- (void)itemTableViewDataSourceDidUpdateContent:(DMItemTableViewDataSource *)dataSource;
+- (void)itemTableViewDataSourceDidEnterOfflineMode:(DMItemTableViewDataSource *)dataSource;
+- (void)itemTableViewDataSourceDidLeaveOfflineMode:(DMItemTableViewDataSource *)dataSource;
+- (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didFailWithError:(NSError *)error;
+
+@end
 
 @interface DMItemTableViewDataSource : NSObject <UITableViewDataSource>
 
+@property (nonatomic, weak) id<DMItemTableViewDataSourceDelegate> delegate;
 @property (nonatomic, copy) NSString *cellIdentifier;
 @property (nonatomic, strong) DMItemCollection *itemCollection;
 @property (nonatomic, strong) NSError *lastError;

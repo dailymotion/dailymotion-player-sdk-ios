@@ -41,7 +41,10 @@ static char indexKey;
             bself.lastError = error;
             if (notify)
             {
-                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemPageViewDataSourceErrorNotification object:bself];
+                if ([bself.delegate respondsToSelector:@selector(itemPageViewDataSource:didFailWithError:)])
+                {
+                    [bself.delegate itemPageViewDataSource:bself didFailWithError:error];
+                }
             }
         }
         else

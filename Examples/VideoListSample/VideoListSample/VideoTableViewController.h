@@ -11,7 +11,7 @@
 
 @class DetailViewController;
 
-@interface VideoTableViewController : UITableViewController
+@interface VideoTableViewController : UITableViewController <DMItemTableViewDataSourceDelegate>
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 @property (nonatomic, strong) DMItemTableViewDataSource *tableDataSource;

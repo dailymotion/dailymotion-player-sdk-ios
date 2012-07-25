@@ -37,12 +37,10 @@ static char operationKey;
 
 - (void)dealloc
 {
-    if (self._loaded)
-    {
-        [self cancelAllOperations];
-        [self removeObserver:self forKeyPath:@"itemCollection"];
-        [self removeObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus"];
-    }
+    [self cancelAllOperations];
+    [self removeObserver:self forKeyPath:@"itemCollection"];
+    [self removeObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount"];
+    [self removeObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus"];
 }
 
 - (void)cancelAllOperations
@@ -55,39 +53,41 @@ static char operationKey;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0)
+    if (!self._loaded && self.itemCollection)
     {
-        if (!self._loaded && self.itemCollection)
+        UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+        NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
+        NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemDataSourceItem protocol");
+
+        __weak DMItemTableViewDataSource *bself = self;
+        DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
-            UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
-            NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
-            NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemTableViewCell protocol");
-
-            __weak DMItemTableViewDataSource *bself = self;
-            DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+            if (error)
             {
-                if (error)
+                bself.lastError = error;
+                bself._loaded = NO;
+                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
                 {
-                    bself.lastError = error;
-                    bself._loaded = NO;
-                    [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                    [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
                 }
-            }];
-            self._operations = [NSMutableArray array];
-            if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
-            {
-                [self._operations addObject:operation];
-                [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
-
-                // Only notify about loading if we have something to load on the network
-                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceLoadingNotification object:self];
             }
+        }];
+        self._operations = [NSMutableArray array];
+        if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
+        {
+            [self._operations addObject:operation];
+            [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
 
-            self._loaded = YES;
+            // Only notify about loading if we have something to load on the network
+            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
+            {
+                [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+            }
         }
-        return self.itemCollection.currentEstimatedTotalItemsCount;
+
+        self._loaded = YES;
     }
-    return 0;
+    return self.itemCollection.currentEstimatedTotalItemsCount;
 }
 
 
@@ -114,7 +114,10 @@ static char operationKey;
                 bself.lastError = error;
                 if (notify)
                 {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                    if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                    {
+                        [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                    }
                 }
             }
             else
@@ -152,7 +155,10 @@ static char operationKey;
             if (error)
             {
                 bself.lastError = error;
-                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                {
+                    [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                }
             }
             else
             {
@@ -177,7 +183,10 @@ static char operationKey;
             if (error)
             {
                 bself.lastError = error;
-                [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceErrorNotification object:bself];
+                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                {
+                    [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                }
             }
             else
             {
@@ -199,12 +208,18 @@ static char operationKey;
             // Local connection doesn't need pre-loading of the list
             self._loaded = YES;
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
+        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
+        {
+            [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+        }
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
-        [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
+        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
+        {
+            [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+        }
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
@@ -213,11 +228,17 @@ static char operationKey;
         if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousRechabilityStatus == DMNotReachable)
         {
             // Became recheable: notify table view controller that it should reload table data
-            [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceUpdatedNotification object:self];
+            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidLeaveOfflineMode:)])
+            {
+                [self.delegate itemTableViewDataSourceDidLeaveOfflineMode:self];
+            }
         }
         else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousRechabilityStatus != DMNotReachable)
         {
-            [[NSNotificationCenter defaultCenter] postNotificationName:DMItemTableViewDataSourceOfflineNotification object:self];
+            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
+            {
+                [self.delegate itemTableViewDataSourceDidEnterOfflineMode:self];
+            }
         }
     }
     else if ([keyPath isEqualToString:@"isFinished"] && [object isKindOfClass:DMItemOperation.class])

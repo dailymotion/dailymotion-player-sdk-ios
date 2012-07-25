@@ -10,12 +10,19 @@
 #import "DMItemCollection.h"
 #import "DMItemDataSourceItem.h"
 
-static NSString *const DMItemPageViewDataSourceUpdatedNotification = @"DMItemPageViewDataSourceUpdatedNotification";
-static NSString *const DMItemPageViewDataSourceErrorNotification = @"DMItemPageViewDataSourceErrorNotification";
-static NSString *const DMItemPageViewDataSourceOfflineNotification = @"DMItemPageViewDataSourceOfflineNotification";
+@class DMItemPageViewDataSource;
+
+@protocol DMItemPageViewDataSourceDelegate <NSObject>
+
+@optional
+
+- (void)itemPageViewDataSource:(DMItemPageViewDataSource *)dataSource didFailWithError:(NSError *)error;
+
+@end
 
 @interface DMItemPageViewDataSource : NSObject <UIPageViewControllerDataSource>
 
+@property (nonatomic, weak) id<DMItemPageViewDataSourceDelegate> delegate;
 @property (nonatomic, strong) UIViewController<DMItemDataSourceItem> *(^createViewControllerBlock)();
 @property (nonatomic, strong) DMItemCollection *itemCollection;
 @property (nonatomic, strong) NSError *lastError;

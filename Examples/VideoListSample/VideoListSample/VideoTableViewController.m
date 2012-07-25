@@ -8,6 +8,7 @@
 
 #import "VideoTableViewController.h"
 #import "DetailViewController.h"
+#import <DailymotionSDK/DMAlert.h>
 
 @interface VideoTableViewController ()
 
@@ -36,6 +37,7 @@
 
     self.tableDataSource = [[DMItemTableViewDataSource alloc] init];
     self.tableDataSource.cellIdentifier = @"Cell";
+    self.tableDataSource.delegate = self;
     self.tableView.dataSource = self.tableDataSource;
 
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
@@ -64,42 +66,6 @@
     self._loadingIndicatorView.frame = frame;
     [self._overlayView addSubview:self._loadingIndicatorView];
     [self.view addSubview:self._overlayView];
-
-    __weak VideoTableViewController *bself = self;
-
-    // Handle DMItemTableViewDataSource notifications
-    [[NSNotificationCenter defaultCenter] addObserverForName:DMItemTableViewDataSourceLoadingNotification
-                                                      object:self.tableDataSource
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note)
-    {
-        [bself setLoading:YES];
-    }];
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:DMItemTableViewDataSourceUpdatedNotification
-                                                      object:self.tableDataSource
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note)
-    {
-        [bself setLoading:NO];
-        [bself.tableView reloadData];
-    }];
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:DMItemTableViewDataSourceErrorNotification
-                                                      object:self.tableDataSource
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note)
-    {
-        NSError *error = ((DMItemTableViewDataSource *)note.object).lastError;
-        [UIAlertView showAlertViewWithTitle:@"Error"
-                                    message:error.localizedDescription
-                          cancelButtonTitle:@"Dismiss"
-                          otherButtonTitles:nil
-                               dismissBlock:nil
-                                cancelBlock:nil];
-    }];
-
-
 }
 
 - (void)dealloc
@@ -189,6 +155,34 @@
         [pageViewController setViewControllers:@[viewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 
     }
+}
+
+#pragma mark - DMItemTableViewDataSourceDelegate
+
+- (void)itemTableViewDataSourceStartedLoadingData:(DMItemTableViewDataSource *)dataSource
+{
+    [self setLoading:YES];
+}
+
+- (void)itemTableViewDataSourceDidUpdateContent:(DMItemTableViewDataSource *)dataSource
+{
+    [self setLoading:NO];
+    [self.tableView reloadData];
+}
+
+- (void)itemTableViewDataSourceDidLeaveOfflineMode:(DMItemTableViewDataSource *)dataSource
+{
+    [self.tableView reloadData];
+}
+
+- (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didFailWithError:(NSError *)error
+{
+    [UIAlertView showAlertViewWithTitle:@"Error"
+                                message:error.localizedDescription
+                      cancelButtonTitle:@"Dismiss"
+                      otherButtonTitles:nil
+                           dismissBlock:nil
+                            cancelBlock:nil];
 }
 
 @end
