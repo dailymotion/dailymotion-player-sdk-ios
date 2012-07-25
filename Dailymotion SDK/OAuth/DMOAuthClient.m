@@ -344,7 +344,7 @@ static char callbackKey;
         }
 
         // Compute a uniq hash key for the current grant type setup
-        const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@", type, apiKey, apiSecret] UTF8String];
+        const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@&scope=%@", type, apiKey, apiSecret, scope] UTF8String];
         unsigned char r[CC_MD5_DIGEST_LENGTH];
         CC_MD5(str, (CC_LONG)strlen(str), r);
 
@@ -435,7 +435,7 @@ static char callbackKey;
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    if ([request.URL.scheme isEqualToString:@"dailymotion"])
+    if ([request.URL.scheme isEqualToString:@"none"])
     {
         [self handleOAuthAuthorizationResponseWithURL:request.URL completionHandler:objc_getAssociatedObject(self, &callbackKey)];
         DMOAuthPerformMandatoryDelegate(@selector(dailymotionOAuthRequestCloseModalDialog:), nil);
@@ -476,7 +476,7 @@ static char callbackKey;
 
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-    if ([request.URL.scheme isEqualToString:@"dailymotion"])
+    if ([request.URL.scheme isEqualToString:@"none"])
     {
         [self handleOAuthAuthorizationResponseWithURL:request.URL completionHandler:objc_getAssociatedObject(self, &callbackKey)];
         [self performMandatoryDelegateSelector:@selector(dailymotionOAuthRequestCloseModalDialog:) withObject:nil];

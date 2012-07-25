@@ -167,7 +167,8 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
         (__bridge id)kSecAttrService: @"Dailymotion",
 
 #if !TARGET_IPHONE_SIMULATOR
-        (__bridge id)kSecAttrAccessGroup: kDMKeychainAccessGroup,
+        // FIXME
+        //(__bridge id)kSecAttrAccessGroup: kDMKeychainAccessGroup,
 #endif
 
         // Return the attributes of the first match only:
@@ -195,6 +196,11 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     secItem[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
     secItem[(__bridge id)kSecAttrAccount] = keychainIdentifier;
     secItem[(__bridge id)kSecAttrService] = @"Dailymotion";
+
+#if !TARGET_IPHONE_SIMULATOR
+    // FIXME
+    //secItem[(__bridge id)kSecAttrAccessGroup] = kDMKeychainAccessGroup;
+#endif
 
     return secItem;
 }
