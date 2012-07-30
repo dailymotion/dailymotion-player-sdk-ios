@@ -124,6 +124,10 @@ static char operationKey;
             {
                 bself.lastError = nil;
                 [scell setFieldsData:data];
+                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didLoadCellContentAtIndexPath:withData:)])
+                {
+                    [bself.delegate itemTableViewDataSource:bself didLoadCellContentAtIndexPath:indexPath withData:data];
+                }
             }
         }
     }];
@@ -163,6 +167,10 @@ static char operationKey;
             else
             {
                 bself.lastError = nil;
+                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didDeleteCellAtIndexPath:)])
+                {
+                    [bself.delegate itemTableViewDataSource:bself didDeleteCellAtIndexPath:indexPath];
+                }
             }
         }];
     }

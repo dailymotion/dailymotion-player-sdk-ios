@@ -8,7 +8,7 @@
 
 #import "DMAPI.h"
 #import "DMNetworking.h"
-#import "DMBoundableInputStream.h"
+#import "DMRangeInputStream.h"
 #import "DMSubscriptingSupport.h"
 
 #ifdef __OBJC_GC__
@@ -31,6 +31,16 @@ static DMAPI *sharedInstance;
 static NSString *const kDMVersion = @"2.0";
 static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
+@interface DMAPITransfer (Private)
+
+@property (nonatomic, strong) void (^completionHandler)(id result, NSError *error);
+@property (nonatomic, strong) void (^cancelBlock)();
+@property (nonatomic, readwrite) NSURL *localURL;
+@property (nonatomic, readwrite) NSURL *remoteURL;
+
+@end
+
+
 @interface DMAPI ()
 
 @property (nonatomic, readwrite, assign) DMNetworkStatus currentReachabilityStatus;
@@ -38,6 +48,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 @property (nonatomic, strong) DMNetworking *_uploadNetworkQueue;
 @property (nonatomic, strong) DMAPICallQueue *_callQueue;
 @property (nonatomic, assign) BOOL _autoConcurrency;
+@property (nonatomic, assign) BOOL _autoChunkSize;
 
 @end
 
@@ -45,6 +56,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 @implementation DMAPI
 {
     NSUInteger _maxConcurrency;
+    NSUInteger _maxChunkSize;
     NSUInteger _maxAggregatedCallCount;
     NSURL *_APIBaseURL;
 }
@@ -68,6 +80,10 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                                    object:nil];
 
         _APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
+        __autoChunkSize = YES;
+        _uploadChunkSize = 100000;
+        __autoConcurrency = YES;
+        _maxConcurrency = 2;
         self._reach = [DMReachability reachabilityWithHostname:_APIBaseURL.host];
         [self._reach startNotifier];
         __uploadNetworkQueue = [[DMNetworking alloc] init];
@@ -78,8 +94,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         _oauth = [[DMOAuthClient alloc] init];
         _oauth.networkQueue.userAgent = self.userAgent;
         self.timeout = 15;
-        __autoConcurrency = NO;
-        _maxConcurrency = 2; // TODO handle auto setup / network type
         _maxAggregatedCallCount = kDMHardMaxCallsPerRequest;
     }
     return self;
@@ -101,30 +115,29 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         return;
     }
 
-    if (self._autoConcurrency)
+    switch (self._reach.currentReachabilityStatus)
     {
-        switch (self._reach.currentReachabilityStatus)
-        {
-            case DMReachableViaWiFi:
+        case DMReachableViaWiFi:
 #ifdef DEBUG
-                NSLog(@"Dailymotion API is reachable via Wifi");
+            NSLog(@"Dailymotion API is reachable via Wifi");
 #endif
-                _maxConcurrency = 6;
-                break;
+            if (self._autoConcurrency) _maxConcurrency = 6;
+            if (self._autoChunkSize) _uploadChunkSize = 1000000;
+            break;
 
-            case DMReachableViaWWAN:
+        case DMReachableViaWWAN:
 #ifdef DEBUG
-                NSLog(@"Dailymotion API is reachable via cellular network");
+            NSLog(@"Dailymotion API is reachable via cellular network");
 #endif
-                _maxConcurrency = 2;
-                break;
+            if (self._autoConcurrency) _maxConcurrency = 2;
+            if (self._autoChunkSize) _uploadChunkSize = 100000;
+            break;
 
-            case DMNotReachable:
+        case DMNotReachable:
 #ifdef DEBUG
-                NSLog(@"Dailymotion API is not reachable");
+            NSLog(@"Dailymotion API is not reachable");
 #endif
-                break;
-        }
+            break;
     }
 
     self.currentReachabilityStatus = self._reach.currentReachabilityStatus;
@@ -406,15 +419,16 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     return _APIBaseURL;
 }
 
+- (void)setUploadChunkSize:(NSUInteger)uploadChunkSize
+{
+    _uploadChunkSize = uploadChunkSize;
+    self._autoChunkSize = NO;
+}
+
 - (void)setMaxConcurrency:(NSUInteger)maxConcurrency
 {
     _maxConcurrency = maxConcurrency;
     self._autoConcurrency = NO;
-}
-
-- (NSUInteger)maxConcurrency
-{
-    return _maxConcurrency;
 }
 
 - (void)setMaxAggregatedCallCount:(NSUInteger)maxAggregatedCallCount
@@ -481,59 +495,141 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 #pragma mark - Upload
 
-- (DMAPICall *)uploadFile:(NSString *)filePath progress:(void (^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))progress callback:(void (^)(NSString *, NSError*))callback
+- (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^)(id result, NSError *error))completionHandler
 {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath])
+    NSParameterAssert([fileURL.scheme isEqualToString:@"file"]);
+
+    DMAPITransfer *uploadOperation = [[DMAPITransfer alloc] init];
+    uploadOperation.localURL = fileURL;
+    uploadOperation.completionHandler = completionHandler;
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path])
     {
-        callback(nil, [DMAPIError errorWithMessage:@"File does not exists." domain:DailymotionApiErrorDomain type:@404 response:nil data:nil]);
+        if (uploadOperation.completionHandler)
+        {
+            uploadOperation.completionHandler(nil, [DMAPIError errorWithMessage:@"File does not exists." domain:DailymotionApiErrorDomain type:@404 response:nil data:nil]);
+        }
+        return uploadOperation;
     }
 
-    [self get:@"/file/upload" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    DMAPICall *apiCall = [self get:@"/file/upload" callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
-        NSUInteger fileSize = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:NULL] objectForKey:NSFileSize] unsignedIntegerValue];
-        NSInputStream *fileStream = [NSInputStream inputStreamWithFileAtPath:filePath];
-
-        DMBoundableInputStream *payload = [[DMBoundableInputStream alloc] init];
-        payload.middleStream = fileStream;
-        payload.headData = [[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"file\"; filename=\"%@\"\r\nContent-Type: application/octet-stream\r\n\r\n", kDMBoundary, [filePath lastPathComponent]] dataUsingEncoding:NSUTF8StringEncoding];
-        payload.tailData = [[NSString stringWithFormat:@"\r\n--%@--\r\n", kDMBoundary] dataUsingEncoding:NSUTF8StringEncoding];
-
-        NSDictionary *headers =
-        @{
-            @"Content-Type": [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kDMBoundary],
-            @"Content-Length": [NSString stringWithFormat:@"%d", (fileSize + payload.headData.length + payload.tailData.length)]
-        };
-        DMNetRequestOperation *networkOperation;
-        networkOperation = [self._uploadNetworkQueue postURL:[NSURL URLWithString:result[@"upload_url"]]
-                                                     payload:(NSInputStream *)payload
-                                                     headers:headers
-                                           completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
-        {
-            NSDictionary *uploadInfo = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
-            if (uploadInfo[@"url"])
-            {
-                callback(uploadInfo[@"url"], nil);
-            }
-            else
-            {
-                NSError *uploadError = [DMAPIError errorWithMessage:@"Invalid upload server response."
-                                                             domain:DailymotionApiErrorDomain
-                                                               type:nil
-                                                           response:response
-                                                               data:responseData];
-                callback(nil, uploadError);
-            }
-
-        }];
-
-        if (progress)
-        {
-            networkOperation.progressHandler = progress;
-        }
+        NSUInteger fileSize = [[[[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:NULL] objectForKey:NSFileSize] unsignedIntegerValue];
+        uploadOperation.totalBytesExpectedToTransfer = fileSize;
+        uploadOperation.remoteURL = [NSURL URLWithString:[result[@"upload_url"] stringByReplacingOccurrencesOfString:@"/upload?" withString:@"/rupload?"]];
+        [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
     }];
 
-#warning TODO upload cancelation
-    return nil;
+    uploadOperation.cancelBlock = ^
+    {
+        [apiCall cancel];
+    };
+
+    return uploadOperation;
+}
+
+- (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^)(id result, NSError *error))completionHandler
+{
+    if (!uploadOperation.completionHandler)
+    {
+        uploadOperation.completionHandler = completionHandler;
+    }
+    else
+    {
+        NSAssert(uploadOperation.completionHandler != completionHandler, @"Trying to resume an already running transfer");
+    }
+
+    if (uploadOperation.cancelled || uploadOperation.finished)
+    {
+        return;
+    }
+
+    NSRange range = NSMakeRange(uploadOperation.totalBytesTransfered, MIN((int)self.uploadChunkSize, uploadOperation.totalBytesExpectedToTransfer - uploadOperation.totalBytesTransfered));
+    DMRangeInputStream *filePartStream = [DMRangeInputStream inputStreamWithFileAtPath:uploadOperation.localURL.path withRange:range];
+
+    NSDictionary *headers = @
+    {
+        @"Content-Type": @"application/octet-stream",
+        @"Content-Length": [NSString stringWithFormat:@"%d", range.length],
+        @"X-Content-Range": [NSString stringWithFormat:@"bytes %d-%d/%d", range.location, range.location + range.length - 1, uploadOperation.totalBytesExpectedToTransfer],
+        @"Session-Id": uploadOperation.sessionId,
+        @"Content-Disposition": [NSString stringWithFormat:@"attachment; filename=\"%@\"", uploadOperation.localURL.path.lastPathComponent]
+    };
+    DMNetRequestOperation *networkOperation;
+    networkOperation = [self._uploadNetworkQueue postURL:uploadOperation.remoteURL
+                                                 payload:(NSInputStream *)filePartStream
+                                                 headers:headers
+                                       completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
+    {
+        if (uploadOperation.cancelled)
+        {
+            return;
+        }
+
+        NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
+        if (connectionError)
+        {
+            if (uploadOperation.completionHandler)
+            {
+                NSError *error = [DMAPIError errorWithMessage:connectionError.localizedDescription
+                                                       domain:DailymotionTransportErrorDomain
+                                                         type:[NSNumber numberWithInt:connectionError.code]
+                                                     response:response
+                                                         data:responseData];
+
+                uploadOperation.completionHandler(nil, error);
+            }
+        }
+        if (statusCode == 201)
+        {
+            // TODO: parse Range header to detect removal of remote file
+            uploadOperation.totalBytesTransfered += range.length; // naive
+            [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
+            return;
+        }
+        else if (statusCode == 200)
+        {
+            if (uploadOperation.completionHandler)
+            {
+                NSDictionary *uploadInfo = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
+                if (uploadInfo[@"url"])
+                {
+                    uploadOperation.completionHandler(uploadInfo[@"url"], nil);
+                }
+            }
+        }
+        else
+        {
+            if (uploadOperation.completionHandler)
+            {
+                NSError *error = [DMAPIError errorWithMessage:@"Upload Server Error."
+                                                       domain:DailymotionTransportErrorDomain
+                                                         type:@(statusCode)
+                                                     response:response
+                                                         data:responseData];
+
+                uploadOperation.completionHandler(nil, error);
+            }
+        }
+
+        uploadOperation.finished = YES;
+        uploadOperation.cancelBlock = nil;
+        uploadOperation.completionHandler = nil;
+        networkOperation.progressHandler = nil;
+    }];
+
+    uploadOperation.cancelBlock = ^
+    {
+        [networkOperation cancel];
+    };
+
+    networkOperation.progressHandler = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite)
+    {
+        if (uploadOperation.progressHandler)
+        {
+            uploadOperation.progressHandler(bytesWritten, uploadOperation.totalBytesTransfered + totalBytesWritten, uploadOperation.totalBytesExpectedToTransfer);
+        }
+    };
 }
 
 #pragma mark - Player

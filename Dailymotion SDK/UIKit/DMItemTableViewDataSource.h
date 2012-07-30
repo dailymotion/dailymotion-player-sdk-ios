@@ -17,6 +17,8 @@
 
 - (void)itemTableViewDataSourceStartedLoadingData:(DMItemTableViewDataSource *)dataSource;
 - (void)itemTableViewDataSourceDidUpdateContent:(DMItemTableViewDataSource *)dataSource;
+- (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didLoadCellContentAtIndexPath:(NSIndexPath *)indexPath withData:(NSDictionary *)data;
+- (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didDeleteCellAtIndexPath:(NSIndexPath *)indexPath;
 - (void)itemTableViewDataSourceDidEnterOfflineMode:(DMItemTableViewDataSource *)dataSource;
 - (void)itemTableViewDataSourceDidLeaveOfflineMode:(DMItemTableViewDataSource *)dataSource;
 - (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didFailWithError:(NSError *)error;

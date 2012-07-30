@@ -8,6 +8,7 @@
 
 #import "DMOAuthClient.h"
 #import "DMAPICallQueue.h"
+#import "DMAPITransfer.h"
 #import "DMAPIError.h"
 #import "DMAPICacheInfo.h"
 #import "DMReachability.h"
@@ -34,6 +35,13 @@
  * disable the automatic management.
  */
 @property (nonatomic, assign) NSUInteger maxConcurrency;
+
+/**
+ * The size of upload chunk size for resumable uploads. By default, this property is automatically
+ * managed regarding current network type (Wifi > 3G/Edge). Changing this value manually will
+ * disable the automatic management.
+ */
+@property (nonatomic, assign) NSUInteger uploadChunkSize;
 
 /**
  * Maximum number of call allowed to be batched in a single request. The hard API limit is 10
@@ -135,11 +143,13 @@
  * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
  *
  * @param filePath The path to the file to upload
- * @param progress A block called at regular interval with upload progress information
- * @param callback A block taking the uploaded file URL string as first argument and an error as second argument
  */
-- (DMAPICall *)uploadFile:(NSString *)filePath progress:(void (^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))progress callback:(void (^)(NSString *url, NSError *error))callback;
+- (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
 
+/**
+ * Resume an unfinished upload
+ */
+- (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
 
 /**
  * Create a DailymtionPlayer object initialized with the specified video ID.

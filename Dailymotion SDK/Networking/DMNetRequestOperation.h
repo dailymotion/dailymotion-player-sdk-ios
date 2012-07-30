@@ -10,7 +10,7 @@
 
 typedef void(^FailureBlock)(NSError *error);
 
-@interface DMNetRequestOperation : NSOperation <NSURLConnectionDelegate>
+@interface DMNetRequestOperation : NSOperation <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 
 @property (nonatomic, strong) void (^progressHandler)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
 @property (nonatomic, strong) void (^completionHandler)(NSURLResponse *response, NSData *responseData, NSError *connectionError);

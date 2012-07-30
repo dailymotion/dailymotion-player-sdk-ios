@@ -19,7 +19,7 @@
 
 - (id)initWithFieldName:(NSString *)fieldName
 {
-    if ((self = [super initWithFrame:CGRectZero]))
+    if ((self = [super init]))
     {
         __fieldName = fieldName;
         self.font = [UIFont boldSystemFontOfSize:20];

@@ -485,10 +485,23 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 {
     DMItemOperation *operation = [[DMItemOperation alloc] init];
 
+    NSUInteger idx = [self._idsCache indexOfObject:item.itemId];
+    if (idx != NSNotFound)
+    {
+        [self._idsCache removeObject:item.itemId];
+        self.currentEstimatedTotalItemsCount -= 1; // required by deleteCellAtIndexPath
+        self.cacheInfo.stalled = NO;
+    }
+
     __weak DMItemRemoteCollection *bself = self;
     DMAPICall *apiCall = [self.api delete:[self._path stringByAppendingFormat:@"/%@", item.itemId] callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
-        bself.cacheInfo.stalled = NO;
+        if (error && idx != NSNotFound)
+        {
+            // Try to reinsert the item at the same position in case of API error
+            // May lead to inconsistencies but this will be fixed by the next fetch
+            [bself._idsCache insertObject:item.itemId atIndex:idx];
+        }
         callback(error);
     }];
 

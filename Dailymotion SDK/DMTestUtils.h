@@ -13,7 +13,7 @@
     long waitResult; \
     __block NSInteger testCount = plannedTests; \
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0); \
-    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:10];
+    NSDate *loopUntil = [NSDate dateWithTimeIntervalSinceNow:100];
 #define REINIT(plannedTests) \
     currentTotalRequestCount = [DMNetworking totalRequestCount]; \
     testCount = plannedTests; \

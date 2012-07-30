@@ -230,6 +230,7 @@
     STAssertEquals(networkRequestCount, 0U, @"Other objects on the same page are already cached");
 }
 
+#warning skipped this test due to a bug that make this test crash under seantest
 - (void)skiptestItemCollectionArchiving
 {
     DMAPI *api = self.api;

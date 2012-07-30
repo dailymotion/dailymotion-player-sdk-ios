@@ -369,7 +369,7 @@
     password = kDMPassword;
     [api.oauth setGrantType:DailymotionGrantTypePassword withAPIKey:kDMAPIKey secret:kDMAPISecret scope:@"read write delete"];
     [api.oauth clearSession];
-    [api uploadFile:kDMTestFilePath progress:nil callback:^(NSString *url, NSError *error)
+    [api uploadFileURL:[NSURL fileURLWithPath:kDMTestFilePath] withCompletionHandler:^(NSString *url, NSError *error)
     {
         if (error)
         {

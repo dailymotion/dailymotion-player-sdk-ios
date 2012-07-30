@@ -45,6 +45,14 @@
     return self;
 }
 
+- (void)dealloc
+{
+    for (NSString *callId in [self._callQueue allKeys])
+    {
+        [self removeCallWithId:callId];
+    }
+}
+
 #pragma mark - Queue
 
 - (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
