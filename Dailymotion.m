@@ -258,7 +258,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?response_type=code&client_id=%@&scope=%@&redirect_uri=%@",
                                            Dailymotion.OAuthAuthorizeEndpoint, [grantInfo valueForKey:@"key"],
                                            [[grantInfo valueForKey:@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
-                                           [[NSString stringWithString:kDMOAuthRedirectURI] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                           [kDMOAuthRedirectURI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
 
 #if TARGET_OS_IPHONE
