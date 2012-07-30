@@ -192,7 +192,7 @@ NSString * const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         }
         if (UIDelegate)
         {
-            NSLog(@"*** Dailymotion: Your UIDelegate doesn't implement mandatory %@ method for %@.", selector, currentGrantType);
+            NSLog(@"*** Dailymotion: Your UIDelegate doesn't implement mandatory %@ method for %@.", NSStringFromSelector(selector), currentGrantType);
         }
         else
         {
