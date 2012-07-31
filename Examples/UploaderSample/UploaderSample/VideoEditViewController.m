@@ -23,13 +23,27 @@
     [self configureForm];
 }
 
+- (void)setVideoInfo:(VideoInfo *)videoInfo
+{
+    _videoInfo = videoInfo;
+    [self configureForm];
+}
+
 - (void)configureForm
 {
-    self.titleTextField.text = self.videoInfo.title;
-    self.descriptionTextField.text = self.videoInfo.description;
-    self.tagsTextField.text = self.videoInfo.tags;
-    self.channelCell.textLabel.text = self.videoInfo.channelName;
-    [self.channelCell setNeedsLayout];
+    if (self.videoInfo)
+    {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+        self.titleTextField.text = self.videoInfo.title;
+        self.descriptionTextField.text = self.videoInfo.description;
+        self.tagsTextField.text = self.videoInfo.tags;
+        self.channelCell.textLabel.text = self.videoInfo.channelName;
+        [self.channelCell setNeedsLayout];
+    }
+    else
+    {
+        self.navigationItem.rightBarButtonItem.enabled = NO;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

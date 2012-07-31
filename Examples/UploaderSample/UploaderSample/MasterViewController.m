@@ -9,6 +9,7 @@
 #import "MasterViewController.h"
 #import "DetailViewController.h"
 #import <DailymotionSDK/DMAlert.h>
+#import <DailymotionSDK/DMItemTableViewCellDefaultCell.h>
 #import "VideoUploadingCell.h"
 
 @interface MasterViewController ()
@@ -108,27 +109,44 @@
 #endif
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
-    {
-        self.detailViewController.detailItem = nil;
-    }
-}
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    ((VideoPickerNavigationViewController *)segue.destinationViewController).videoDelegate = self;
-
     if ([segue.identifier isEqualToString:@"chooseVideo"])
     {
+        ((VideoPickerNavigationViewController *)segue.destinationViewController).videoDelegate = self;
         ((UIImagePickerController *)segue.destinationViewController).sourceType = UIImagePickerControllerSourceTypeCamera;
     }
     else if ([segue.identifier isEqualToString:@"captureVideo"])
     {
+        ((VideoPickerNavigationViewController *)segue.destinationViewController).videoDelegate = self;
         ((UIImagePickerController *)segue.destinationViewController).sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
     }
+    else if ([segue.identifier isEqualToString:@"publishVideo"])
+    {
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+        NSAssert(indexPath.section == 0, @"wrong section for publish video segue");
+        VideoUploadOperation *uploadOperation = [self._pendingUploads objectAtIndex:indexPath.row];
+        ((VideoEditViewController *)segue.destinationViewController).delegate = self;
+        ((VideoEditViewController *)segue.destinationViewController).videoInfo = uploadOperation.videoInfo;
+    }
+    else if ([segue.identifier isEqualToString:@"editVideo"])
+    {
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+        NSAssert(indexPath.section == 1, @"wrong section for edit video segue");
+        __weak VideoEditViewController *controller = (VideoEditViewController *)segue.destinationViewController;
+        controller.delegate = self;
 
+        [self.itemDataSource.itemCollection withItemFields:@[@"id", @"title", @"description", @"tags", @"channel"] atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
+        {
+            VideoInfo *videoInfo = [[VideoInfo alloc] init];
+            videoInfo.videoId = [data valueForKey:@"id"];
+            videoInfo.title = [data valueForKey:@"title"];
+            videoInfo.description = [data valueForKey:@"description"];
+            videoInfo.tags = [(NSArray *)[data valueForKey:@"tags"] componentsJoinedByString:@", "];
+            videoInfo.channel = [data valueForKey:@"channel"];
+            controller.videoInfo = videoInfo;
+        }];
+    }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -262,8 +280,11 @@
         [args setValue:[videoInfo valueForKey:field] forKey:field];
     }
     [args setValue:videoInfo.uploadedFileURL.absoluteString forKey:@"url"];
+    [args setValue:@(YES) forKey:@"published"];
 
-    [[DMAPI sharedAPI] post:@"/me/videos" args:args callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+    NSString *path = videoInfo.videoId ? [NSString stringWithFormat:@"/video/%@", videoInfo.videoId] : @"/me/videos";
+
+    [[DMAPI sharedAPI] post:path args:args callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
         if (error)
         {
@@ -273,22 +294,27 @@
                               otherButtonTitles:nil
                                    dismissBlock:nil
                                     cancelBlock:nil];
-
-            UINavigationController *editNavController = [self.storyboard instantiateViewControllerWithIdentifier:@"videoEdit"];
-            VideoEditViewController *editViewController = (VideoEditViewController *)editNavController.topViewController;
-            editViewController.videoInfo = videoInfo;
-            editViewController.delegate = self;
-            [self presentModalViewController:editNavController animated:YES];
+            if (!videoInfo.videoId)
+            {
+                [self performSegueWithIdentifier:@"publishVideo" sender:videoInfo];
+            }
         }
         else
         {
             NSInteger row = [self._pendingUploads indexOfObject:videoInfo];
-            [self._pendingUploads removeObjectAtIndex:row];
-            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
-            dispatch_async(dispatch_get_main_queue(), ^
+            if (row == NSNotFound)
             {
                 [self.tableView reloadData];
-            });
+            }
+            else
+            {
+                [self._pendingUploads removeObjectAtIndex:row];
+                [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                dispatch_async(dispatch_get_main_queue(), ^
+                {
+                    [self.tableView reloadData];
+                });
+            }
         }
     }];
 }
@@ -304,7 +330,13 @@
 - (void)videoEditControllerDidFinishEditingVideo:(VideoEditViewController *)videoEditController
 {
     [self dismissModalViewControllerAnimated:YES];
+    [self.navigationController popToViewController:self animated:YES];
     [self postVideoInfo:videoEditController.videoInfo];
+}
+
+- (void)videoEditControllerDidCancel:(VideoEditViewController *)videoEditController
+{
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 @end

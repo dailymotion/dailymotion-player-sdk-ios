@@ -13,6 +13,7 @@
 
 @property (strong, nonatomic) NSURL *fileURL;
 @property (strong, nonatomic) NSURL *uploadedFileURL;
+@property (strong, nonatomic) NSString *videoId;
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSString *channel;
 @property (strong, nonatomic) NSString *channelName;
