@@ -161,10 +161,10 @@
         BOOL conditionalRequest = allFieldsCached && cacheStalled;
 
         __weak DMItem *bself = self;
-        __weak DMAPICall *apiCall = [self.api get:self._path
-                                             args:@{@"fields": fieldsToLoad}
-                                        cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
-                                         callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+        DMAPICall *apiCall = [self.api get:self._path
+                                      args:@{@"fields": fieldsToLoad}
+                                 cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
+                                  callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
         {
             if (!error && bself.cacheInfo.etag && cache.etag && ![bself.cacheInfo.etag isEqualToString:cache.etag])
             {
@@ -197,6 +197,33 @@
     {
         operation.isFinished = YES;
     }
+
+    return operation;
+}
+
+- (DMItemOperation *)editWithData:(NSDictionary *)data done:(void (^)(NSError *error))callback
+{
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+    if (!data || data.count == 0)
+    {
+        operation.isFinished = YES;
+        callback(nil);
+        return operation;
+    }
+
+    // Apply new data to local object so UI can be updated before the API operation complete
+    [self loadInfo:data withCacheInfo:self.cacheInfo];
+
+    __weak DMItem *bself = self;
+    DMAPICall *apiCall = [self.api post:self._path args:data callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    {
+        [bself flushCache];
+        callback(error);
+        operation.isFinished = YES;
+    }];
+
+    operation.cancelBlock = ^{[apiCall cancel];};
 
     return operation;
 }

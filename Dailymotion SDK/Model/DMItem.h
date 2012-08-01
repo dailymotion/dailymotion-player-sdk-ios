@@ -58,6 +58,16 @@
 - (DMItemOperation *)withFields:(NSArray *)fields do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
 
 /**
+ * Edit some item fields
+ *
+ * @param data A dictionary containing fields to modify with their new value
+ * @param done The block to call when operation is completed
+ *
+ * @return A DMItemOperation instance able to cancel the request
+ */
+- (DMItemOperation *)editWithData:(NSDictionary *)data done:(void (^)(NSError *error))callback;
+
+/**
  * Test if fields are present in the cache
  *
  * @prarm fields A list of object fields names to test

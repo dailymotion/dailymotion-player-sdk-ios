@@ -136,7 +136,7 @@
         __weak VideoEditViewController *controller = (VideoEditViewController *)segue.destinationViewController;
         controller.delegate = self;
 
-        [self.itemDataSource.itemCollection withItemFields:@[@"id", @"title", @"description", @"tags", @"channel"] atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
+        [self.itemDataSource.itemCollection withItemFields:@[@"id", @"title", @"description", @"tags", @"channel", @"channel.name"] atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
             VideoInfo *videoInfo = [[VideoInfo alloc] init];
             videoInfo.videoId = [data valueForKey:@"id"];
@@ -144,6 +144,7 @@
             videoInfo.description = [data valueForKey:@"description"];
             videoInfo.tags = [(NSArray *)[data valueForKey:@"tags"] componentsJoinedByString:@", "];
             videoInfo.channel = [data valueForKey:@"channel"];
+            videoInfo.channelName = [data valueForKey:@"channel.name"];
             controller.videoInfo = videoInfo;
         }];
     }
@@ -282,9 +283,7 @@
     [args setValue:videoInfo.uploadedFileURL.absoluteString forKey:@"url"];
     [args setValue:@(YES) forKey:@"published"];
 
-    NSString *path = videoInfo.videoId ? [NSString stringWithFormat:@"/video/%@", videoInfo.videoId] : @"/me/videos";
-
-    [[DMAPI sharedAPI] post:path args:args callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+    void (^callback)(NSError *) = ^(NSError *error)
     {
         if (error)
         {
@@ -316,7 +315,23 @@
                 });
             }
         }
-    }];
+    };
+
+    if (videoInfo.videoId)
+    {
+        DMItem *item = [DMItem itemWithType:@"video" forId:videoInfo.videoId fromAPI:[DMAPI sharedAPI]];
+        [self.itemDataSource.itemCollection editItem:item withData:args done:^(NSError *error)
+        {
+            callback(error);
+        }];
+    }
+    else
+    {
+        [[DMAPI sharedAPI] post:@"/me/videos" args:args callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
+        {
+            callback(error);
+        }];
+    }
 }
 
 - (void)videoUploadOperation:(VideoUploadOperation *)videoUploadOperation didFinishUploadWithURL:(NSURL *)url

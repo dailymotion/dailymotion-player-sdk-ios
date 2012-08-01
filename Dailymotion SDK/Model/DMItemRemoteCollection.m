@@ -437,6 +437,69 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }];
 }
 
+- (DMItemOperation *)editItemAtIndex:(NSUInteger)index withData:(NSDictionary *)data done:(void (^)(NSError *error))callback
+{
+
+    if (index < [self._idsCache count] && self._idsCache[index] != DMEndOfList)
+    {
+        DMItem *item = [self itemWithId:self._idsCache[index]];
+        return [item editWithData:data done:callback];
+    }
+    else
+    {
+        DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+        __weak DMItemRemoteCollection *bself = self;
+        __block DMItemOperation *subOperation = [self withItemFields:@[] atIndex:index do:^(NSDictionary *devnull, BOOL stalled, NSError *error)
+        {
+            if (error)
+            {
+                callback(error);
+                operation.isFinished = YES;
+            }
+            else if (index < [bself._idsCache count] && bself._idsCache[index] != DMEndOfList)
+            {
+                DMItem *item = [bself itemWithId:bself._idsCache[index]];
+                subOperation = [item editWithData:data done:^(NSError *error2)
+                {
+                    callback(error2);
+                    operation.isFinished = YES;
+                }];
+            }
+            else
+            {
+                callback(nil);
+                operation.isFinished = YES;
+            }
+        }];
+
+        operation.cancelBlock = ^
+        {
+            [subOperation cancel];
+        };
+
+        return operation;
+    }
+}
+
+- (DMItemOperation *)editItem:(DMItem *)item withData:(NSDictionary *)data done:(void (^)(NSError *))callback
+{
+    DMItem *collectionItem = [self._itemCache objectForKey:item.itemId];
+    if (collectionItem)
+    {
+        [collectionItem loadInfo:data withCacheInfo:collectionItem.cacheInfo];
+        return [item editWithData:data done:^(NSError *error)
+        {
+            [collectionItem flushCache];
+            callback(error);
+        }];
+    }
+    else
+    {
+        return [item editWithData:data done:callback];
+    }
+}
+
 - (void)flushCache
 {
     @synchronized(self._idsCache)
@@ -488,7 +551,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     NSUInteger idx = [self._idsCache indexOfObject:item.itemId];
     if (idx != NSNotFound)
     {
-        [self._idsCache removeObject:item.itemId];
+        [self._idsCache removeObjectAtIndex:idx];
         self.currentEstimatedTotalItemsCount -= 1; // required by deleteCellAtIndexPath
         self.cacheInfo.stalled = NO;
     }

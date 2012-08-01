@@ -128,6 +128,18 @@
     return nil;
 }
 
+- (DMItemOperation *)editItemAtIndex:(NSUInteger)index withData:(NSDictionary *)data done:(void (^)(NSError *error))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+- (DMItemOperation *)editItem:(DMItem *)item withData:(NSDictionary *)data done:(void (^)(NSError *error))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (void)flushCache
 {
 }

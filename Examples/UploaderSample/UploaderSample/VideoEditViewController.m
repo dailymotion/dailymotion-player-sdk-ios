@@ -46,6 +46,16 @@
     }
 }
 
+- (void)saveFormData
+{
+    if (self.videoInfo)
+    {
+        self.videoInfo.title = self.titleTextField.text;
+        self.videoInfo.description = self.descriptionTextField.text;
+        self.videoInfo.tags = self.tagsTextField.text;
+    }
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.channelCell == [self.tableView cellForRowAtIndexPath:indexPath])
@@ -59,22 +69,6 @@
     if ([segue.identifier isEqualToString:@"chooseChannel"])
     {
         ((ChannelSelectorViewController *)segue.destinationViewController).videoInfo = self.videoInfo;
-    }
-}
-
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-    if (textField == self.titleTextField)
-    {
-        self.videoInfo.title = self.titleTextField.text;
-    }
-    else if (textField == self.descriptionTextField)
-    {
-        self.videoInfo.description = self.descriptionTextField.text;
-    }
-    else if (textField == self.tagsTextField)
-    {
-        self.videoInfo.tags = self.tagsTextField.text;
     }
 }
 
@@ -104,6 +98,7 @@
 
 - (IBAction)done:(id)sender
 {
+    [self saveFormData];
     if ([self.delegate respondsToSelector:@selector(videoEditControllerDidFinishEditingVideo:)])
     {
         [self.delegate videoEditControllerDidFinishEditingVideo:self];
