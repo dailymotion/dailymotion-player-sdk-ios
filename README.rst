@@ -38,7 +38,7 @@ Add headers
 Import headers in your source files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the source files where you need to use the library, use #import ``<DailymotionSDK/SDK.h>``::
+In the source files where you need to use the library, use #import ``<DailymotionSDK/DailymotionSDK.h>``::
 
     #import <DailymotionSDK/SDK.h>
 

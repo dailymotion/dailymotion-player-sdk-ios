@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D2AAC07D0554694100DB518D"
                BuildableName = "libDailymotion SDK.a"
-               BlueprintName = "Dailymotion SDK"
+               BlueprintName = "DailymotionSDK"
                ReferencedContainer = "container:Dailymotion SDK iOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
