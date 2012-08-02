@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <DailymotionSDK/SDK.h>
+#import <DailymotionSDK/DailymotionSDK.h>
 
 @interface HistoryVideoCollection : NSObject
 

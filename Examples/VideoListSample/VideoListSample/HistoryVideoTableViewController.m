@@ -16,12 +16,12 @@
     [super viewDidLoad];
 
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
-    ((DMItemTableViewDataSource *)self.tableDataSource).editable = YES;
-    ((DMItemTableViewDataSource *)self.tableDataSource).reorderable = YES;
+    self.itemDataSource.editable = YES;
+    self.itemDataSource.reorderable = YES;
 
     [HistoryVideoCollection historyCollectionWithAPI:DMAPI.sharedAPI callback:^(DMItemCollection *historyVideoCollection)
     {
-        self.tableDataSource.itemCollection = historyVideoCollection;
+        self.itemDataSource.itemCollection = historyVideoCollection;
     }];
 }
 

@@ -7,7 +7,7 @@
 //
 
 #import "SearchVideoTableViewController.h"
-#import <DailymotionSDK/SDK.h>
+#import <DailymotionSDK/DailymotionSDK.h>
 
 @interface SearchVideoTableViewController ()
 
@@ -28,12 +28,12 @@
 
     dispatch_async(dispatch_get_current_queue(), ^
     {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:resumeCollectionPath] && !self.tableDataSource.itemCollection)
+        if ([[NSFileManager defaultManager] fileExistsAtPath:resumeCollectionPath] && !self.itemDataSource.itemCollection)
         {
             DMItemCollection *resumedItemCollection = [DMItemCollection itemCollectionFromFile:resumeCollectionPath withAPI:DMAPI.sharedAPI];
-            if (!self.tableDataSource.itemCollection)
+            if (!self.itemDataSource.itemCollection)
             {
-                self.tableDataSource.itemCollection = resumedItemCollection;
+                self.itemDataSource.itemCollection = resumedItemCollection;
                 self.searchBar.text = ((DMItemRemoteCollection *)resumedItemCollection).params[@"search"];
             }
             //[[NSFileManager defaultManager] removeItemAtPath:resumeCollectionPath error:NULL];
@@ -45,9 +45,9 @@
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note)
     {
-        if (bself.tableDataSource.itemCollection)
+        if (bself.itemDataSource.itemCollection)
         {
-            [bself.tableDataSource.itemCollection saveToFile:resumeCollectionPath];
+            [bself.itemDataSource.itemCollection saveToFile:resumeCollectionPath];
         }
     }];
 }
@@ -58,7 +58,7 @@
 {
     // Change the table view itemCollection with a new video list query
     // The DMItemTableViewDataSource will handle the change and send notifications to show loading and refresh the table view when necessary
-    self.tableDataSource.itemCollection = [DMItemCollection itemCollectionWithType:@"video"
+    self.itemDataSource.itemCollection = [DMItemCollection itemCollectionWithType:@"video"
                                                                          forParams:@{@"sort": @"relevance", @"search": searchBar.text}
                                                                            fromAPI:DMAPI.sharedAPI];
     [searchBar resignFirstResponder];

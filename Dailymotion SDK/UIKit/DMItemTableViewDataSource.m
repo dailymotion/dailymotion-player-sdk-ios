@@ -71,6 +71,13 @@ static char operationKey;
                     [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
                 }
             }
+            else
+            {
+                if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
+                {
+                    [self.delegate itemTableViewDataSourceDidFinishLoadingData:self];
+                }
+            }
         }];
         self._operations = [NSMutableArray array];
         if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
@@ -79,9 +86,9 @@ static char operationKey;
             [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
 
             // Only notify about loading if we have something to load on the network
-            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
+            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidStartLoadingData:)])
             {
-                [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+                [self.delegate itemTableViewDataSourceDidStartLoadingData:self];
             }
         }
 
@@ -216,20 +223,20 @@ static char operationKey;
             // Local connection doesn't need pre-loading of the list
             self._loaded = YES;
         }
-        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
+        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
         {
             dispatch_async(dispatch_get_current_queue(), ^
             {
-                [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+                [self.delegate itemTableViewDataSourceDidChange:self];
             });
         }
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
-        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
+        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
         {
-            [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+            [self.delegate itemTableViewDataSourceDidChange:self];
         }
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)

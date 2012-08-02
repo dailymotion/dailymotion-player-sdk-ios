@@ -62,7 +62,17 @@
 
 #pragma mark - DMItemTableViewDataSourceDelegate
 
-- (void)itemTableViewDataSourceDidUpdateContent:(DMItemTableViewController *)dataSource
+- (void)itemTableViewDataSourceDidChange:(DMItemTableViewDataSource *)dataSource;
+{
+    [self.tableView reloadData];
+}
+
+- (void)itemTableViewDataSourceDidStartLoadingData:(DMItemTableViewDataSource *)dataSource
+{
+
+}
+
+- (void)itemTableViewDataSourceDidFinishLoadingData:(DMItemTableViewController *)dataSource
 {
     [self.tableView reloadData];
 }

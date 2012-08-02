@@ -35,10 +35,7 @@
 {
     [super viewDidLoad];
 
-    self.tableDataSource = [[DMItemTableViewDataSource alloc] init];
-    self.tableDataSource.cellIdentifier = @"Cell";
-    self.tableDataSource.delegate = self;
-    self.tableView.dataSource = self.tableDataSource;
+    self.itemDataSource.cellIdentifier = @"Cell";
 
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
@@ -97,12 +94,15 @@
     {
         [self._loadingIndicatorView startAnimating];
         self._overlayView.hidden = NO;
+        [self.view bringSubviewToFront:self._overlayView];
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.tableView.scrollEnabled = NO;
     }
     else
     {
         [self._loadingIndicatorView stopAnimating];
         self._overlayView.hidden = YES;
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.tableView.scrollEnabled = YES;
     }
 }
@@ -113,7 +113,7 @@
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
-        DMItemCollection *itemCollection = self.tableDataSource.itemCollection;
+        DMItemCollection *itemCollection = self.itemDataSource.itemCollection;
         // Cancel the previous operation if any
         [self._itemOperation cancel];
 
@@ -147,7 +147,7 @@
         UIPageViewController *pageViewController = [segue destinationViewController];
 
         // Pass the table view data source's current itemCollection to the page view controller's datasource
-        self.pageViewDataSource.itemCollection = self.tableDataSource.itemCollection;
+        self.pageViewDataSource.itemCollection = self.itemDataSource.itemCollection;
         pageViewController.dataSource = self.pageViewDataSource;
 
         // Ask the datasource for the initial view controller (for the selected video) to be shown
@@ -159,30 +159,16 @@
 
 #pragma mark - DMItemTableViewDataSourceDelegate
 
-- (void)itemTableViewDataSourceStartedLoadingData:(DMItemTableViewDataSource *)dataSource
+- (void)itemTableViewDataSourceDidStartLoadingData:(DMItemTableViewDataSource *)dataSource
 {
+    [super itemTableViewDataSourceDidStartLoadingData:dataSource];
     [self setLoading:YES];
 }
 
-- (void)itemTableViewDataSourceDidUpdateContent:(DMItemTableViewDataSource *)dataSource
+- (void)itemTableViewDataSourceDidFinishLoadingData:(DMItemTableViewDataSource *)dataSource
 {
+    [super itemTableViewDataSourceDidFinishLoadingData:dataSource];
     [self setLoading:NO];
-    [self.tableView reloadData];
-}
-
-- (void)itemTableViewDataSourceDidLeaveOfflineMode:(DMItemTableViewDataSource *)dataSource
-{
-    [self.tableView reloadData];
-}
-
-- (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didFailWithError:(NSError *)error
-{
-    [UIAlertView showAlertViewWithTitle:@"Error"
-                                message:error.localizedDescription
-                      cancelButtonTitle:@"Dismiss"
-                      otherButtonTitles:nil
-                           dismissBlock:nil
-                            cancelBlock:nil];
 }
 
 @end

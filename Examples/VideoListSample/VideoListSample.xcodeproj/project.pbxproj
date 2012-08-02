@@ -21,7 +21,7 @@
 		5394B9F615A9E29500332C14 /* VideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5394B9F515A9E29500332C14 /* VideoTableViewController.m */; };
 		5394B9F915A9E53F00332C14 /* HistoryVideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5394B9F815A9E53F00332C14 /* HistoryVideoTableViewController.m */; };
 		5394B9FC15A9E77100332C14 /* HistoryVideoCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 5394B9FB15A9E77100332C14 /* HistoryVideoCollection.m */; };
-		53AE4FB115A4EF5E0083E085 /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53AE4FAC15A4EF3F0083E085 /* libDailymotion SDK.a */; };
+		53AE4FB115A4EF5E0083E085 /* libDailymotionSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53AE4FAC15A4EF3F0083E085 /* libDailymotionSDK.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,7 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53AE4FB115A4EF5E0083E085 /* libDailymotion SDK.a in Frameworks */,
+				53AE4FB115A4EF5E0083E085 /* libDailymotionSDK.a in Frameworks */,
 				536DA1AF15A48DBB00941F43 /* SystemConfiguration.framework in Frameworks */,
 				536DA1AD15A48DB400941F43 /* Security.framework in Frameworks */,
 				536DA17B15A48D4B00941F43 /* UIKit.framework in Frameworks */,
@@ -157,7 +157,7 @@
 		53AE4FA415A4EF3F0083E085 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				53AE4FAC15A4EF3F0083E085 /* libDailymotion SDK.a */,
+				53AE4FAC15A4EF3F0083E085 /* libDailymotionSDK.a */,
 				53AE4FAE15A4EF3F0083E085 /* Tests.octest */,
 			);
 			name = Products;
@@ -217,10 +217,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		53AE4FAC15A4EF3F0083E085 /* libDailymotion SDK.a */ = {
+		53AE4FAC15A4EF3F0083E085 /* libDailymotionSDK.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libDailymotion SDK.a";
+			path = libDailymotionSDK.a;
 			remoteRef = 53AE4FAB15A4EF3F0083E085 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

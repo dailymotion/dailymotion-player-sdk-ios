@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <DailymotionSDK/SDK.h>
+#import <DailymotionSDK/DailymotionSDK.h>
 
 @class DetailViewController;
 
-@interface VideoTableViewController : UITableViewController <DMItemTableViewDataSourceDelegate>
+@interface VideoTableViewController : DMItemTableViewController
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
-@property (nonatomic, strong) DMItemTableViewDataSource *tableDataSource;
 
 @end

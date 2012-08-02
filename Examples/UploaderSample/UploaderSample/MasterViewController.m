@@ -242,15 +242,15 @@
 
 #pragma mark - DMItemTableViewDataSourceDelegate
 
-- (void)itemTableViewDataSourceStartedLoadingData:(DMItemTableViewDataSource *)dataSource
+- (void)itemTableViewDataSourceDidStartLoadingData:(DMItemTableViewDataSource *)dataSource
 {
-    [super itemTableViewDataSourceStartedLoadingData:dataSource];
+    [super itemTableViewDataSourceDidStartLoadingData:dataSource];
     [self setLoading:YES];
 }
 
-- (void)itemTableViewDataSourceDidUpdateContent:(DMItemTableViewDataSource *)dataSource
+- (void)itemTableViewDataSourceDidFinishLoadingData:(DMItemTableViewDataSource *)dataSource
 {
-    [super itemTableViewDataSourceDidUpdateContent:dataSource];
+    [super itemTableViewDataSourceDidFinishLoadingData:dataSource];
     [self setLoading:NO];
 }
 

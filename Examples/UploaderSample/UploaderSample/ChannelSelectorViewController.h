@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <DailymotionSDK/SDK.h>
+#import <DailymotionSDK/DailymotionSDK.h>
 
 @class VideoInfo;
 

@@ -21,7 +21,7 @@
 		538DA6C515BACBFD007F2D22 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 538DA6C315BACBFD007F2D22 /* MainStoryboard.storyboard */; };
 		538DA6CB15BACBFD007F2D22 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 538DA6CA15BACBFD007F2D22 /* MasterViewController.m */; };
 		538DA6CE15BACBFD007F2D22 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 538DA6CD15BACBFD007F2D22 /* DetailViewController.m */; };
-		538DA6EE15BACC74007F2D22 /* libDailymotion SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 538DA6E615BACC2C007F2D22 /* libDailymotion SDK.a */; };
+		538DA6EE15BACC74007F2D22 /* libDailymotionSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 538DA6E615BACC2C007F2D22 /* libDailymotionSDK.a */; };
 		538DA6F015BACC86007F2D22 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538DA6EF15BACC86007F2D22 /* Security.framework */; };
 		538DA6F215BACC8F007F2D22 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538DA6F115BACC8F007F2D22 /* SystemConfiguration.framework */; };
 		53943EF215BEE71C00F42452 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53943EF115BEE71C00F42452 /* MobileCoreServices.framework */; };
@@ -97,7 +97,7 @@
 				53943EF215BEE71C00F42452 /* MobileCoreServices.framework in Frameworks */,
 				538DA6F215BACC8F007F2D22 /* SystemConfiguration.framework in Frameworks */,
 				538DA6F015BACC86007F2D22 /* Security.framework in Frameworks */,
-				538DA6EE15BACC74007F2D22 /* libDailymotion SDK.a in Frameworks */,
+				538DA6EE15BACC74007F2D22 /* libDailymotionSDK.a in Frameworks */,
 				538DA6B215BACBFC007F2D22 /* UIKit.framework in Frameworks */,
 				538DA6B415BACBFC007F2D22 /* Foundation.framework in Frameworks */,
 				538DA6B615BACBFC007F2D22 /* CoreGraphics.framework in Frameworks */,
@@ -181,7 +181,7 @@
 		538DA6DE15BACC2B007F2D22 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				538DA6E615BACC2C007F2D22 /* libDailymotion SDK.a */,
+				538DA6E615BACC2C007F2D22 /* libDailymotionSDK.a */,
 				538DA6E815BACC2C007F2D22 /* Tests.octest */,
 			);
 			name = Products;
@@ -241,10 +241,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		538DA6E615BACC2C007F2D22 /* libDailymotion SDK.a */ = {
+		538DA6E615BACC2C007F2D22 /* libDailymotionSDK.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libDailymotion SDK.a";
+			path = libDailymotionSDK.a;
 			remoteRef = 538DA6E515BACC2C007F2D22 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
