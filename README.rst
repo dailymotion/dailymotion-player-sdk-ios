@@ -21,7 +21,7 @@ Add build target dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - In you application project app’s target settings, find the "Build Phases" section and open the "Target Dependencies" block.
-- Click the "+" button and select ``Dailymotion SDK``
+- Click the "+" button and select ``DailymotionSDK``
 - Open the "Link Binary With Libraries" block
 - Click the "+" button and select ``libDailymotionSDK.a`` library
 - Click the "+" button again and select the ``Security.framework``
@@ -40,7 +40,7 @@ Import headers in your source files
 
 In the source files where you need to use the library, use #import ``<DailymotionSDK/DailymotionSDK.h>``::
 
-    #import <DailymotionSDK/SDK.h>
+    #import <DailymotionSDK/DailymotionSDK.h>
 
 
 Feedback

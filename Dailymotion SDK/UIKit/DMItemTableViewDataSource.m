@@ -218,7 +218,10 @@ static char operationKey;
         }
         if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidUpdateContent:)])
         {
-            [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+            dispatch_async(dispatch_get_current_queue(), ^
+            {
+                [self.delegate itemTableViewDataSourceDidUpdateContent:self];
+            });
         }
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)

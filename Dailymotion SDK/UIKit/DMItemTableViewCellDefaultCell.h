@@ -14,8 +14,4 @@
  */
 @interface DMItemTableViewDefaultCell : UITableViewCell <DMItemDataSourceItem>
 
-- (NSArray *)fieldsNeeded;
-- (void)prepareForLoading;
-- (void)setFieldsData:(NSDictionary *)data;
-
 @end
