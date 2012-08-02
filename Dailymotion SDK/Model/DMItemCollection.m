@@ -128,13 +128,7 @@
     return nil;
 }
 
-- (DMItemOperation *)editItemAtIndex:(NSUInteger)index withData:(NSDictionary *)data done:(void (^)(NSError *error))callback
-{
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
-}
-
-- (DMItemOperation *)editItem:(DMItem *)item withData:(NSDictionary *)data done:(void (^)(NSError *error))callback
+- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 {
     [self doesNotRecognizeSelector:_cmd];
     return nil;

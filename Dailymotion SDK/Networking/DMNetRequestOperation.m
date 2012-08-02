@@ -49,7 +49,7 @@
     {
         [self willChangeValueForKey:@"isExecuting"];
         self._connection = [[NSURLConnection alloc] initWithRequest:self._request delegate:self startImmediately:NO];
-        [self._connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [self._connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
         [self._connection start];
         self._executing = YES;
         //self._timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self._request.timeoutInterval target:self selector:@selector(timeout) userInfo:nil repeats:NO];

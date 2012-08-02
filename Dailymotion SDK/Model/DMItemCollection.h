@@ -92,26 +92,15 @@
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback;
 
 /**
- * Edit given fields data of the item at the specified index of the collection.
+ * Fetch the DMItem for the collection at a specified index in order to edit it
  *
  * @param index The index of the item to edit
- * @param data A dictionary containing fields to edit and their new values
+ * @param fields The fields to load with the item
  * @param done The block to call once operation is completed
  *
  * @return A DMItemOperation instance able to cancel the request.
  */
-- (DMItemOperation *)editItemAtIndex:(NSUInteger)index withData:(NSDictionary *)data done:(void (^)(NSError *error))callback;
-
-/**
- * Edit a given item of the collection
- *
- * @param item The item to edit
- * @param data A dictionary containing fields to edit and their new values
- * @param done The block to call once operation is completed
- *
- * @return A DMItemOperation instance able to cancel the request.
- */
-- (DMItemOperation *)editItem:(DMItem *)item withData:(NSDictionary *)data done:(void (^)(NSError *error))callback;
+- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 
 /**
  * Flush all previously loaded cache for this collection (won't flush items cache data)

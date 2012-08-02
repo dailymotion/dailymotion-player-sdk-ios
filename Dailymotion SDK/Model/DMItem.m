@@ -39,9 +39,12 @@
 
 - (id)initWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
 {
-    NSAssert(type != nil, @"The type cannot be nil");
-    NSAssert(itemId != nil, @"The item id cannot be nil");
-    NSAssert(api != nil, @"The api cannot be nil");
+    NSParameterAssert(type != nil);
+    NSParameterAssert(itemId != nil);
+    NSParameterAssert(api != nil);
+    NSParameterAssert([type isKindOfClass:NSString.class]);
+    NSParameterAssert([itemId isKindOfClass:NSString.class]);
+    NSParameterAssert([api isKindOfClass:DMAPI.class]);
 
     if ((self = [super init]))
     {

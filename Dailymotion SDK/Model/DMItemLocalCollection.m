@@ -86,6 +86,25 @@ static DMItemOperation *fakeOperation()
     }
 }
 
+- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+{
+    return [self withItemFields:fields atIndex:index do:^(NSDictionary *devnull, BOOL stalled, NSError *error)
+    {
+        if (error)
+        {
+            callback(nil, error);
+        }
+        else if (index < [self._items count])
+        {
+            callback([self._items objectAtIndex:index], nil);
+        }
+        else
+        {
+            callback(nil, nil);
+        }                                                 
+    }];
+}
+
 - (void)checkItem:(DMItem *)item
 {
     NSAssert([item.type isEqual:self.type], @"Item type must match collection type");

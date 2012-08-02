@@ -136,16 +136,21 @@
         __weak VideoEditViewController *controller = (VideoEditViewController *)segue.destinationViewController;
         controller.delegate = self;
 
-        [self.itemDataSource.itemCollection withItemFields:@[@"id", @"title", @"description", @"tags", @"channel", @"channel.name"] atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
+        NSArray *fields = @[@"id", @"title", @"description", @"tags", @"channel", @"channel.name"];
+        [self.itemDataSource.itemCollection itemAtIndex:indexPath.row withFields:fields done:^(DMItem *item, NSError *error)
         {
-            VideoInfo *videoInfo = [[VideoInfo alloc] init];
-            videoInfo.videoId = [data valueForKey:@"id"];
-            videoInfo.title = [data valueForKey:@"title"];
-            videoInfo.description = [data valueForKey:@"description"];
-            videoInfo.tags = [(NSArray *)[data valueForKey:@"tags"] componentsJoinedByString:@", "];
-            videoInfo.channel = [data valueForKey:@"channel"];
-            videoInfo.channelName = [data valueForKey:@"channel.name"];
-            controller.videoInfo = videoInfo;
+            [item withFields:fields do:^(NSDictionary *data, BOOL stalled, NSError *error)
+            {
+                VideoInfo *videoInfo = [[VideoInfo alloc] init];
+                videoInfo.item = item;
+                videoInfo.videoId = [data valueForKey:@"id"];
+                videoInfo.title = [data valueForKey:@"title"];
+                videoInfo.description = [data valueForKey:@"description"];
+                videoInfo.tags = [(NSArray *)[data valueForKey:@"tags"] componentsJoinedByString:@", "];
+                videoInfo.channel = [data valueForKey:@"channel"];
+                videoInfo.channelName = [data valueForKey:@"channel.name"];
+                controller.videoInfo = videoInfo;
+            }];
         }];
     }
 }
@@ -278,7 +283,10 @@
     NSDictionary *args = NSMutableDictionary.dictionary;
     for (NSString *field in @[@"title", @"description", @"channel", @"tags"])
     {
-        [args setValue:[videoInfo valueForKey:field] forKey:field];
+        if ((id)field != NSNull.null)
+        {
+            [args setValue:[videoInfo valueForKey:field] forKey:field];
+        }
     }
     [args setValue:videoInfo.uploadedFileURL.absoluteString forKey:@"url"];
     [args setValue:@(YES) forKey:@"published"];
@@ -317,13 +325,9 @@
         }
     };
 
-    if (videoInfo.videoId)
+    if (videoInfo.item)
     {
-        DMItem *item = [DMItem itemWithType:@"video" forId:videoInfo.videoId fromAPI:[DMAPI sharedAPI]];
-        [self.itemDataSource.itemCollection editItem:item withData:args done:^(NSError *error)
-        {
-            callback(error);
-        }];
+        [videoInfo.item editWithData:args done:callback];
     }
     else
     {

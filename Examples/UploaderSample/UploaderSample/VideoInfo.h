@@ -20,5 +20,6 @@
 @property (strong, nonatomic) NSString *tags;
 @property (strong, nonatomic) NSString *description;
 @property (strong, nonatomic) DMAPITransfer *transferOperation;
+@property (strong, nonatomic) DMItem *item;
 
 @end
