@@ -31,6 +31,16 @@
 + (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api;
 
 /**
+ * Get an DMItem for a given object name (i.e.: video, user, playlist) and an object id
+ *
+ * @param type The item type name
+ * @param objectId The item id
+ *
+ * @return A shared instance of DMItem for the requested object
+ */
++ (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId;
+
+/**
  * Get an instance of DMItemCollection of a given connection to the item
  *
  * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
@@ -41,6 +51,17 @@
  * @see DMItemCollection
  */
 - (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type withParams:(NSDictionary *)params;
+
+/**
+ * Get an instance of DMItemCollection of a given connection to the item
+ *
+ * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
+ * @param type The connection type name
+ * @param item The item to load connection from
+ *
+ * @see DMItemCollection
+ */
+- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type;
 
 /**
  * Load some fields from either API or cache and callback the passed block with the fields data

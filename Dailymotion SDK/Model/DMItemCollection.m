@@ -41,14 +41,29 @@
 
 #pragma mark - Initializers
 
++ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit
+{
+    return [self itemLocalConnectionWithType:type countLimit:countLimit fromAPI:DMAPI.sharedAPI];
+}
+
 + (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
 {
     return [[DMItemLocalCollection alloc] initWithType:type withItemIds:nil countLimit:(NSUInteger)countLimit fromAPI:api];
 }
 
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit
+{
+    return [self itemLocalConnectionWithType:type withIds:ids countLimit:countLimit fromAPI:DMAPI.sharedAPI];
+}
+
 + (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
 {
     return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids countLimit:(NSUInteger)countLimit fromAPI:api];
+}
+
++ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params
+{
+    return [self itemCollectionWithType:type forParams:params fromAPI:DMAPI.sharedAPI];
 }
 
 + (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api
@@ -59,12 +74,22 @@
                                                 fromAPI:api];
 }
 
++ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item
+{
+    return [self itemCollectionWithConnection:connection ofType:type forItem:item withParams:nil];
+}
+
 + (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item withParams:(NSDictionary *)params
 {
     return [[DMItemRemoteCollection alloc] initWithType:type
                                                  params:params
                                                    path:[NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection]
                                                 fromAPI:item.api];
+}
+
++ (id)itemCollectionFromFile:(NSString *)filePath
+{
+    return [self itemCollectionFromFile:filePath withAPI:DMAPI.sharedAPI];
 }
 
 + (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api

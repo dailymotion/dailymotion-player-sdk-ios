@@ -32,9 +32,19 @@
 
 @implementation DMItem
 
++ (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId
+{
+    return [self itemWithType:type forId:itemId fromAPI:DMAPI.sharedAPI];
+}
+
 + (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
 {
     return [[self alloc] initWithType:type forId:itemId fromAPI:api];
+}
+
+- (id)initWithType:(NSString *)type forId:(NSString *)itemId
+{
+    return [self initWithType:type forId:itemId fromAPI:DMAPI.sharedAPI];
 }
 
 - (id)initWithType:(NSString *)type forId:(NSString *)itemId fromAPI:(DMAPI *)api
@@ -80,6 +90,11 @@
     }
 
     return self;
+}
+
+- (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type
+{
+    return [DMItemCollection itemCollectionWithConnection:connection ofType:type forItem:self];
 }
 
 - (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type withParams:(NSDictionary *)params

@@ -33,6 +33,14 @@
 + (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api;
 
 /**
+ * Return an empty local collection of items
+ *
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param countLimit The maximum number of item allowed in the collection
+ */
++ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit;
+
+/**
  * Return a local collection of items with the given ids
  *
  * @param type The item type name (i.e.: video, user, playlist)
@@ -43,6 +51,15 @@
 + (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api;
 
 /**
+ * Return a local collection of items with the given ids
+ *
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param ids The list of item ids to store in the collection
+ * @param countLimit The maximum number of item allowed in the collection
+ */
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit;
+
+/**
  * Instanciate an item collection for a given object type with some optional paramters
  *
  * @param type The item type name (i.e.: video, user, playlist)
@@ -50,6 +67,14 @@
  * @param api The DMAPI object to use to retrieve data
  */
 + (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api;
+
+/**
+ * Instanciate an item collection for a given object type with some optional paramters
+ *
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param params Parameters to filter or sort the result
+ */
++ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params;
 
 /**
  * Instanciate an item collection for an item connection
@@ -62,6 +87,15 @@
 + (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item withParams:(NSDictionary *)params;
 
 /**
+ * Instanciate an item collection for an item connection
+ *
+ * @param connection The name of the item's connection (i.e.: videos, playlists, feeds)
+ * @param type The item type name (i.e.: video, user, playlist)
+ * @param item The item to load connection from
+ */
++ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item;
+
+/**
  * Load a collection from a previously archived collection file.
  *
  * NOTE: This method is synchrone, you must not call it from main thread
@@ -70,6 +104,15 @@
  * @param api The DMAPI object to use with the unarchived collection
  */
 + (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api;
+
+/**
+ * Load a collection from a previously archived collection file.
+ *
+ * NOTE: This method is synchrone, you must not call it from main thread
+ *
+ * @param filePath Path to the archive file
+ */
++ (id)itemCollectionFromFile:(NSString *)filePath;
 
 /**
  * Persists the collection with currenly cached items data to disk
