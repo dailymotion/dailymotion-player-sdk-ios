@@ -141,9 +141,9 @@ static char callbackKey;
             @"refresh_token": self.session.refreshToken
         };
         [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
-         {
-             [self handleOAuthResponse:response data:responseData completionHandler:handler];
-         }];
+        {
+            [self handleOAuthResponse:response data:responseData completionHandler:handler];
+        }];
         return;
     }
 
@@ -235,7 +235,11 @@ static char callbackKey;
         {
             // If we already have a session and get an invalid_grant, it's certainly because the refresh_token as expired or have been revoked
             // In such case, we restart the authentication by reseting the session
-            self.session = nil;
+            [self clearSession];
+            if ([self.delegate respondsToSelector:@selector(dailymotionOAuthRequestSessionDidExpire:)])
+            {
+                [self.delegate dailymotionOAuthRequestSessionDidExpire:self];
+            }
             [self requestAccessTokenWithCompletionHandler:handler];
         }
         else
@@ -360,6 +364,7 @@ static char callbackKey;
 
     self.grantType = type;
     self._grantInfo = info;
+    self.session = nil;
 }
 
 - (void)clearSession

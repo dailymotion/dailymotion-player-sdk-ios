@@ -125,9 +125,9 @@ typedef enum
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
  */
 #if TARGET_OS_IPHONE
-- (void)dailymotionOAuthRequest:(DMOAuthClient *)request createModalDialogWithView:(UIView *)view;
+- (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(UIView *)view;
 #else
-- (void)dailymotionOAuthRequest:(DMOAuthRequest *)request createModalDialogWithView:(NSView *)view;
+- (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(NSView *)view;
 #endif
 
 /**
@@ -136,7 +136,7 @@ typedef enum
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
  */
-- (void)dailymotionOAuthRequestCloseModalDialog:(DMOAuthClient *)request;
+- (void)dailymotionOAuthRequestCloseModalDialog:(DMOAuthClient *)client;
 
 /**
  * Called when the grant method is ``DailymotionGrantTypePassword`` and the credentials are requested by the library.
@@ -145,7 +145,7 @@ typedef enum
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypePassword``.
  */
-- (void)dailymotionOAuthRequest:(DMOAuthClient *)request didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
+- (void)dailymotionOAuthRequest:(DMOAuthClient *)client didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
 
 
 /**
@@ -153,6 +153,11 @@ typedef enum
  * the Dailymotion SDK asks the UI delegate if the link should be openned in an external browser or if the UI delegate
  * want to handle the openned link by itself.
  */
-- (BOOL)dailymotionOAuthRequest:(DMOAuthClient *)request shouldOpenURLInExternalBrowser:(NSURL *)url;
+- (BOOL)dailymotionOAuthRequest:(DMOAuthClient *)client shouldOpenURLInExternalBrowser:(NSURL *)url;
+
+/**
+ * Called when the session expired and can't be automatically resumed.
+ */
+- (void)dailymotionOAuthRequestSessionDidExpire:(DMOAuthClient *)client;
 
 @end
