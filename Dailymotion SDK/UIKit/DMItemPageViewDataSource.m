@@ -32,24 +32,27 @@ static char indexKey;
     objc_setAssociatedObject(viewController, &indexKey, [NSNumber numberWithUnsignedInt:index], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [viewController prepareForLoading];
 
-    __weak DMItemPageViewDataSource *bself = self;
+    __weak DMItemPageViewDataSource *wself = self;
     self._operation = [self.itemCollection withItemFields:viewController.fieldsNeeded atIndex:index do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemPageViewDataSource *sself = wself;
+
         if (error)
         {
-            BOOL notify = !bself.lastError; // prevents from error storms
-            bself.lastError = error;
+            BOOL notify = !sself.lastError; // prevents from error storms
+            sself.lastError = error;
             if (notify)
             {
-                if ([bself.delegate respondsToSelector:@selector(itemPageViewDataSource:didFailWithError:)])
+                if ([sself.delegate respondsToSelector:@selector(itemPageViewDataSource:didFailWithError:)])
                 {
-                    [bself.delegate itemPageViewDataSource:bself didFailWithError:error];
+                    [sself.delegate itemPageViewDataSource:sself didFailWithError:error];
                 }
             }
         }
         else
         {
-            bself.lastError = nil;
+            sself.lastError = nil;
             [viewController setFieldsData:data];
         }
     }];

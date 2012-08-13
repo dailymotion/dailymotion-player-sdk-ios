@@ -19,6 +19,7 @@ static char operationKey;
 
 @property (nonatomic, assign) BOOL _loaded;
 @property (nonatomic, strong) NSMutableArray *_operations;
+@property (nonatomic, weak) UITableView *_lastTableView;
 
 @end
 
@@ -45,6 +46,10 @@ static char operationKey;
 
 - (void)cancelAllOperations
 {
+    for (DMItemOperation *operation in self._operations)
+    {
+        [operation removeObserver:self forKeyPath:@"isFinished"];
+    }
     [self._operations makeObjectsPerformSelector:@selector(cancel)];
     [self._operations removeAllObjects];
 }
@@ -53,22 +58,27 @@ static char operationKey;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    self._lastTableView = tableView;
+
     if (!self._loaded && self.itemCollection)
     {
         UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
         NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
         NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemDataSourceItem protocol");
 
-        __weak DMItemTableViewDataSource *bself = self;
+        __weak DMItemTableViewDataSource *wself = self;
         DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
+            if (!wself) return;
+            __strong DMItemTableViewDataSource *sself = wself;
+
             if (error)
             {
-                bself.lastError = error;
-                bself._loaded = NO;
-                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                sself.lastError = error;
+                sself._loaded = NO;
+                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
                 {
-                    [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                    [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
                 }
             }
             else
@@ -77,8 +87,11 @@ static char operationKey;
                 {
                     [self.delegate itemTableViewDataSourceDidFinishLoadingData:self];
                 }
+                [self._lastTableView reloadData];
             }
         }];
+        // Cleanup running operations
+        [self cancelAllOperations];
         self._operations = [NSMutableArray array];
         if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
         {
@@ -100,6 +113,7 @@ static char operationKey;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    self._lastTableView = tableView;
     __weak UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
 
     DMItemOperation *previousOperation = objc_getAssociatedObject(cell, &operationKey);
@@ -107,9 +121,12 @@ static char operationKey;
 
     [cell prepareForLoading];
 
-    __weak DMItemTableViewDataSource *bself = self;
+    __weak DMItemTableViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemTableViewDataSource *sself = wself;
+
         __strong UITableViewCell <DMItemDataSourceItem> *scell = cell;
         if (scell)
         {
@@ -117,23 +134,23 @@ static char operationKey;
 
             if (error)
             {
-                BOOL notify = !bself.lastError; // prevents from error storms
-                bself.lastError = error;
+                BOOL notify = !sself.lastError; // prevents from error storms
+                sself.lastError = error;
                 if (notify)
                 {
-                    if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                    if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
                     {
-                        [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                        [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
                     }
                 }
             }
             else
             {
-                bself.lastError = nil;
+                sself.lastError = nil;
                 [scell setFieldsData:data];
-                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didLoadCellContentAtIndexPath:withData:)])
+                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didLoadCellContentAtIndexPath:withData:)])
                 {
-                    [bself.delegate itemTableViewDataSource:bself didLoadCellContentAtIndexPath:indexPath withData:data];
+                    [sself.delegate itemTableViewDataSource:sself didLoadCellContentAtIndexPath:indexPath withData:data];
                 }
             }
         }
@@ -160,23 +177,26 @@ static char operationKey;
 {
     if (editingStyle == UITableViewCellEditingStyleDelete && [self.itemCollection canEdit] && self.editable)
     {
-        __weak DMItemTableViewDataSource *bself = self;
+        __weak DMItemTableViewDataSource *wself = self;
         [self.itemCollection removeItemAtIndex:indexPath.row done:^(NSError *error)
         {
+            if (!wself) return;
+            __strong DMItemTableViewDataSource *sself = wself;
+
             if (error)
             {
-                bself.lastError = error;
-                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                sself.lastError = error;
+                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
                 {
-                    [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                    [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
                 }
             }
             else
             {
-                bself.lastError = nil;
-                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didDeleteCellAtIndexPath:)])
+                sself.lastError = nil;
+                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didDeleteCellAtIndexPath:)])
                 {
-                    [bself.delegate itemTableViewDataSource:bself didDeleteCellAtIndexPath:indexPath];
+                    [sself.delegate itemTableViewDataSource:sself didDeleteCellAtIndexPath:indexPath];
                 }
             }
         }];
@@ -192,20 +212,23 @@ static char operationKey;
 {
     if ([self.itemCollection canReorder] && self.reorderable)
     {
-        __weak DMItemTableViewDataSource *bself = self;
+        __weak DMItemTableViewDataSource *wself = self;
         [self.itemCollection moveItemAtIndex:fromIndexPath.row toIndex:toIndexPath.row done:^(NSError *error)
         {
+            if (!wself) return;
+            __strong DMItemTableViewDataSource *sself = wself;
+
             if (error)
             {
-                bself.lastError = error;
-                if ([bself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                sself.lastError = error;
+                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
                 {
-                    [bself.delegate itemTableViewDataSource:bself didFailWithError:error];
+                    [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
                 }
             }
             else
             {
-                bself.lastError = nil;
+                sself.lastError = nil;
             }
         }];
     }
@@ -230,6 +253,7 @@ static char operationKey;
                 [self.delegate itemTableViewDataSourceDidChange:self];
             });
         }
+        [self._lastTableView reloadData];
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
@@ -238,6 +262,7 @@ static char operationKey;
         {
             [self.delegate itemTableViewDataSourceDidChange:self];
         }
+        [self._lastTableView reloadData];
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
@@ -250,6 +275,7 @@ static char operationKey;
             {
                 [self.delegate itemTableViewDataSourceDidLeaveOfflineMode:self];
             }
+            [self._lastTableView reloadData];
         }
         else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousRechabilityStatus != DMNotReachable)
         {

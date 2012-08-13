@@ -64,22 +64,18 @@
 
 - (void)itemTableViewDataSourceDidChange:(DMItemTableViewDataSource *)dataSource;
 {
-    [self.tableView reloadData];
 }
 
 - (void)itemTableViewDataSourceDidStartLoadingData:(DMItemTableViewDataSource *)dataSource
 {
-
 }
 
 - (void)itemTableViewDataSourceDidFinishLoadingData:(DMItemTableViewController *)dataSource
 {
-    [self.tableView reloadData];
 }
 
 - (void)itemTableViewDataSourceDidLeaveOfflineMode:(DMItemTableViewController *)dataSource
 {
-    [self.tableView reloadData];
 }
 
 - (void)itemTableViewDataSource:(DMItemTableViewController *)dataSource didFailWithError:(NSError *)error

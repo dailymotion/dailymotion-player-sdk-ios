@@ -178,19 +178,21 @@
         // Perform conditional request only if we already have all requested fields in cache
         BOOL conditionalRequest = allFieldsCached && cacheStalled;
 
-        __weak DMItem *bself = self;
+        __weak DMItem *wself = self;
         DMAPICall *apiCall = [self.api get:self._path
                                       args:@{@"fields": fieldsToLoad}
                                  cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
                                   callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
         {
-            if (!error && bself.cacheInfo.etag && cache.etag && ![bself.cacheInfo.etag isEqualToString:cache.etag])
+            if (!wself) return;
+            __strong DMItem *sself = wself;
+            if (!error && sself.cacheInfo.etag && cache.etag && ![sself.cacheInfo.etag isEqualToString:cache.etag])
             {
                 // If new etag is different from previous etag, clear already cached fields
-                [bself flushCache];
+                [sself flushCache];
             }
 
-            bself.cacheInfo = cache;
+            sself.cacheInfo = cache;
 
             if (error)
             {
@@ -200,10 +202,10 @@
             {
                 [result enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop)
                 {
-                    bself._fieldsCache[key] = object;
+                    sself._fieldsCache[key] = object;
                 }];
 
-                callback([bself._fieldsCache dictionaryForKeys:fields], NO, nil);
+                callback([sself._fieldsCache dictionaryForKeys:fields], NO, nil);
             }
 
             operation.isFinished = YES;
@@ -233,10 +235,12 @@
     // Apply new data to local object so UI can be updated before the API operation complete
     [self loadInfo:data withCacheInfo:self.cacheInfo];
 
-    __weak DMItem *bself = self;
+    __weak DMItem *wself = self;
     DMAPICall *apiCall = [self.api post:self._path args:data callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
-        [bself flushCache];
+        if (!wself) return;
+        __strong DMItem *sself = wself;
+        [sself flushCache];
         callback(error);
         operation.isFinished = YES;
     }];

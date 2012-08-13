@@ -78,7 +78,7 @@
     }
 
     [self willChangeValueForKey:@"isExecuting"];
-    __weak DMOAuthRequestOperation *bself = self;
+    __weak DMOAuthRequestOperation *wself = self;
     self._request = [self._networkQueue performRequestWithURL:self.URL
                                                        method:self.method
                                                       payload:self.payload
@@ -86,8 +86,10 @@
                                                   cachePolicy:NSURLRequestUseProtocolCachePolicy
                                             completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
     {
-        [bself doneWithResponse:response data:responseData error:error];
-        bself._request = nil;
+        if (!wself) return;
+        __strong DMOAuthRequestOperation *sself = wself;
+        [sself doneWithResponse:response data:responseData error:error];
+        sself._request = nil;
     }];
     if (self.progressHandler)
     {

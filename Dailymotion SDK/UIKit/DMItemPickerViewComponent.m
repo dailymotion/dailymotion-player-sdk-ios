@@ -66,16 +66,18 @@ static char operationKey;
     {
         UIView<DMItemDataSourceItem> *view = self._createRowViewBlock();
 
-        __weak DMItemPickerViewComponent *bself = self;
+        __weak DMItemPickerViewComponent *wself = self;
         DMItemOperation *operation = [self._itemCollection withItemFields:view.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
+            if (!wself) return;
+            __strong DMItemPickerViewComponent *sself = wself;
             if (error)
             {
-                bself.lastError = error;
-                bself._loaded = NO;
-                if ([bself.delegate respondsToSelector:@selector(pickerViewComponent:didFailWithError:)])
+                sself.lastError = error;
+                sself._loaded = NO;
+                if ([sself.delegate respondsToSelector:@selector(pickerViewComponent:didFailWithError:)])
                 {
-                    [bself.delegate pickerViewComponent:bself didFailWithError:error];
+                    [sself.delegate pickerViewComponent:sself didFailWithError:error];
                 }
             }
         }];
@@ -109,26 +111,29 @@ static char operationKey;
 
     [view prepareForLoading];
 
-    __weak DMItemPickerViewComponent *bself = self;
+    __weak DMItemPickerViewComponent *wself = self;
     DMItemOperation *operation = [self._itemCollection withItemFields:view.fieldsNeeded atIndex:row do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemPickerViewComponent *sself = wself;
+
         objc_setAssociatedObject(view, &operationKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
         if (error)
         {
-            BOOL notify = !bself.lastError; // prevents from error storms
-            bself.lastError = error;
+            BOOL notify = !sself.lastError; // prevents from error storms
+            sself.lastError = error;
             if (notify)
             {
-                if ([bself.delegate respondsToSelector:@selector(pickerViewComponent:didFailWithError:)])
+                if ([sself.delegate respondsToSelector:@selector(pickerViewComponent:didFailWithError:)])
                 {
-                    [bself.delegate pickerViewComponent:bself didFailWithError:error];
+                    [sself.delegate pickerViewComponent:sself didFailWithError:error];
                 }
             }
         }
         else
         {
-            bself.lastError = nil;
+            sself.lastError = nil;
             [view setFieldsData:data];
         }
     }];
@@ -145,27 +150,30 @@ static char operationKey;
 
 - (void)didSelectRow:(NSInteger)row
 {
-    __weak DMItemPickerViewComponent *bself = self;
+    __weak DMItemPickerViewComponent *wself = self;
     [self._itemCollection withItemFields:@[@"id"] atIndex:row do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemPickerViewComponent *sself = wself;
+
         if (error)
         {
-            BOOL notify = !bself.lastError; // prevents from error storms
-            bself.lastError = error;
+            BOOL notify = !sself.lastError; // prevents from error storms
+            sself.lastError = error;
             if (notify)
             {
-                if ([bself.delegate respondsToSelector:@selector(pickerViewComponent:didFailWithError:)])
+                if ([sself.delegate respondsToSelector:@selector(pickerViewComponent:didFailWithError:)])
                 {
-                    [bself.delegate pickerViewComponent:bself didFailWithError:error];
+                    [sself.delegate pickerViewComponent:sself didFailWithError:error];
                 }
             }
         }
         else
         {
-            if ([bself.delegate respondsToSelector:@selector(pickerViewComponent:didSelectItem:)])
+            if ([sself.delegate respondsToSelector:@selector(pickerViewComponent:didSelectItem:)])
             {
                 // TODO share the cache of the collection item
-                [bself.delegate pickerViewComponent:bself didSelectItem:[DMItem itemWithType:bself._itemCollection.type forId:data[@"id"] fromAPI:self._itemCollection.api]];
+                [sself.delegate pickerViewComponent:sself didSelectItem:[DMItem itemWithType:sself._itemCollection.type forId:data[@"id"] fromAPI:sself._itemCollection.api]];
             }
         }
     }];

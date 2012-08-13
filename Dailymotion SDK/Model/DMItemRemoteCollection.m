@@ -220,7 +220,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             NSMutableDictionary *requestInfo = self._runningRequests[requestKey];
             __block void (^bcallback)(NSArray *, BOOL, NSInteger, BOOL, NSError *) = callback;
             __weak DMItemOperation *boperation = operation;
-            __weak DMItemRemoteCollection *bself = self;
+            __weak DMItemRemoteCollection *wself = self;
             if (!requestInfo)
             {
                 requestInfo = [NSMutableDictionary dictionary];
@@ -228,15 +228,21 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                 requestInfo[@"operations"] = [NSMutableArray arrayWithObject:boperation];
                 requestInfo[@"cleanupBlock"] = ^
                 {
-                    NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                    if (!wself) return;
+                    __strong DMItemRemoteCollection *sself = wself;
+
+                    NSMutableDictionary *_requestInfo = sself._runningRequests[requestKey];
                     [_requestInfo removeAllObjects];
-                    [bself._runningRequests removeObjectForKey:requestKey];
+                    [sself._runningRequests removeObjectForKey:requestKey];
                 };
                 requestInfo[@"apiCall"] = [self loadItemsWithFields:fields forPage:page withPageSize:itemsPerPage do:^(NSArray *_items, BOOL _more, NSInteger _total, BOOL _stalled, NSError *_error)
                 {
-                    @synchronized(bself._runningRequests)
+                    if (!wself) return;
+                    __strong DMItemRemoteCollection *sself = wself;
+
+                    @synchronized(sself._runningRequests)
                     {
-                        NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                        NSMutableDictionary *_requestInfo = sself._runningRequests[requestKey];
                         if (!_requestInfo) return;
                         void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
                         for (cb in (NSMutableArray *)_requestInfo[@"callbacks"])
@@ -260,9 +266,12 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
             operation.cancelBlock = ^
             {
-                @synchronized(bself._runningRequests)
+                if (!wself) return;
+                __strong DMItemRemoteCollection *sself = wself;
+
+                @synchronized(sself._runningRequests)
                 {
-                    NSMutableDictionary *_requestInfo = bself._runningRequests[requestKey];
+                    NSMutableDictionary *_requestInfo = sself._runningRequests[requestKey];
                     if (!_requestInfo) return;
                     [(NSMutableArray *)_requestInfo[@"operations"] removeObject:boperation];
                     NSMutableArray *callbacks = _requestInfo[@"callbacks"];
@@ -294,10 +303,13 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     [fieldsSet addObject:@"id"]; // Enforce id retrival
     params[@"fields"] = [fieldsSet allObjects];
 
-    __weak DMItemRemoteCollection *bself = self;
+    __weak DMItemRemoteCollection *wself = self;
 
     return [self.api get:self._path args:params cacheInfo:nil callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemRemoteCollection *sself = wself;
+
         if (error)
         {
             callback(nil, NO, -1, NO, error);
@@ -311,23 +323,23 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             return;
         }
 
-        bself._total = result[@"total"] ? [result[@"total"] intValue] : -1;
+        sself._total = result[@"total"] ? [result[@"total"] intValue] : -1;
         BOOL more = [result[@"has_more"] boolValue];
         NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsPerPage];
 
-        @synchronized(bself._listCache)
+        @synchronized(sself._listCache)
         {
-            if (cacheInfo.etag && bself.cacheInfo.etag && ![cacheInfo.etag isEqualToString:bself.cacheInfo.etag])
+            if (cacheInfo.etag && sself.cacheInfo.etag && ![cacheInfo.etag isEqualToString:sself.cacheInfo.etag])
             {
                 // The etag as changed, clear all previously cached pages
-                [bself._listCache removeAllObjects];
+                [sself._listCache removeAllObjects];
             }
-            bself.cacheInfo = cacheInfo;
+            sself.cacheInfo = cacheInfo;
 
             NSUInteger idx = (page - 1) * itemsPerPage;
             for (NSDictionary *itemData in list)
             {
-                DMItem *item = [bself itemWithId:itemData[@"id"] atIndex:idx++];
+                DMItem *item = [sself itemWithId:itemData[@"id"] atIndex:idx++];
                 [item loadInfo:itemData withCacheInfo:cacheInfo];
                 [items addObject:item];
             }
@@ -335,25 +347,25 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             if (!more)
             {
                 // Add an end-of-list marker
-                NSUInteger lastCacheIndex = [bself._listCache count] - 1;
+                NSUInteger lastCacheIndex = [sself._listCache count] - 1;
                 NSUInteger eolIndex = (page - 1) * itemsPerPage + [list count];
-                bself._total = eolIndex;
+                sself._total = eolIndex;
                 if (lastCacheIndex == eolIndex - 1)
                 {
-                    [bself._listCache addObject:DMEndOfList];
+                    [sself._listCache addObject:DMEndOfList];
                 }
                 else if (lastCacheIndex < eolIndex - 1)
                 {
                     // Cache was smaller than new actual size
-                    [bself._listCache raise:eolIndex withObject:[NSNull null]];
-                    [bself._listCache addObject:DMEndOfList];
+                    [sself._listCache raise:eolIndex withObject:[NSNull null]];
+                    [sself._listCache addObject:DMEndOfList];
                 }
                 else
                 {
                     // Cache was larger than new actual size
-                    bself._listCache[eolIndex] = DMEndOfList;
+                    sself._listCache[eolIndex] = DMEndOfList;
                     // Shrink the cache to the new size
-                    [bself._listCache shrink:eolIndex + 1];
+                    [sself._listCache shrink:eolIndex + 1];
                 }
             }
             else
@@ -362,33 +374,33 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                 {
                     // Handle when actual list raised by more than one page compared to cache
                     NSUInteger oelIndex;
-                    while ((oelIndex = [bself._listCache indexOfObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)]) != NSNotFound)
+                    while ((oelIndex = [sself._listCache indexOfObject:DMEndOfList inRange:NSMakeRange(0, (page - 1) * itemsPerPage - 1)]) != NSNotFound)
                     {
-                        bself._listCache[oelIndex] = [NSNull null];
+                        sself._listCache[oelIndex] = [NSNull null];
                     }
                 }
             }
 
-            NSUInteger maxEstimatedItemsCount = bself.pageSize * 100;
-            if (bself._total == -1)
+            NSUInteger maxEstimatedItemsCount = sself.pageSize * 100;
+            if (sself._total == -1)
             {
                 // If server didn't returned an estimated total and we don't know the current list boundary,
                 // set the estimated total to current cache size + one page. It won't be accurate for the
                 // majority of the case, but this value isn't to be shown to the end user, only to help building
                 // the UI.
-                NSUInteger fakedTotal = MIN([bself._listCache count] + bself.pageSize, maxEstimatedItemsCount);
-                if (bself.currentEstimatedTotalItemsCount != fakedTotal)
+                NSUInteger fakedTotal = MIN([sself._listCache count] + sself.pageSize, maxEstimatedItemsCount);
+                if (sself.currentEstimatedTotalItemsCount != fakedTotal)
                 {
-                    bself.currentEstimatedTotalItemsCount = fakedTotal;
+                    sself.currentEstimatedTotalItemsCount = fakedTotal;
                 }
             }
-            else if (bself.currentEstimatedTotalItemsCount != MIN((NSUInteger)bself._total, maxEstimatedItemsCount))
+            else if (sself.currentEstimatedTotalItemsCount != MIN((NSUInteger)sself._total, maxEstimatedItemsCount))
             {
-                bself.currentEstimatedTotalItemsCount = MIN(bself._total, maxEstimatedItemsCount);
+                sself.currentEstimatedTotalItemsCount = MIN(sself._total, maxEstimatedItemsCount);
             }
         }
 
-        callback(items, more, bself._total, NO, nil);
+        callback(items, more, sself._total, NO, nil);
     }];
 }
 
@@ -437,16 +449,19 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 {
-    __weak DMItemRemoteCollection *bself = self;
+    __weak DMItemRemoteCollection *wself = self;
     return [self withItemFields:fields atIndex:index do:^(NSDictionary *devnull, BOOL stalled, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemRemoteCollection *sself = wself;
+
         if (error)
         {
             callback(nil, error);
         }
-        else if ([bself itemAtIndex:index])
+        else if ([sself itemAtIndex:index])
         {
-            callback([bself itemAtIndex:index], nil);
+            callback([sself itemAtIndex:index], nil);
         }
         else
         {
@@ -482,10 +497,12 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }
     else
     {
-        __weak DMItemRemoteCollection *bself = self;
+        __weak DMItemRemoteCollection *wself = self;
         DMAPICall *apiCall = [self.api post:[self._path stringByAppendingFormat:@"/%@", item.itemId] callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
         {
-            bself.cacheInfo.stalled = NO;
+            if (!wself) return;
+            __strong DMItemRemoteCollection *sself = wself;
+            sself.cacheInfo.stalled = NO;
             callback(error);
         }];
 
@@ -510,14 +527,17 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         self.cacheInfo.stalled = NO;
     }
 
-    __weak DMItemRemoteCollection *bself = self;
+    __weak DMItemRemoteCollection *wself = self;
     DMAPICall *apiCall = [self.api delete:[self._path stringByAppendingFormat:@"/%@", item.itemId] callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
+        if (!wself) return;
+        __strong DMItemRemoteCollection *sself = wself;
+
         if (error && idx != NSNotFound)
         {
             // Try to reinsert the item at the same position in case of API error
             // May lead to inconsistencies but this will be fixed by the next fetch
-            [bself._listCache insertObject:item.itemId atIndex:idx];
+            [sself._listCache insertObject:item.itemId atIndex:idx];
         }
         callback(error);
     }];
@@ -540,17 +560,20 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }
     else
     {
-        __weak DMItemRemoteCollection *bself = self;
+        __weak DMItemRemoteCollection *wself = self;
         __block DMItemOperation *subOperation = [self withItemFields:@[] atIndex:index do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
+            if (!wself) return;
+            __strong DMItemRemoteCollection *sself = wself;
+
             if (error)
             {
                 callback(error);
                 operation.isFinished = YES;
             }
-            else if ([bself itemAtIndex:index])
+            else if ([sself itemAtIndex:index])
             {
-                subOperation = [bself removeItem:[self itemAtIndex:index] done:^(NSError *error2)
+                subOperation = [sself removeItem:[self itemAtIndex:index] done:^(NSError *error2)
                 {
                     callback(error2);
                     operation.isFinished = YES;

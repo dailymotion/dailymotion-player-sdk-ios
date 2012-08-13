@@ -101,19 +101,22 @@ static char callbackKey;
         // all at once once the token server answered
         self.requestQueue.suspended = YES;
 
-        __weak DMOAuthClient *bself = self;
+        __weak DMOAuthClient *wself = self;
         [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
         {
+            if (!wself) return;
+            __strong DMOAuthClient *sself = wself;
+
             if (error)
             {
-                [bself.requestQueue.operations makeObjectsPerformSelector:@selector(cancelWithError:) withObject:error];
+                [sself.requestQueue.operations makeObjectsPerformSelector:@selector(cancelWithError:) withObject:error];
             }
             else
             {
-                [bself.requestQueue.operations makeObjectsPerformSelector:@selector(setAccessToken:) withObject:newAccessToken];
+                [sself.requestQueue.operations makeObjectsPerformSelector:@selector(setAccessToken:) withObject:newAccessToken];
             }
 
-            bself.requestQueue.suspended = NO;
+            sself.requestQueue.suspended = NO;
         }];
     }
 
