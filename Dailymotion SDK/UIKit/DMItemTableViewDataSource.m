@@ -9,6 +9,7 @@
 #import "DMItemTableViewDataSource.h"
 #import "DMItemDataSourceItem.h"
 #import "DMItemLocalCollection.h"
+#import "DMItemRemoteCollection.h"
 #import "DMSubscriptingSupport.h"
 #import "objc/runtime.h"
 #import "objc/message.h"
@@ -59,8 +60,9 @@ static char operationKey;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     self._lastTableView = tableView;
+    BOOL networkLoadingWhileOffline = self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.itemCollection isKindOfClass:DMItemRemoteCollection.class];
 
-    if (!self._loaded && self.itemCollection)
+    if (!self._loaded && self.itemCollection && !networkLoadingWhileOffline)
     {
         UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
         NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemTableViewCell protocol");
@@ -266,22 +268,33 @@ static char operationKey;
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
-        if (!self._loaded) return;
-        DMNetworkStatus previousRechabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
-        if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousRechabilityStatus == DMNotReachable)
+        if (change[NSKeyValueChangeOldKey] == NSNull.null)
         {
-            // Became recheable: notify table view controller that it should reload table data
-            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidLeaveOfflineMode:)])
+            if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
             {
-                [self.delegate itemTableViewDataSourceDidLeaveOfflineMode:self];
+                // We always start by getting this status before even when connected, immediately followed by a reachable notif if finaly connected
+                [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
             }
-            [self._lastTableView reloadData];
         }
-        else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousRechabilityStatus != DMNotReachable)
+        else
         {
-            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
+            DMNetworkStatus previousRechabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
+            if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousRechabilityStatus == DMNotReachable)
             {
-                [self.delegate itemTableViewDataSourceDidEnterOfflineMode:self];
+                [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
+                // Became recheable: notify table view controller that it should reload table data
+                if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidLeaveOfflineMode:)])
+                {
+                    [self.delegate itemTableViewDataSourceDidLeaveOfflineMode:self];
+                }
+                [self._lastTableView reloadData];
+            }
+            else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousRechabilityStatus != DMNotReachable)
+            {
+                if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
+                {
+                    [self.delegate itemTableViewDataSourceDidEnterOfflineMode:self];
+                }
             }
         }
     }
