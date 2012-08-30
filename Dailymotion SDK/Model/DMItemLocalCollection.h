@@ -19,4 +19,10 @@
 
 - (id)initWithType:(NSString *)type withItemIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api;
 
+/**
+ * Remove all the items of the collection
+ */
+- (void)clear;
+
+
 @end

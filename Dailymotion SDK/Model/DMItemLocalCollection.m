@@ -151,6 +151,12 @@ static DMItemOperation *fakeOperation()
     return fakeOperation();
 }
 
+- (void)clear
+{
+    [self._items removeAllObjects];
+    self.currentEstimatedTotalItemsCount = self._items.count;
+}
+
 - (BOOL)canReorder
 {
     return YES;
