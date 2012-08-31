@@ -92,6 +92,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 #pragma mark - Implementation
 
+- (BOOL)isLocal
+{
+    return NO;
+}
+
 - (DMItem *)itemWithId:(NSString *)itemId atIndex:(NSUInteger)index
 {
     DMItem *item = [self itemAtIndex:index];

@@ -243,7 +243,7 @@ static char operationKey;
     if ([keyPath isEqualToString:@"itemCollection"] && object == self)
     {
         self._loaded = NO;
-        if ([self.itemCollection isKindOfClass:DMItemLocalCollection.class])
+        if (self.itemCollection.isLocal)
         {
             // Local connection doesn't need pre-loading of the list
             self._loaded = YES;

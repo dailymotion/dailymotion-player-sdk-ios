@@ -147,6 +147,12 @@
     return [data writeToFile:filePath atomically:YES];
 }
 
+- (BOOL)isLocal
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return NO;
+}
+
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
     [self doesNotRecognizeSelector:_cmd];

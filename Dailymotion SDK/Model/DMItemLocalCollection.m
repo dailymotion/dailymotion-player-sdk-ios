@@ -71,6 +71,11 @@ static DMItemOperation *fakeOperation()
 
 #pragma mark - Implementation
 
+- (BOOL)isLocal
+{
+    return YES;
+}
+
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
     if (index < [self._items count])

@@ -15,6 +15,11 @@
 @property (nonatomic, readonly, strong) DMAPI *api;
 
 /**
+ * Return YES if the collection isn't comming from the remote API
+ */
+- (BOOL)isLocal;
+
+/**
  * Return the current view of the object on the number of item that may be present in the list.
  *
  * This number is an estimation that may be either returned by the server or computed by the class.
