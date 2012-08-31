@@ -69,6 +69,11 @@ static DMItemOperation *fakeOperation()
     [coder encodeInteger:_countLimit forKey:@"countLimit"];
 }
 
+- (NSOrderedSet *)items
+{
+    return [NSOrderedSet orderedSetWithOrderedSet:self._items];
+}
+
 #pragma mark - Implementation
 
 - (BOOL)isLocal
@@ -126,7 +131,7 @@ static DMItemOperation *fakeOperation()
     {
         [self checkItem:item];
         [self._items insertObject:item atIndex:0];
-        if (self._items.count > self.countLimit)
+        if (self.countLimit != 0 && self._items.count > self.countLimit)
         {
             [self._items removeObjectsInRange:NSMakeRange(self.countLimit, self._items.count - self.countLimit)];
         }
