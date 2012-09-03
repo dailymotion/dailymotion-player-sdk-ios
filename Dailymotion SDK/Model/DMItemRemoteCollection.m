@@ -542,7 +542,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         {
             // Try to reinsert the item at the same position in case of API error
             // May lead to inconsistencies but this will be fixed by the next fetch
-            [sself._listCache insertObject:item.itemId atIndex:idx];
+            [sself._listCache insertObject:item atIndex:idx];
         }
         callback(error);
     }];
