@@ -242,6 +242,8 @@ static char operationKey;
 {
     if ([keyPath isEqualToString:@"itemCollection"] && object == self)
     {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
+
         self._loaded = NO;
         if (self.itemCollection.isLocal)
         {
@@ -293,7 +295,7 @@ static char operationKey;
             {
                 if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
                 {
-                    [self.delegate itemTableViewDataSourceDidEnterOfflineMode:self];
+                    [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
                 }
             }
         }
