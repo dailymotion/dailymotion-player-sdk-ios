@@ -117,6 +117,11 @@
     return [NSString stringWithFormat:@"%@(%@): %@", self.type, self.itemId, [self._fieldsCache description]];
 }
 
+- (NSDictionary *)cachedFields
+{
+    return [NSDictionary dictionaryWithDictionary:self._fieldsCache];
+}
+
 - (void)loadInfo:(NSDictionary *)info withCacheInfo:(DMAPICacheInfo *)cacheInfo
 {
     __block NSMutableDictionary *fieldsCache = self._fieldsCache;
