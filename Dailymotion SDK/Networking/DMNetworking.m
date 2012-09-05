@@ -104,7 +104,10 @@ NSUInteger totalRequestCount;
     [request setAllHTTPHeaderFields:headers];
     [request addValue:[DMUDID deviceIdentifier] forHTTPHeaderField:@"X-DeviceId"];
     [request setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
-    [request setTimeoutInterval:self.timeout];
+    if (self.timeout)
+    {
+        [request setTimeoutInterval:self.timeout];
+    }
     [request setCachePolicy:cachePolicy];
 
     if ([payload isKindOfClass:[NSDictionary class]])
