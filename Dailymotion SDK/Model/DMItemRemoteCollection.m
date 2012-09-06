@@ -416,9 +416,8 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (DMItemOperation *)_loadAllItemsWithFields:(NSArray *)fields page:(NSUInteger)page do:(void (^)(NSArray *array, NSError *error))callback
 {
-    __block DMItemOperation *operation = [[DMItemOperation alloc] init];
     __weak DMItemRemoteCollection *wself = self;
-    DMAPICall *call = [self loadItemsWithFields:fields forPage:page withPageSize:100 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    __block DMItemOperation *operation = [self itemsWithFields:fields forPage:page withPageSize:100 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
     {
         if (!wself) return;
         __strong DMItemRemoteCollection *sself = wself;
@@ -441,11 +440,6 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             callback([sself._listCache objectsInRange:NSMakeRange(0, eolIndex != NSNotFound ? eolIndex : [sself._listCache count]) notFoundMarker:NSNull.null], nil);
         }
     }];
-
-    operation.cancelBlock = ^
-    {
-        [call cancel];
-    };
 
     return operation;
 }
@@ -643,9 +637,13 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
 {
-    id obj = self._listCache[fromIndex];
-    [self._listCache removeObjectAtIndex:fromIndex];
-    [self._listCache insertObject:obj atIndex:toIndex];
+    if (toIndex == fromIndex)
+    {
+        callback(nil);
+        DMItemOperation *fakeOperation = DMItemOperation.new;
+        fakeOperation.isFinished = YES;
+        return fakeOperation;
+    }
 
     __weak DMItemRemoteCollection *wself = self;
     __block DMItemOperation *operation = [self loadAllItemsWithFields:@[] do:^(NSArray *items, NSError *error)
@@ -659,10 +657,15 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         }
         else
         {
+            id obj = sself._listCache[fromIndex];
+            [sself._listCache removeObjectAtIndex:fromIndex];
+            [sself._listCache insertObject:obj atIndex:toIndex];
+
             NSMutableArray *ids = [NSMutableArray arrayWithCapacity:items.count];
-            for (DMItem *item in items)
+            for (id item in sself._listCache)
             {
-                [ids addObject:item.itemId];
+                if (item == DMEndOfList) break;
+                [ids addObject:((DMItem *)item).itemId];
             }
 
             DMAPICall *apiCall = [sself.api post:sself._path args:@{@"ids": ids} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error2)
