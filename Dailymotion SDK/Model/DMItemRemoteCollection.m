@@ -352,8 +352,8 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             if (!more)
             {
                 // Add an end-of-list marker
-                NSUInteger lastCacheIndex = [sself._listCache count] - 1;
-                NSUInteger eolIndex = (page - 1) * itemsPerPage + [list count];
+                NSInteger lastCacheIndex = [sself._listCache count] - 1;
+                NSInteger eolIndex = (page - 1) * itemsPerPage + [list count];
                 sself._total = eolIndex;
                 if (lastCacheIndex == eolIndex - 1)
                 {

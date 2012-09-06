@@ -14,7 +14,7 @@
 
 @interface DMItemRemoteCollection (Private)
 
-- (DMItem *)itemWithId:(NSString *)itemId;
+- (DMItem *)itemWithId:(NSString *)itemId atIndex:(NSUInteger)index;
 
 @end
 
@@ -182,7 +182,7 @@
         STAssertNotNil(data[@"id"], @"Got an id field");
 
         // Force this item invalid so next collection request with have to refresh to data
-        [videoSearch itemWithId:data[@"id"]].cacheInfo.valid = NO;
+        [videoSearch itemWithId:data[@"id"] atIndex:0].cacheInfo.valid = NO;
         DONE
     }];
 

@@ -376,8 +376,7 @@
             NSLog(@"Upload error: %@", error);
         }
         STAssertNil(error, @"Is success response");
-        STAssertNotNil(url, @"Got an URL.");
-        STAssertEqualObjects([[NSURL URLWithString:url] absoluteString], url, @"URL is valid");
+        STAssertTrue([url isKindOfClass:NSURL.class], @"Got an URL.");
         DONE
     }];
 

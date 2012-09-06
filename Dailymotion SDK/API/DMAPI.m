@@ -277,11 +277,18 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         NSArray *results = nil;
         if (responseData)
         {
-            results = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
+            NSError *error;
+            id jsonObject = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+            results = error ? error : [self parseResult:jsonObject];
         }
-        if (!results)
+        if (!results || [results isKindOfClass:NSError.class])
         {
-            NSError *error = [DMAPIError errorWithMessage:@"Invalid API server response." domain:DailymotionApiErrorDomain type:nil response:response data:responseData];
+            NSDictionary *userInfo;
+            if ([results isKindOfClass:NSError.class])
+            {
+                userInfo = @{NSUnderlyingErrorKey: results};
+            }
+            NSError *error = [DMAPIError errorWithMessage:@"Invalid API server response." domain:DailymotionApiErrorDomain type:nil response:response data:responseData userInfo:userInfo];
             [self raiseErrorToCalls:calls error:error];
             return;
         }
@@ -384,6 +391,66 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                 call.callback(nil, nil, error);
             }
         }
+    }
+}
+
+- (id)parseResult:(id)result
+{
+    return [self parseResult:result forKey:nil root:YES];
+}
+
+- (id)parseResult:(id)result forKey:(NSString *)parentKey root:(BOOL)root
+{
+    if ([result isKindOfClass:NSArray.class])
+    {
+        NSMutableArray *list = [NSMutableArray arrayWithCapacity:((NSArray *)result).count];
+        for (id obj in result)
+        {
+            id parsedObj = [self parseResult:obj forKey:parentKey root:NO];
+            if ([parsedObj isKindOfClass:NSError.class]) return parsedObj; // bubble errors up
+            [list addObject:parsedObj];
+        }
+        return [NSArray arrayWithArray:list];
+    }
+    else if ([result isKindOfClass:NSDictionary.class])
+    {
+        __block NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:((NSDictionary *)result).count];
+        [(NSDictionary *)result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
+        {
+            id parsedObj = [self parseResult:obj forKey:key root:NO];
+            if ([parsedObj isKindOfClass:NSError.class])
+            {
+                // bubble errors up
+                dict = parsedObj;
+                *stop = YES;
+                return;
+            }
+            dict[key] = parsedObj;
+        }];
+        return dict;
+    }
+    else if (!root)
+    {
+        if ([result isKindOfClass:NSString.class])
+        {
+            if ([parentKey hasSuffix:@"_url"] || [parentKey isEqualToString:@"url"])
+            {
+                return [NSURL URLWithString:result];
+            }
+            else
+            {
+                return result;
+            }
+        }
+        else
+        {
+            return result;
+        }
+    }
+    else
+    {
+        return [NSError errorWithDomain:@"APIParseError" code:0
+                               userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Invalid type for root node: %@", [result class]]}]; // Error on root
     }
 }
 
@@ -516,7 +583,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     {
         NSUInteger fileSize = [[[[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:NULL] objectForKey:NSFileSize] unsignedIntegerValue];
         uploadOperation.totalBytesExpectedToTransfer = fileSize;
-        uploadOperation.remoteURL = [NSURL URLWithString:[result[@"upload_url"] stringByReplacingOccurrencesOfString:@"/upload?" withString:@"/rupload?"]];
+        uploadOperation.remoteURL = [NSURL URLWithString:[((NSURL *)result[@"upload_url"]).absoluteString stringByReplacingOccurrencesOfString:@"/upload?" withString:@"/rupload?"]];
         [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
     }];
 
@@ -592,10 +659,8 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
             if (uploadOperation.completionHandler)
             {
                 NSDictionary *uploadInfo = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:NULL];
-                if (uploadInfo[@"url"])
-                {
-                    uploadOperation.completionHandler(uploadInfo[@"url"], nil);
-                }
+                NSURL *url = uploadInfo[@"url"] && uploadInfo[@"url"] != NSNull.null ? [NSURL URLWithString:uploadInfo[@"url"]] : nil;
+                uploadOperation.completionHandler(url, nil);
             }
         }
         else

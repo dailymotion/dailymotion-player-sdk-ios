@@ -51,7 +51,7 @@ static UIImage *placeHolderImage;
     [self setNeedsLayout];
 
     __weak DMItemTableViewDefaultCell *wself = self;
-    self._URL = [NSURL URLWithString:data[@"thumbnail_small_url"]];
+    self._URL = data[@"thumbnail_small_url"];
     NSURL *localURL = [self._URL copy];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
     {
