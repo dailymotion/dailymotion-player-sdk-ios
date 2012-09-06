@@ -161,8 +161,8 @@
 
     DMItemOperation *operation = [[DMItemOperation alloc] init];
     fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
-    NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
-    BOOL allFieldsCached = [data count] == [fields count];
+    NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues];
+    BOOL allFieldsCached = [self areFieldsCached:fields];
     BOOL someFieldsCached = allFieldsCached || [data count] > 0;
     BOOL cacheStalled = self.cacheInfo ? self.cacheInfo.stalled : YES;
 
