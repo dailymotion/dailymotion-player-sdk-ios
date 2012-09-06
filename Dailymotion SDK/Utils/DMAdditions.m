@@ -19,9 +19,18 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
 
 - (NSDictionary *)dictionaryForKeys:(NSArray *)keys
 {
+    return [self dictionaryForKeys:keys options:0];
+}
+
+- (NSDictionary *)dictionaryForKeys:(NSArray *)keys options:(DMDictionnaryOption)options;
+{
     NSArray *values = [self objectsForKeys:keys notFoundMarker:DMNotFound];
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjects:values forKeys:keys];
     [dict removeObjectsForKeys:[dict allKeysForObject:DMNotFound]];
+    if (options & DMDictionaryOptionFilterNullValues)
+    {
+        [dict removeObjectsForKeys:[dict allKeysForObject:NSNull.null]];
+    }
     return dict;
 }
 

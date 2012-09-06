@@ -8,6 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum
+{
+    DMDictionaryOptionFilterNullValues = 1
+} DMDictionnaryOption;
+
 @interface NSDictionary(DMAdditions)
 
 /**
@@ -20,6 +25,8 @@
  * @return An NSDictionnary containing a subset of the current dictionnary containing only the given keys if present
  */
 - (NSDictionary *)dictionaryForKeys:(NSArray *)keys;
+
+- (NSDictionary *)dictionaryForKeys:(NSArray *)keys options:(DMDictionnaryOption)options;
 
 /**
  * Return all given keys which are missing in the current dictionnary

@@ -210,7 +210,7 @@
                     sself._fieldsCache[key] = object;
                 }];
 
-                callback([sself._fieldsCache dictionaryForKeys:fields], NO, nil);
+                callback([sself._fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues], NO, nil);
             }
 
             operation.isFinished = YES;
