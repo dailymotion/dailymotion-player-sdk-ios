@@ -194,8 +194,8 @@ static char operationKey;
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
         if (!self._loaded) return;
-        DMNetworkStatus previousRechabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
-        if (self._itemCollection.api.currentReachabilityStatus != DMNotReachable && previousRechabilityStatus == DMNotReachable)
+        DMNetworkStatus previousReachabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
+        if (self._itemCollection.api.currentReachabilityStatus != DMNotReachable && previousReachabilityStatus == DMNotReachable)
         {
             // Became recheable: notify table view controller that it should reload table data
             if ([self.delegate respondsToSelector:@selector(pickerViewComponentDidLeaveOfflineMode:)])
@@ -203,7 +203,7 @@ static char operationKey;
                 [self.delegate pickerViewComponentDidLeaveOfflineMode:self];
             }
         }
-        else if (self._itemCollection.api.currentReachabilityStatus == DMNotReachable && previousRechabilityStatus != DMNotReachable)
+        else if (self._itemCollection.api.currentReachabilityStatus == DMNotReachable && previousReachabilityStatus != DMNotReachable)
         {
             if ([self.delegate respondsToSelector:@selector(pickerViewComponentDidEnterOfflineMode:)])
             {
