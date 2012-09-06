@@ -94,7 +94,7 @@ static char callbackKey;
         // Authentication requeseted and own a valid access token, perform the request by adding the token in the Authorization header
         request.accessToken = accessToken;
     }
-    else
+    else if (!self.requestQueue.isSuspended)
     {
         // OAuth authentication is require but no valid access token is found, request a new one and postpone calls.
         // NOTE: if several requests are performed before the access token is returned, they are postponed and called
