@@ -63,19 +63,25 @@
     self._timeoutTimer = nil;
     if (self.isFinished) return;
     [super cancel];
-    [self._connection cancel];
 
-    if (!self.isFinished)
+    if (self._connection)
     {
-        [self willChangeValueForKey:@"isFinished"];
-        self._finished = YES;
-        [self didChangeValueForKey:@"isFinished"];
-    }
-    if (self.isExecuting)
-    {
-        [self willChangeValueForKey:@"isExecuting"];
-        self._executing = NO;
-        [self didChangeValueForKey:@"isExecuting"];
+        [self._connection cancel];
+
+        // As we cancelled the connection, its callback won't be called and thus won't
+        // maintain the isFinished and isExecuting flags.
+        if (!self.isFinished)
+        {
+            [self willChangeValueForKey:@"isFinished"];
+            self._finished = YES;
+            [self didChangeValueForKey:@"isFinished"];
+        }
+        if (self.isExecuting)
+        {
+            [self willChangeValueForKey:@"isExecuting"];
+            self._executing = NO;
+            [self didChangeValueForKey:@"isExecuting"];
+        }
     }
 
     self._request = nil;
