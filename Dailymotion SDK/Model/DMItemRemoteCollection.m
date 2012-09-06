@@ -409,6 +409,47 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }];
 }
 
+- (DMItemOperation *)loadAllItemsWithFields:(NSArray *)fields do:(void (^)(NSArray *array, NSError *error))callback
+{
+    return [self _loadAllItemsWithFields:fields page:1 do:callback];
+}
+
+- (DMItemOperation *)_loadAllItemsWithFields:(NSArray *)fields page:(NSUInteger)page do:(void (^)(NSArray *array, NSError *error))callback
+{
+    __block DMItemOperation *operation = [[DMItemOperation alloc] init];
+    __weak DMItemRemoteCollection *wself = self;
+    DMAPICall *call = [self loadItemsWithFields:fields forPage:page withPageSize:100 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
+    {
+        if (!wself) return;
+        __strong DMItemRemoteCollection *sself = wself;
+
+        if (more)
+        {
+            DMItemOperation *subOperation = [sself _loadAllItemsWithFields:fields page:page do:callback];
+            operation.cancelBlock = ^
+            {
+                [subOperation cancel];
+            };
+        }
+        else if (error)
+        {
+            callback(nil, error);
+        }
+        else
+        {
+            NSInteger eolIndex = [sself._listCache indexOfObject:DMEndOfList];
+            callback([sself._listCache objectsInRange:NSMakeRange(0, eolIndex != NSNotFound ? eolIndex : [sself._listCache count]) notFoundMarker:NSNull.null], nil);
+        }
+    }];
+
+    operation.cancelBlock = ^
+    {
+        [call cancel];
+    };
+
+    return operation;
+}
+
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
     if (self.cacheInfo && self.cacheInfo.valid && !self.cacheInfo.stalled && [self itemAtIndex:index])
@@ -596,6 +637,45 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             [subOperation cancel];
         };
     }
+
+    return operation;
+}
+
+- (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
+{
+    id obj = self._listCache[fromIndex];
+    [self._listCache removeObjectAtIndex:fromIndex];
+    [self._listCache insertObject:obj atIndex:toIndex];
+
+    __weak DMItemRemoteCollection *wself = self;
+    __block DMItemOperation *operation = [self loadAllItemsWithFields:@[] do:^(NSArray *items, NSError *error)
+    {
+        if (!wself) return;
+        __strong DMItemRemoteCollection *sself = wself;
+
+        if (error)
+        {
+            callback(error);
+        }
+        else
+        {
+            NSMutableArray *ids = [NSMutableArray arrayWithCapacity:items.count];
+            for (DMItem *item in items)
+            {
+                [ids addObject:item.itemId];
+            }
+
+            DMAPICall *apiCall = [sself.api post:sself._path args:@{@"ids": ids} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error2)
+            {
+                callback(error2);
+            }];
+
+            operation.cancelBlock = ^
+            {
+                [apiCall cancel];
+            };
+        }
+    }];
 
     return operation;
 }
