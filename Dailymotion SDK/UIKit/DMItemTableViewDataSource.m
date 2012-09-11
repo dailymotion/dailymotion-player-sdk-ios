@@ -149,6 +149,7 @@ static char operationKey;
             else
             {
                 sself.lastError = nil;
+                if (!data) return; // Reached and of list, the number of item in the list will be updated after this cell is displayed
                 [scell setFieldsData:data];
                 if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didLoadCellContentAtIndexPath:withData:)])
                 {
