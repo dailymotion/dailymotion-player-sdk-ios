@@ -36,5 +36,6 @@
 @property (nonatomic, assign) BOOL reorderable;
 
 - (void)cancelAllOperations;
+- (void)reload:(void (^)())completionBlock;
 
 @end

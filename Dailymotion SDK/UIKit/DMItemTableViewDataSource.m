@@ -18,6 +18,7 @@ static char operationKey;
 
 @interface DMItemTableViewDataSource ()
 
+@property (nonatomic, assign) BOOL _reloading;
 @property (nonatomic, assign) BOOL _loaded;
 @property (nonatomic, strong) NSMutableArray *_operations;
 @property (nonatomic, weak) UITableView *_lastTableView;
@@ -53,6 +54,33 @@ static char operationKey;
     }
     [self._operations makeObjectsPerformSelector:@selector(cancel)];
     [self._operations removeAllObjects];
+}
+
+- (void)reload:(void (^)())completionBlock
+{
+    if (![self.itemCollection isKindOfClass:DMItemRemoteCollection.class])
+    {
+        completionBlock();
+        return;
+    }
+
+    self._reloading = YES;
+    ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
+    UITableViewCell <DMItemDataSourceItem> *cell = [self._lastTableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+    __weak DMItemTableViewDataSource *wself = self;
+    DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    {
+        if (!wself) return;
+        __strong DMItemTableViewDataSource *sself = wself;
+        sself._reloading = NO;
+        completionBlock();
+    }];
+
+    if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
+    {
+        [self._operations addObject:operation];
+        [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
+    }
 }
 
 #pragma Table Data Source
@@ -263,6 +291,7 @@ static char operationKey;
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
+        if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
         if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
         {
             [self.delegate itemTableViewDataSourceDidChange:self];
