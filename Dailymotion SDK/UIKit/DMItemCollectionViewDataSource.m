@@ -1,12 +1,12 @@
 //
-//  DMItemTableViewDataSource.m
+//  DMItemCollectionViewDataSource.m
 //  Dailymotion SDK iOS
 //
-//  Created by Olivier Poitrey on 25/06/12.
+//  Created by Olivier Poitrey on 21/09/12.
 //
 //
 
-#import "DMItemTableViewDataSource.h"
+#import "DMItemCollectionViewDataSource.h"
 #import "DMItemDataSourceItem.h"
 #import "DMItemLocalCollection.h"
 #import "DMItemRemoteCollection.h"
@@ -16,16 +16,16 @@
 
 static char operationKey;
 
-@interface DMItemTableViewDataSource ()
+@interface DMItemCollectionViewDataSource ()
 
 @property (nonatomic, assign) BOOL _reloading;
 @property (nonatomic, assign) BOOL _loaded;
 @property (nonatomic, strong) NSMutableArray *_operations;
-@property (nonatomic, weak) UITableView *_lastTableView;
+@property (nonatomic, weak) UICollectionView *_lastCollectionView;
 
 @end
 
-@implementation DMItemTableViewDataSource
+@implementation DMItemCollectionViewDataSource
 
 - (id)init
 {
@@ -66,12 +66,12 @@ static char operationKey;
 
     self._reloading = YES;
     ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
-    UITableViewCell <DMItemDataSourceItem> *cell = [self._lastTableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
-    __weak DMItemTableViewDataSource *wself = self;
+    UICollectionView <DMItemDataSourceItem> *cell = self.cellClass.new;
+    __weak DMItemCollectionViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (!wself) return;
-        __strong DMItemTableViewDataSource *sself = wself;
+        __strong DMItemCollectionViewDataSource *sself = wself;
         sself._reloading = NO;
         completionBlock();
     }];
@@ -83,41 +83,75 @@ static char operationKey;
     }
 }
 
-#pragma Table Data Source
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (void)registerCellClass
 {
-    self._lastTableView = tableView;
+    UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
+    NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
+    NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemCollectionViewDataSource: UICollectionViewCell returned by DMItemCollectionViewDataSource.cellClass must comform to DMItemDataSourceItem protocol");
+    [self._lastCollectionView registerClass:self.cellClass forCellWithReuseIdentifier:@"DMItemCell"];
+}
+
+- (void)setCellClass:(Class)cellClass
+{
+    _cellClass = cellClass;
+    if (self._lastCollectionView)
+    {
+        [self registerCellClass];
+    }
+}
+
+- (void)set_lastCollectionView:(UICollectionView *)collectionView
+{
+    if ((__lastCollectionView != collectionView))
+    {
+        __lastCollectionView = collectionView;
+        [self registerCellClass];
+    }
+}
+
+- (void)configureCollectionView:(UICollectionView *)collectionView
+{
+    UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
+    NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
+    NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemCollectionViewDataSource: UICollectionViewCell returned by DMItemCollectionViewDataSource.cellClass must comform to DMItemDataSourceItem protocol");
+    [collectionView registerClass:self.cellClass forCellWithReuseIdentifier:@"DMItemCell"];
+}
+
+#pragma Collection Data Source
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    self._lastCollectionView = collectionView;
     BOOL networkLoadingWhileOffline = self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.itemCollection isKindOfClass:DMItemRemoteCollection.class];
 
     if (!self._loaded && self.itemCollection && !networkLoadingWhileOffline)
     {
-        UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
-        NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemDataSourceItem protocol");
-        NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemTableViewDataSource: UITableViewCell returned by DMItemTableViewDataSource.cellIdentifier must comform to DMItemDataSourceItem protocol");
+        self._loaded = YES;
 
-        __weak DMItemTableViewDataSource *wself = self;
+        UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
+
+        __weak DMItemCollectionViewDataSource *wself = self;
         DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
         {
             if (!wself) return;
-            __strong DMItemTableViewDataSource *sself = wself;
+            __strong DMItemCollectionViewDataSource *sself = wself;
 
             if (error)
             {
                 sself.lastError = error;
                 sself._loaded = NO;
-                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didFailWithError:)])
                 {
-                    [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
+                    [sself.delegate itemCollectionViewDataSource:sself didFailWithError:error];
                 }
             }
             else
             {
-                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
+                if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidFinishLoadingData:)])
                 {
-                    [sself.delegate itemTableViewDataSourceDidFinishLoadingData:self];
+                    [sself.delegate itemCollectionViewDataSourceDidFinishLoadingData:self];
                 }
-                [sself._lastTableView reloadData];
+                [sself._lastCollectionView reloadData];
             }
         }];
         // Cleanup running operations
@@ -129,35 +163,32 @@ static char operationKey;
             [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
 
             // Only notify about loading if we have something to load on the network
-            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidStartLoadingData:)])
+            if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidStartLoadingData:)])
             {
-                [self.delegate itemTableViewDataSourceDidStartLoadingData:self];
+                [self.delegate itemCollectionViewDataSourceDidStartLoadingData:self];
             }
         }
-
-        self._loaded = YES;
     }
     return self.itemCollection.currentEstimatedTotalItemsCount;
 }
 
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    self._lastTableView = tableView;
-    __weak UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+    self._lastCollectionView = collectionView;
+    __weak UICollectionViewCell <DMItemDataSourceItem> *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DMItemCell" forIndexPath:indexPath];
 
     DMItemOperation *previousOperation = objc_getAssociatedObject(cell, &operationKey);
     [previousOperation cancel];
 
     [cell prepareForLoading];
 
-    __weak DMItemTableViewDataSource *wself = self;
+    __weak DMItemCollectionViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (!wself) return;
-        __strong DMItemTableViewDataSource *sself = wself;
+        __strong DMItemCollectionViewDataSource *sself = wself;
 
-        __strong UITableViewCell <DMItemDataSourceItem> *scell = cell;
+        __strong UICollectionViewCell <DMItemDataSourceItem> *scell = cell;
         if (scell)
         {
             objc_setAssociatedObject(scell, &operationKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -168,9 +199,9 @@ static char operationKey;
                 sself.lastError = error;
                 if (notify)
                 {
-                    if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
+                    if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didFailWithError:)])
                     {
-                        [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
+                        [sself.delegate itemCollectionViewDataSource:sself didFailWithError:error];
                     }
                 }
             }
@@ -179,9 +210,9 @@ static char operationKey;
                 sself.lastError = nil;
                 if (!data) return; // Reached and of list, the number of item in the list will be updated after this cell is displayed
                 [scell setFieldsData:data];
-                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didLoadCellContentAtIndexPath:withData:)])
+                if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didLoadCellContentAtIndexPath:withData:)])
                 {
-                    [sself.delegate itemTableViewDataSource:sself didLoadCellContentAtIndexPath:indexPath withData:data];
+                    [sself.delegate itemCollectionViewDataSource:sself didLoadCellContentAtIndexPath:indexPath withData:data];
                 }
             }
         }
@@ -197,81 +228,13 @@ static char operationKey;
     return cell;
 }
 
-#pragma mark - Table Editing
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [self.itemCollection canEdit] && self.editable;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete && [self.itemCollection canEdit] && self.editable)
-    {
-        __weak DMItemTableViewDataSource *wself = self;
-        [self.itemCollection removeItemAtIndex:indexPath.row done:^(NSError *error)
-        {
-            if (!wself) return;
-            __strong DMItemTableViewDataSource *sself = wself;
-
-            if (error)
-            {
-                sself.lastError = error;
-                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
-                {
-                    [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
-                }
-            }
-            else
-            {
-                sself.lastError = nil;
-                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didDeleteCellAtIndexPath:)])
-                {
-                    [sself.delegate itemTableViewDataSource:sself didDeleteCellAtIndexPath:indexPath];
-                }
-            }
-        }];
-    }
-}
-
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [self.itemCollection canReorder] && self.reorderable;
-}
-
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-    if ([self.itemCollection canReorder] && self.reorderable)
-    {
-        __weak DMItemTableViewDataSource *wself = self;
-        [self.itemCollection moveItemAtIndex:fromIndexPath.row toIndex:toIndexPath.row done:^(NSError *error)
-        {
-            if (!wself) return;
-            __strong DMItemTableViewDataSource *sself = wself;
-
-            if (error)
-            {
-                sself.lastError = error;
-                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
-                {
-                    [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
-                }
-            }
-            else
-            {
-                sself.lastError = nil;
-            }
-        }];
-    }
-}
-
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"itemCollection"] && object == self)
     {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
+        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) object:self];
 
         self._loaded = NO;
         if (self.itemCollection.isLocal)
@@ -279,33 +242,33 @@ static char operationKey;
             // Local connection doesn't need pre-loading of the list
             self._loaded = YES;
         }
-        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
+        if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidChange:)])
         {
             dispatch_async(dispatch_get_main_queue(), ^
             {
-                [self.delegate itemTableViewDataSourceDidChange:self];
+                [self.delegate itemCollectionViewDataSourceDidChange:self];
             });
         }
-        [self._lastTableView reloadData];
+        dispatch_sync(dispatch_get_main_queue(), ^{[self._lastCollectionView reloadData];});
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
         if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
-        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
+        if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidChange:)])
         {
-            [self.delegate itemTableViewDataSourceDidChange:self];
+            [self.delegate itemCollectionViewDataSourceDidChange:self];
         }
-        [self._lastTableView reloadData];
+        [self._lastCollectionView reloadData];
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
         if (change[NSKeyValueChangeOldKey] == NSNull.null)
         {
-            if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
+            if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:)])
             {
                 // We always start by getting this status before even when connected, immediately followed by a reachable notif if finaly connected
-                [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
+                [(NSObject *)self.delegate performSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
             }
         }
         else
@@ -313,19 +276,19 @@ static char operationKey;
             DMNetworkStatus previousReachabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
             if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousReachabilityStatus == DMNotReachable)
             {
-                [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
-                // Became recheable: notify table view controller that it should reload table data
-                if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidLeaveOfflineMode:)])
+                [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) object:self];
+                // Became recheable: notify collection view controller that it should reload collection view data
+                if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidLeaveOfflineMode:)])
                 {
-                    [self.delegate itemTableViewDataSourceDidLeaveOfflineMode:self];
+                    [self.delegate itemCollectionViewDataSourceDidLeaveOfflineMode:self];
                 }
-                [self._lastTableView reloadData];
+                [self._lastCollectionView reloadData];
             }
             else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousReachabilityStatus != DMNotReachable)
             {
-                if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
+                if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:)])
                 {
-                    [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
+                    [(NSObject *)self.delegate performSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
                 }
             }
         }

@@ -10,6 +10,7 @@
 #import <DailymotionSDK/DMItemRemoteCollection.h>
 #import <DailymotionSDK/DMItemLocalCollection.h>
 #import <DailymotionSDK/DMItemTableViewController.h>
+#import <DailymotionSDK/DMItemCollectionViewController.h>
 #import <DailymotionSDK/DMItemPageViewDataSource.h>
 #import <DailymotionSDK/DMItemPickerViewDataSource.h>
 #import <DailymotionSDK/DMPlayerViewController.h>

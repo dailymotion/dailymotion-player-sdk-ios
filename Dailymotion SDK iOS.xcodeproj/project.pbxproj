@@ -55,6 +55,10 @@
 		539DB6A115992A8D0029B767 /* DailymotionSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 539DB69F15992A8D0029B767 /* DailymotionSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		539DB6B615994F5B0029B767 /* DMItemTableViewCellDefaultCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 539DB6B415994F5B0029B767 /* DMItemTableViewCellDefaultCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		539DB6B715994F5B0029B767 /* DMItemTableViewCellDefaultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */; };
+		53BFC71D160C620200214FDD /* DMItemCollectionViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 53BFC71B160C620200214FDD /* DMItemCollectionViewDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53BFC71E160C620200214FDD /* DMItemCollectionViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 53BFC71C160C620200214FDD /* DMItemCollectionViewDataSource.m */; };
+		53BFC721160C622200214FDD /* DMItemCollectionViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 53BFC71F160C622200214FDD /* DMItemCollectionViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53BFC722160C622200214FDD /* DMItemCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53BFC720160C622200214FDD /* DMItemCollectionViewController.m */; };
 		53C52B7615A5E3D800903816 /* DMAPIArchiverDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 53C52B7415A5E3D800903816 /* DMAPIArchiverDelegate.h */; };
 		53C52B7715A5E3D800903816 /* DMAPIArchiverDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 53C52B7515A5E3D800903816 /* DMAPIArchiverDelegate.m */; };
 		53C52B8315A6586E00903816 /* DMItemRemoteCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 53C52B8115A6586E00903816 /* DMItemRemoteCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -146,6 +150,10 @@
 		539DB69F15992A8D0029B767 /* DailymotionSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DailymotionSDK.h; sourceTree = "<group>"; };
 		539DB6B415994F5B0029B767 /* DMItemTableViewCellDefaultCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewCellDefaultCell.h; sourceTree = "<group>"; };
 		539DB6B515994F5B0029B767 /* DMItemTableViewCellDefaultCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemTableViewCellDefaultCell.m; sourceTree = "<group>"; };
+		53BFC71B160C620200214FDD /* DMItemCollectionViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemCollectionViewDataSource.h; sourceTree = "<group>"; };
+		53BFC71C160C620200214FDD /* DMItemCollectionViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemCollectionViewDataSource.m; sourceTree = "<group>"; };
+		53BFC71F160C622200214FDD /* DMItemCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemCollectionViewController.h; sourceTree = "<group>"; };
+		53BFC720160C622200214FDD /* DMItemCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemCollectionViewController.m; sourceTree = "<group>"; };
 		53C52B7415A5E3D800903816 /* DMAPIArchiverDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPIArchiverDelegate.h; sourceTree = "<group>"; };
 		53C52B7515A5E3D800903816 /* DMAPIArchiverDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPIArchiverDelegate.m; sourceTree = "<group>"; };
 		53C52B8115A6586E00903816 /* DMItemRemoteCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemRemoteCollection.h; sourceTree = "<group>"; };
@@ -354,6 +362,7 @@
 				53943EFF15BF76B900F42452 /* UIPickerView */,
 				53706AFE15A327BF00D29386 /* UIPageViewController */,
 				53706AFC15A327AE00D29386 /* UITableViewController */,
+				53BFC719160C612B00214FDD /* UICollectionViewController */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -391,6 +400,17 @@
 				53943F0915BF97D300F42452 /* DMItemPickerLabel.m */,
 			);
 			name = UIPickerView;
+			sourceTree = "<group>";
+		};
+		53BFC719160C612B00214FDD /* UICollectionViewController */ = {
+			isa = PBXGroup;
+			children = (
+				53BFC71B160C620200214FDD /* DMItemCollectionViewDataSource.h */,
+				53BFC71C160C620200214FDD /* DMItemCollectionViewDataSource.m */,
+				53BFC71F160C622200214FDD /* DMItemCollectionViewController.h */,
+				53BFC720160C622200214FDD /* DMItemCollectionViewController.m */,
+			);
+			name = UICollectionViewController;
 			sourceTree = "<group>";
 		};
 		53E273741265BD9700B541BE /* Tests */ = {
@@ -454,6 +474,8 @@
 				53943F0A15BF97D300F42452 /* DMItemPickerLabel.h in Headers */,
 				530BCB6015C0548D007C6917 /* DMItemTableViewDataSource.h in Headers */,
 				530BCB6415C054BA007C6917 /* DMItemTableViewController.h in Headers */,
+				53BFC71D160C620200214FDD /* DMItemCollectionViewDataSource.h in Headers */,
+				53BFC721160C622200214FDD /* DMItemCollectionViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +621,8 @@
 				53943F0B15BF97D300F42452 /* DMItemPickerLabel.m in Sources */,
 				530BCB6115C0548D007C6917 /* DMItemTableViewDataSource.m in Sources */,
 				530BCB6515C054BA007C6917 /* DMItemTableViewController.m in Sources */,
+				53BFC71E160C620200214FDD /* DMItemCollectionViewDataSource.m in Sources */,
+				53BFC722160C622200214FDD /* DMItemCollectionViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
