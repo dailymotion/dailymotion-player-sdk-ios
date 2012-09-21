@@ -66,7 +66,7 @@ static char operationKey;
 
     self._reloading = YES;
     ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
-    UICollectionView <DMItemDataSourceItem> *cell = self.cellClass.new;
+    UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
     __weak DMItemCollectionViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
@@ -83,40 +83,6 @@ static char operationKey;
     }
 }
 
-- (void)registerCellClass
-{
-    UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
-    NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
-    NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemCollectionViewDataSource: UICollectionViewCell returned by DMItemCollectionViewDataSource.cellClass must comform to DMItemDataSourceItem protocol");
-    [self._lastCollectionView registerClass:self.cellClass forCellWithReuseIdentifier:@"DMItemCell"];
-}
-
-- (void)setCellClass:(Class)cellClass
-{
-    _cellClass = cellClass;
-    if (self._lastCollectionView)
-    {
-        [self registerCellClass];
-    }
-}
-
-- (void)set_lastCollectionView:(UICollectionView *)collectionView
-{
-    if ((__lastCollectionView != collectionView))
-    {
-        __lastCollectionView = collectionView;
-        [self registerCellClass];
-    }
-}
-
-- (void)configureCollectionView:(UICollectionView *)collectionView
-{
-    UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
-    NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
-    NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemCollectionViewDataSource: UICollectionViewCell returned by DMItemCollectionViewDataSource.cellClass must comform to DMItemDataSourceItem protocol");
-    [collectionView registerClass:self.cellClass forCellWithReuseIdentifier:@"DMItemCell"];
-}
-
 #pragma Collection Data Source
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -129,6 +95,8 @@ static char operationKey;
         self._loaded = YES;
 
         UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
+        NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
+        NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemCollectionViewDataSource: UICollectionViewCell returned by DMItemCollectionViewDataSource.cellClass must comform to DMItemDataSourceItem protocol");
 
         __weak DMItemCollectionViewDataSource *wself = self;
         DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -175,7 +143,8 @@ static char operationKey;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     self._lastCollectionView = collectionView;
-    __weak UICollectionViewCell <DMItemDataSourceItem> *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DMItemCell" forIndexPath:indexPath];
+    __weak UICollectionViewCell <DMItemDataSourceItem> *cell = [collectionView dequeueReusableCellWithReuseIdentifier:self.cellIdentifier forIndexPath:indexPath];
+    NSAssert([cell isKindOfClass:self.cellClass], @"The cellIdentifier must point to a reuseable cell nib pointing to the same class as defined in cellClass");
 
     DMItemOperation *previousOperation = objc_getAssociatedObject(cell, &operationKey);
     [previousOperation cancel];

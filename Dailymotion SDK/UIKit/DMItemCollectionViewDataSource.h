@@ -30,6 +30,7 @@
 
 @property (nonatomic, weak) id<DMItemCollectionViewDataSourceDelegate> delegate;
 @property (nonatomic, assign) Class cellClass;
+@property (nonatomic, assign) NSString *cellIdentifier;
 @property (nonatomic, strong) DMItemCollection *itemCollection;
 @property (nonatomic, strong) NSError *lastError;
 @property (nonatomic, assign) BOOL editable;
