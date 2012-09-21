@@ -685,7 +685,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (BOOL)canReorder
 {
-    return NO; // TODO
+    return YES;
 }
 
 @end
