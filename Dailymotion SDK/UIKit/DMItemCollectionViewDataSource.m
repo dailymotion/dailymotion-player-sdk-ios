@@ -228,7 +228,7 @@ static char operationKey;
         {
             [self.delegate itemCollectionViewDataSourceDidChange:self];
         }
-        [self._lastCollectionView reloadData];
+        dispatch_async(dispatch_get_main_queue(), ^{[self._lastCollectionView reloadData];});
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
