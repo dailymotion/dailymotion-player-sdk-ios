@@ -368,6 +368,7 @@ static char callbackKey;
     self.grantType = type;
     self._grantInfo = info;
     self.session = nil;
+    self.requestQueue.suspended = NO;
 }
 
 - (void)clearSession

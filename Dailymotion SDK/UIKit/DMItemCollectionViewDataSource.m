@@ -222,7 +222,7 @@ static char operationKey;
                 [self.delegate itemCollectionViewDataSourceDidChange:self];
             });
         }
-        dispatch_sync(dispatch_get_main_queue(), ^{[self._lastCollectionView reloadData];});
+        [self._lastCollectionView reloadData];
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
@@ -232,7 +232,7 @@ static char operationKey;
         {
             [self.delegate itemCollectionViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
-        dispatch_async(dispatch_get_main_queue(), ^{[self._lastCollectionView reloadData];});
+        [self._lastCollectionView reloadData];
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
