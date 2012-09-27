@@ -115,7 +115,11 @@ static char operationKey;
             {
                 if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
                 {
-                    [sself.delegate itemTableViewDataSourceDidFinishLoadingData:self];
+                    [sself.delegate itemTableViewDataSourceDidFinishLoadingData:sself];
+                }
+                if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
+                {
+                    [sself.delegate itemTableViewDataSource:sself didUpdateWithEstimatedTotalItemsCount:sself.itemCollection.currentEstimatedTotalItemsCount];
                 }
                 [sself._lastTableView reloadData];
             }
@@ -139,7 +143,6 @@ static char operationKey;
     }
     return self.itemCollection.currentEstimatedTotalItemsCount;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -278,6 +281,10 @@ static char operationKey;
         {
             // Local connection doesn't need pre-loading of the list
             self._loaded = YES;
+            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
+            {
+                [self.delegate itemTableViewDataSourceDidFinishLoadingData:self];
+            }
         }
         if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
         {
@@ -286,15 +293,16 @@ static char operationKey;
                 [self.delegate itemTableViewDataSourceDidChange:self];
             });
         }
+
         [self._lastTableView reloadData];
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
         if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
-        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
+        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
         {
-            [self.delegate itemTableViewDataSourceDidChange:self];
+            [self.delegate itemTableViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
         [self._lastTableView reloadData];
     }

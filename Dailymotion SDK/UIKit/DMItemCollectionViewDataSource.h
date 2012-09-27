@@ -16,6 +16,7 @@
 @optional
 
 - (void)itemCollectionViewDataSourceDidChange:(DMItemCollectionViewDataSource *)dataSource;
+- (void)itemCollectionViewDataSource:(DMItemCollectionViewDataSource *)dataSource didUpdateWithEstimatedTotalItemsCount:(NSUInteger)estimatedTotalItems;
 - (void)itemCollectionViewDataSourceDidStartLoadingData:(DMItemCollectionViewDataSource *)dataSource;
 - (void)itemCollectionViewDataSourceDidFinishLoadingData:(DMItemCollectionViewDataSource *)dataSource;
 - (void)itemCollectionViewDataSource:(DMItemCollectionViewDataSource *)dataSource didLoadCellContentAtIndexPath:(NSIndexPath *)indexPath withData:(NSDictionary *)data;

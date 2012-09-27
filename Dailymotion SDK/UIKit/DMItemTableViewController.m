@@ -66,6 +66,11 @@
 {
 }
 
+- (void)itemTableViewDataSource:(DMItemTableViewDataSource *)dataSource didUpdateWithEstimatedTotalItemsCount:(NSUInteger)estimatedTotalItems
+{
+
+}
+
 - (void)itemTableViewDataSourceDidStartLoadingData:(DMItemTableViewDataSource *)dataSource
 {
 }

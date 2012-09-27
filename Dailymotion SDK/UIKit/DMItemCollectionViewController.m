@@ -46,6 +46,10 @@
 {
 }
 
+- (void)itemCollectionViewDataSource:(DMItemCollectionViewDataSource *)dataSource didUpdateWithEstimatedTotalItemsCount:(NSUInteger)estimatedTotalItems
+{
+}
+
 - (void)itemCollectionViewDataSourceDidStartLoadingData:(DMItemCollectionViewDataSource *)dataSource
 {
 }

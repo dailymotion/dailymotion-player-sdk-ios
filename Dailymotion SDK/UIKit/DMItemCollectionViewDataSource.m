@@ -119,6 +119,10 @@ static char operationKey;
                 {
                     [sself.delegate itemCollectionViewDataSourceDidFinishLoadingData:self];
                 }
+                if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
+                {
+                    [sself.delegate itemCollectionViewDataSource:sself didUpdateWithEstimatedTotalItemsCount:sself.itemCollection.currentEstimatedTotalItemsCount];
+                }
                 [sself._lastCollectionView reloadData];
             }
         }];
@@ -224,9 +228,9 @@ static char operationKey;
     {
         if (!self._loaded) return;
         if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
-        if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidChange:)])
+        if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
         {
-            [self.delegate itemCollectionViewDataSourceDidChange:self];
+            [self.delegate itemCollectionViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
         dispatch_async(dispatch_get_main_queue(), ^{[self._lastCollectionView reloadData];});
     }
