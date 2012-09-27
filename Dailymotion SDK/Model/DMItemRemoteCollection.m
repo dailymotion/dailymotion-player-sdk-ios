@@ -97,6 +97,19 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     return NO;
 }
 
+- (DMItem *)itemWithId:(NSString *)itemId;
+{
+    for (DMItem *item in self._listCache)
+    {
+        if ([item isKindOfClass:DMItem.class] && [item.itemId isEqualToString:itemId])
+        {
+            return item;
+        }
+    }
+
+    return [DMItem itemWithType:self.type forId:itemId];
+}
+
 - (DMItem *)itemWithId:(NSString *)itemId atIndex:(NSUInteger)index
 {
     DMItem *item = [self itemAtIndex:index];

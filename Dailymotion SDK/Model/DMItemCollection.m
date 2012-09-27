@@ -203,4 +203,10 @@
     return nil;
 }
 
+- (DMItem *)itemWithId:(NSString *)itemId
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 @end

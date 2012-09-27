@@ -76,6 +76,19 @@ static DMItemOperation *fakeOperation()
 
 #pragma mark - Implementation
 
+- (DMItem *)itemWithId:(NSString *)itemId;
+{
+    for (DMItem *item in self._items)
+    {
+        if ([item isKindOfClass:DMItem.class] && [item.itemId isEqualToString:itemId])
+        {
+            return item;
+        }
+    }
+
+    return [DMItem itemWithType:self.type forId:itemId];
+}
+
 - (BOOL)isLocal
 {
     return YES;

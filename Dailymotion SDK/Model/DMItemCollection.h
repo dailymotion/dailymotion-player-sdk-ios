@@ -198,4 +198,13 @@
  */
 - (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *error))callback;
 
+/**
+ * Return a DMItem with same type as the current collection for the given id. If the collection as
+ * an item with the same id in its cache, the cached item is returned.
+ *
+ * @param id The id of the item to return
+ * @return DMItem from the collection's cache if any or a new item otherwise
+ */
+- (DMItem *)itemWithId:(NSString *)itemId;
+
 @end
