@@ -173,19 +173,12 @@
 
     if (!allFieldsCached || cacheStalled)
     {
-        NSArray *fieldsToLoad = fields;
-        if (!allFieldsCached && !cacheStalled)
-        {
-            // Only load the missing fields if the cache is still valid
-            fieldsToLoad = [data allMissingKeysForKeys:fields];
-        }
-
         // Perform conditional request only if we already have all requested fields in cache
         BOOL conditionalRequest = allFieldsCached && cacheStalled;
 
         __weak DMItem *wself = self;
         DMAPICall *apiCall = [self.api get:self._path
-                                      args:@{@"fields": fieldsToLoad}
+                                      args:@{@"fields": fields}
                                  cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
                                   callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
         {
