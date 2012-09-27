@@ -49,6 +49,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 @property (nonatomic, strong) DMAPICallQueue *_callQueue;
 @property (nonatomic, assign) BOOL _autoConcurrency;
 @property (nonatomic, assign) BOOL _autoChunkSize;
+@property (nonatomic, strong) NSMutableDictionary *_globalParameters;
 
 @end
 
@@ -61,7 +62,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     NSURL *_APIBaseURL;
 }
 
-+ (id)sharedAPI
++ (DMAPI *)sharedAPI
 {
     if (!sharedInstance)
     {
@@ -510,6 +511,40 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 #pragma mark public
 
+- (void)setValue:(id)value forGlobalParameter:(NSString *)name
+{
+    if (!self._globalParameters)
+    {
+        self._globalParameters = NSMutableDictionary.new;
+    }
+
+    if (value)
+    {
+        self._globalParameters[name] = value;
+    }
+    else
+    {
+        [self removeGlobalParameter:name];
+    }
+}
+
+- (void)removeGlobalParameter:(NSString *)name
+{
+    if (self._globalParameters)
+    {
+        [self._globalParameters removeObjectForKey:name];
+        if (self._globalParameters.count == 0)
+        {
+            self._globalParameters = nil;
+        }
+    }
+}
+
+- (id)valueForGlobalParameter:(NSString *)name
+{
+    return self._globalParameters[name];
+}
+
 - (DMAPICall *)get:(NSString *)path callback:(DMAPICallResultBlock)callback
 {
     return [self request:path method:@"GET" args:nil cacheInfo:nil callback:callback];
@@ -543,6 +578,13 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 - (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
 {
+    if (self._globalParameters)
+    {
+        NSMutableDictionary *mergedArgs = [self._globalParameters mutableCopy];
+        [mergedArgs addEntriesFromDictionary:args];
+        args = mergedArgs;
+    }
+
     DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args cacheInfo:cacheInfo callback:callback];
     return call;
 }

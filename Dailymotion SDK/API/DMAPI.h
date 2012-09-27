@@ -61,7 +61,30 @@
 /**
  * Get the shared DM API instance for the current application.
  */
-+ (id)sharedAPI;
++ (DMAPI *)sharedAPI;
+
+/**
+ * Set a parameter that will be sent with all API calls like for instance `localization` and
+ * `family_filter` parameters.
+ *
+ * @param value The parameter value
+ * @param name The parameter name
+ */
+- (void)setValue:(id)value forGlobalParameter:(NSString *)name;
+
+/**
+ * Remove the specified global parameter.
+ *
+ * @param name The parameter to remove
+ */
+- (void)removeGlobalParameter:(NSString *)name;
+
+/**
+ * Get the specified global parameter.
+ *
+ * @param name The parameter to get
+ */
+- (id)valueForGlobalParameter:(NSString *)name;
 
 /**
  * Perform a GET request to Dailymotion's API with the given method name and arguments.
