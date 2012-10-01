@@ -41,6 +41,11 @@ NSUInteger totalRequestCount;
     return self;
 }
 
+- (void)dealloc
+{
+    [self cancelAllConnections];
+}
+
 - (void)setMaxConcurrency:(NSUInteger)maxConcurrency
 {
     self._queue.maxConcurrentOperationCount = maxConcurrency;
@@ -156,6 +161,19 @@ NSUInteger totalRequestCount;
     operation.completionHandler = handler;
     [self._queue addOperation:operation];
     return operation;
+}
+
+- (NSString *)userAgent
+{
+    if (!_userAgent)
+    {
+        NSString *appName = NSBundle.mainBundle.infoDictionary[@"CFBundleName"];
+        NSString *appVersion = NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"];
+        UIDevice *device = UIDevice.currentDevice;
+        _userAgent = [NSString.alloc initWithFormat:@"%@/%@ (%@ %@; %@)", appName, appVersion, device.systemName, device.systemVersion, device.model];
+    }
+
+    return _userAgent;
 }
 
 @end
