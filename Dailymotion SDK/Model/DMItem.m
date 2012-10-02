@@ -248,4 +248,49 @@
     return operation;
 }
 
+- (DMItemOperation *)subItemWithType:(NSString *)type forField:(NSString *)subItemField done:(void (^)(DMItem *item, NSError *error))callback
+{
+    DMItemOperation *operation;
+
+    NSString *itemId;
+
+    if ((itemId = self._fieldsCache[subItemField]) || (itemId = self._fieldsCache[[subItemField stringByAppendingString:@".id"]]))
+    {
+        operation = DMItemOperation.new;
+        operation.isFinished = YES;
+        NSString *fieldPrefix = [subItemField stringByAppendingString:@"."];
+        NSMutableDictionary *subItemCache = NSMutableDictionary.dictionary;
+        [self._fieldsCache enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
+        {
+            if ([key hasPrefix:fieldPrefix])
+            {
+                subItemCache[[key substringFromIndex:fieldPrefix.length]] = value;
+            }
+        }];
+        DMItem *subItem = [DMItem itemWithType:type forId:itemId];
+        subItem._fieldsCache = subItemCache;
+        callback(subItem, nil);
+    }
+    else
+    {
+        operation = [self withFields:@[subItemField] do:^(NSDictionary *data, BOOL stalled, NSError *error)
+        {
+            if (error)
+            {
+                callback(nil, error);
+            }
+            else if (!data[subItemField])
+            {
+                callback(nil, nil);
+            }
+            else
+            {
+                callback([DMItem itemWithType:type forId:data[subItemField]], nil);
+            }
+        }];
+    }
+
+    return operation;
+}
+
 @end

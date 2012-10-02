@@ -101,4 +101,15 @@
  */
 - (void)flushCache;
 
+/**
+ * Get a DMItem from an object field
+ *
+ * @param type The type of the sub item
+ * @param subItemField The name of the field holding the sub item
+ * @param callback The block to call with the initialized sub item
+ *
+ * @return A DMItemOperation instance able to cancel the request
+ */
+- (DMItemOperation *)subItemWithType:(NSString *)type forField:(NSString *)subItemField done:(void (^)(DMItem *item, NSError *error))callback;
+
 @end
