@@ -30,6 +30,9 @@ typedef enum
 
 @protocol DailymotionOAuthDelegate;
 
+/**
+ * A wrapper for DMNetworking to perform OAuth 2.0 requests.
+ */
 @interface DMOAuthClient : NSObject PLATFORM_DELEGATES
 
 @property (nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
@@ -63,6 +66,13 @@ typedef enum
 
 /**
  * Perform a request with oauth authentication
+ *
+ * @param URL The URL to send request for.
+ * @param method The HTTP method to use for the request.
+ * @param payload The payload for POST or PUT HTTP method. @see DMNetworking for the list of supported types.
+ * @param headers A dictionary with some custom headers to add.
+ * @param cachePolicy The cache policy for the request.
+ * @param handler The block to be called with the response.
  */
 - (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
 
@@ -110,6 +120,9 @@ typedef enum
 
 @end
 
+/**
+ * Delegate protocol used to request end-user input when necessary.
+ */
 @protocol DailymotionOAuthDelegate <NSObject>
 
 @optional
@@ -123,6 +136,9 @@ typedef enum
  * The default implementation of this delegate method is to create a new window with the content of the view.
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
+ *
+ * @param client The DMOAuthClient sending this message.
+ * @param view The view to display to the end user.
  */
 #if TARGET_OS_IPHONE
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(UIView *)view;
@@ -135,6 +151,8 @@ typedef enum
  * to close the previousely created modal dialog.
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
+ *
+ * @param client The DMOAuthClient sending this message
  */
 - (void)dailymotionOAuthRequestCloseModalDialog:(DMOAuthClient *)client;
 
@@ -144,6 +162,9 @@ typedef enum
  * the pending API calls to be completed.
  *
  * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypePassword``.
+ *
+ * @param client The DMOAuthClient requesting this information.
+ * @param setCredentials The block to call back with the obtained username and password.
  */
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)client didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials;
 
@@ -152,11 +173,16 @@ typedef enum
  * When a link is clicked in the authorization dialog, like for instance to create an account or recover a lost password,
  * the Dailymotion SDK asks the UI delegate if the link should be openned in an external browser or if the UI delegate
  * want to handle the openned link by itself.
+ *
+ * @param client The DMOAuthClient requesting this information.
+ * @param url The URL to the webpage to show to the end-user.
  */
 - (BOOL)dailymotionOAuthRequest:(DMOAuthClient *)client shouldOpenURLInExternalBrowser:(NSURL *)url;
 
 /**
  * Called when the session expired and can't be automatically resumed.
+ *
+ * @param client The DMOAuthClient sending this message
  */
 - (void)dailymotionOAuthRequestSessionDidExpire:(DMOAuthClient *)client;
 

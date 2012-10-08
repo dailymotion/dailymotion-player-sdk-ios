@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ * NSString category to handle URL query-string serialization
+ */
 @interface NSString (DMQueryString)
 
 /**
@@ -22,6 +25,9 @@
 
 @end
 
+/**
+ * NSDictionary category to handle URL query-string serialization
+ */
 @interface NSDictionary (DMURLArguments)
 
 /**

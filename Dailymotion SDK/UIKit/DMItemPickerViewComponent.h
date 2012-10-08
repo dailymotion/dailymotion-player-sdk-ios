@@ -25,6 +25,9 @@
 
 @end
 
+/**
+ * Data-source for UIPickerViewComponent.
+ */
 @interface DMItemPickerViewComponent : NSObject
 
 @property (nonatomic, weak) id<DMItemPickerViewComponentDelegate> delegate;

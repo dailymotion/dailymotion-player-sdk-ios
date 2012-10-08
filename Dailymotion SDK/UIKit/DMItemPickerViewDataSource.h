@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "DMItemPickerViewComponent.h"
 
+/**
+ * Data-source for UIPickerView.
+ */
 @interface DMItemPickerViewDataSource : NSObject <UIPickerViewDataSource, UIPickerViewDelegate>
 
 @property (nonatomic, strong) NSArray *components;

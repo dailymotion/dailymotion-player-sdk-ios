@@ -18,9 +18,9 @@
 @property (nonatomic, strong, readonly) NSDictionary *headers;
 @property (nonatomic, strong, readonly) id payload;
 @property (nonatomic, strong) void (^progressHandler)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
-@property (nonatomic, strong) void (^completionHandler)(NSURLResponse*, NSData*, NSError*);
+@property (nonatomic, strong) void (^completionHandler)(NSURLResponse *response, NSData *data, NSError *error);
 
-- (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:(NSDictionary *)headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))handler;
 - (void)cancel;
 - (void)cancelWithError:(NSError *)error;
 

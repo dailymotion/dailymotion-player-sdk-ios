@@ -10,6 +10,9 @@
 #import "DMAPICacheInfo.h"
 #import "DMItemCollection.h"
 
+/**
+ * Concreat implementation of DMItemCollection handling remote list of DMItem to be retrived thru the Dailymotion API.
+ */
 @interface DMItemRemoteCollection : DMItemCollection  <NSCoding>
 
 @property (nonatomic, readonly, assign) NSUInteger pageSize;
@@ -25,6 +28,11 @@
  * the data will come from the stalled cache, the `stalled` parameter is then set to `YES`. In parallele, an API
  * request is automatically performed to retrieve fresh data. On success the block is called a second time with
  * the `stalled` parameter set to `NO`.
+ *
+ * @param fields The list of fields to retrieve for each items of the list.
+ * @param page The page offset.
+ * @param itemsPerPage The number of items per page to retrieve.
+ * @param callback The block to be called with the result.
  */
 - (DMItemOperation *)itemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback;
 

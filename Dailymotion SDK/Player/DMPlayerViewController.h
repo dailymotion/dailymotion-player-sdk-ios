@@ -10,6 +10,9 @@
 
 @class DMPlayerViewController;
 
+/**
+ * The DMPlayerDelegate protocol defines optional methods for a delegate of DMPlayerViewController.
+ */
 @protocol DMPlayerDelegate <NSObject>
 
 @optional
@@ -24,10 +27,20 @@
 
 @end
 
+/**
+ * The DMPlayerViewController class implements a wrapper around the Dailymtion HTML5 player so it can be
+ * easily controlled.
+ */
 @interface DMPlayerViewController : UIViewController <UIWebViewDelegate>
 
+/**
+ * The base URL for the player. Default is http://www.dailymotion.com.
+ */
 @property (nonatomic, copy) NSString *webBaseURLString;
 
+/**
+ * The player delegate to send player events to.
+ */
 @property (nonatomic, weak) id<DMPlayerDelegate>delegate;
 
 /**
@@ -92,6 +105,12 @@
  * @param arg The argument to pass to the method (if necessary)
  */
 - (void)api:(NSString *)method arg:(NSString *)arg;
+
+/**
+ * Call player API method. See `Player API Reference <http://www.dailymotion.com/doc/api/player.html#api-reference>` for more info.
+ *
+ * @param method The method name to call
+ */
 - (void)api:(NSString *)method;
 
 @end

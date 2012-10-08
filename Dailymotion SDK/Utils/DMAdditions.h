@@ -13,6 +13,9 @@ typedef enum
     DMDictionaryOptionFilterNullValues = 1
 } DMDictionnaryOption;
 
+/**
+ * Some useful additions to NSDictionary.
+ */
 @interface NSDictionary(DMAdditions)
 
 /**
@@ -51,6 +54,9 @@ typedef enum
 
 @end
 
+/**
+ * Some useful additions to NSArray.
+ */
 @interface NSArray (DMAdditions)
 
 /**
@@ -68,6 +74,9 @@ typedef enum
 
 @end
 
+/**
+ * Some useful additions to NSMutableArray.
+ */
 @interface NSMutableArray (DMAdditions)
 
 /**

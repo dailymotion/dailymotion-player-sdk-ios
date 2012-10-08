@@ -9,24 +9,18 @@
 #import <Foundation/Foundation.h>
 #import "DMItem.h"
 
+/**
+ * Abstract (cluster) class for DMItem collection handling. This object is used to handle list of DMItem.
+ * There is two concreat implementation of this class:
+ *
+ * - DMItemRemoteCollection is used to handle list of DMItem objects stored on Dailymotion (i.e.: searches, playlists, comments, etc.)
+ * - DMItemLocalCollection is used to handle locally stored list of (remote) DMItem objects (i.e.: history, quicklist)
+ */
 @interface DMItemCollection : NSObject <NSCoding>
 
-@property (nonatomic, readonly, copy) NSString *type;
-@property (nonatomic, readonly, strong) DMAPI *api;
-
 /**
- * Return YES if the collection isn't comming from the remote API
+ * @name Creating a DMItemCollection Instance
  */
-- (BOOL)isLocal;
-
-/**
- * Return the current view of the object on the number of item that may be present in the list.
- *
- * This number is an estimation that may be either returned by the server or computed by the class.
- * You may use KVO on this property to know when the collection content has changed so you can refresh
- * the UI.
- */
-@property (nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
 
 /**
  * Return an empty local collection of items
@@ -120,6 +114,34 @@
 + (id)itemCollectionFromFile:(NSString *)filePath;
 
 /**
+ * @name Properties
+ */
+
+/** The DMItem type of DMItem objects contained in this collection (ie: video, comment, user) */
+@property (nonatomic, readonly, copy) NSString *type;
+
+/** The underlaying DMAPI instance */
+@property (nonatomic, readonly, strong) DMAPI *api;
+
+/**
+ * Return YES if the collection isn't comming from the remote API
+ */
+- (BOOL)isLocal;
+
+/**
+ * Return the current view of the object on the number of item that may be present in the list.
+ *
+ * This number is an estimation that may be either returned by the server or computed by the class.
+ * You may use KVO on this property to know when the collection content has changed so you can refresh
+ * the UI.
+ */
+@property (nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
+
+/**
+ * @name Writting Collection to Disk
+ */
+
+/**
  * Persists the collection with currenly cached items data to disk
  *
  * NOTE: This method is synchrone, you must not call it from main thread
@@ -130,8 +152,12 @@
 - (BOOL)saveToFile:(NSString *)filePath;
 
 /**
+ * @name Reading Collection
+ */
+
+/**
  * Gather the fields data for the item located at the given index in the collection.
- * @prarm fields A list of object fields names to load
+ * @param fields A list of object fields names to load
  * @param index The index of the requested item in the collection
  * @param callback The block to call with resulting field data
  *
@@ -144,16 +170,15 @@
  *
  * @param index The index of the item to edit
  * @param fields The fields to load with the item
- * @param done The block to call once operation is completed
+ * @param callback The block to call once operation is completed
  *
  * @return A DMItemOperation instance able to cancel the request.
  */
 - (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 
 /**
- * Flush all previously loaded cache for this collection (won't flush items cache data)
+ * Editing Collection
  */
-- (void)flushCache;
 
 /**
  * Indicates if the collection can be edited by adding or deleting items.
@@ -172,7 +197,8 @@
 /**
  * Remove the item from the collection.
  *
- * @param item The item to remove
+ * @param item The item to remove.
+ * @param callback The block to be called once operation is completed.
  */
 - (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *error))callback;
 
@@ -199,12 +225,22 @@
 - (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *error))callback;
 
 /**
+ * @name Managing Cache
+ */
+
+/**
  * Return a DMItem with same type as the current collection for the given id. If the collection as
  * an item with the same id in its cache, the cached item is returned.
  *
- * @param id The id of the item to return
- * @return DMItem from the collection's cache if any or a new item otherwise
+ * @param itemId The id of the item to return.
+ *
+ * @return DMItem from the collection's cache if any or a new item otherwise.
  */
 - (DMItem *)itemWithId:(NSString *)itemId;
+
+/**
+ * Flush all previously loaded cache for this collection (won't flush items cache data)
+ */
+- (void)flushCache;
 
 @end

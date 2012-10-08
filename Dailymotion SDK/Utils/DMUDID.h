@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ * A substitute for Apple deprecated UIDevice's deviceIdentifier
+ */
 @interface DMUDID : NSObject
 
 /**

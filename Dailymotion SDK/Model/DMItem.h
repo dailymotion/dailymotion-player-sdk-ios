@@ -12,19 +12,18 @@
 
 @class DMItemCollection;
 
+/**
+ * A kind of ORM for Dailymotion remote objects. This class handles API calls, caching of results, cache invalidation etc.
+ */
 @interface DMItem : NSObject <NSCoding>
 
-@property (nonatomic, readonly, copy) NSString *type;
-@property (nonatomic, readonly, copy) NSString *itemId;
-@property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
-@property (nonatomic, readonly, strong) DMAPI *api;
-@property (nonatomic, readonly, copy) NSDictionary *cachedFields;
+/** @name Creating a DMItem Instance */
 
 /**
  * Get an DMItem for a given object name (i.e.: video, user, playlist) and an object id
  *
  * @param type The item type name
- * @param objectId The item id
+ * @param itemId The item id
  * @param api The DMAPI object to use to retrieve item data
  *
  * @return A shared instance of DMItem for the requested object
@@ -35,7 +34,7 @@
  * Get an DMItem for a given object name (i.e.: video, user, playlist) and an object id
  *
  * @param type The item type name
- * @param objectId The item id
+ * @param itemId The item id
  *
  * @return A shared instance of DMItem for the requested object
  */
@@ -46,7 +45,6 @@
  *
  * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
  * @param type The connection type name
- * @param item The item to load connection from
  * @param params Optional parameters to filter/sort the result
  *
  * @see DMItemCollection
@@ -58,11 +56,25 @@
  *
  * @param connection The name of the item's connection (i.e.: videos, playlists, feed)
  * @param type The connection type name
- * @param item The item to load connection from
  *
  * @see DMItemCollection
  */
 - (DMItemCollection *)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type;
+
+/** @name Properties */
+
+/** The item type (ie: video, comment, user) */
+@property (nonatomic, readonly, copy) NSString *type;
+/** The item id */
+@property (nonatomic, readonly, copy) NSString *itemId;
+/** Current cache info for the item */
+@property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
+/** The underlaying DMAPI instance */
+@property (nonatomic, readonly, strong) DMAPI *api;
+/** Cached fields */
+@property (nonatomic, readonly, copy) NSDictionary *cachedFields;
+
+/** @name Reading and Writing Item Fields */
 
 /**
  * Load some fields from either API or cache and callback the passed block with the fields data
@@ -72,7 +84,7 @@
  *       the `stalled` parameter will be NO. If some fields are cached and other are missing, the
  *       a first callback will return all available fields data and stalled flag will be YES.
  *
- * @prarm fields A list of object fields names to load
+ * @param fields A list of object fields names to load
  * @param callback The block to call with resulting field data
  *
  * @return A DMItemOperation instance able to cancel the request
@@ -83,16 +95,18 @@
  * Edit some item fields
  *
  * @param data A dictionary containing fields to modify with their new value
- * @param done The block to call when operation is completed
+ * @param callback The block to call when operation is completed
  *
  * @return A DMItemOperation instance able to cancel the request
  */
 - (DMItemOperation *)editWithData:(NSDictionary *)data done:(void (^)(NSError *error))callback;
 
+/** @name Managing Cache */
+
 /**
  * Test if fields are present in the cache
  *
- * @prarm fields A list of object fields names to test
+ * @param fields A list of object fields names to test
  */
 - (BOOL)areFieldsCached:(NSArray *)fields;
 

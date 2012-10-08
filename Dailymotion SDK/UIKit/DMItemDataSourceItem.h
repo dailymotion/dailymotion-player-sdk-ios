@@ -9,6 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "DMItemCollection.h"
 
+/**
+ * The DMItemDataSourceItem protocol defines methods that datasource items class must implement to work with
+ * Dailymotion UIKit data sources.
+ */
 @protocol DMItemDataSourceItem <NSObject>
 
 @required

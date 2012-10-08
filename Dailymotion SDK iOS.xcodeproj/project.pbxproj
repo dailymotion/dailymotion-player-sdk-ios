@@ -102,6 +102,7 @@
 		53002EA915876C860060AC98 /* DMNetRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMNetRequestOperation.m; sourceTree = "<group>"; };
 		53002EAD15878AF70060AC98 /* DMAPICall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPICall.h; sourceTree = "<group>"; };
 		53002EAE15878AF70060AC98 /* DMAPICall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPICall.m; sourceTree = "<group>"; };
+		5307CEB016233DF80052762A /* AppledocSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AppledocSettings.plist; sourceTree = "<group>"; };
 		530BCB5E15C0548D007C6917 /* DMItemTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewDataSource.h; sourceTree = "<group>"; };
 		530BCB5F15C0548D007C6917 /* DMItemTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemTableViewDataSource.m; sourceTree = "<group>"; };
 		530BCB6215C054BA007C6917 /* DMItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMItemTableViewController.h; sourceTree = "<group>"; };
@@ -260,6 +261,7 @@
 			isa = PBXGroup;
 			children = (
 				AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */,
+				5307CEB016233DF80052762A /* AppledocSettings.plist */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -508,6 +510,7 @@
 				D2AAC07A0554694100DB518D /* Headers */,
 				D2AAC07B0554694100DB518D /* Sources */,
 				D2AAC07C0554694100DB518D /* Frameworks */,
+				5307CEAE16231B270052762A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -558,6 +561,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		5307CEAE16231B270052762A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/appledoc AppledocSettings.plist\n";
+		};
 		53E273541265BD1C00B541BE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

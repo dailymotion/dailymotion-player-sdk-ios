@@ -26,7 +26,7 @@
 
 @implementation DMOAuthRequestOperation
 
-- (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
+- (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:(NSDictionary *)headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))handler
 {
     if ((self = [super init]))
     {

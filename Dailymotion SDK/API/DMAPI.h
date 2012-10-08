@@ -17,10 +17,31 @@
 #import "DMPlayerViewController.h"
 #endif
 
+/**
+ * Low level access to the API. This object can be used to perform direct API request. It is thus recommanded
+ * to use higher level objects like DMItem and DMItemCollection or UIKit data sources like DMTableViewDataSource
+ * and friends.
+ *
+ * DMAPI doesn't handle caching, use DMItem and DMItemCollection if you need caching.
+ *
+ * DMAPI will automatically aggregate calls to the API performed in the same run loop tic. It can aggregate up to
+ * 10 calls in a single request. This is a huge performance boost, especially for mobile network on which the
+ * allowed number of concurrent network connections is very very low. Although, it can lead to unwanted behavior
+ * as response won't be return until all requests have been treated by the server.
+ */
 @interface DMAPI : NSObject
 
+/**
+ * Get the shared DM API instance for the current application.
+ */
++ (DMAPI *)sharedAPI;
+
+/** @name Properties */
+
+/**
+ * Dailymotion SDK Version
+ */
 @property (nonatomic) NSString *version;
-@property (nonatomic, assign) NSTimeInterval timeout;
 
 @property (nonatomic, copy) NSURL *APIBaseURL;
 
@@ -28,6 +49,16 @@
  * Report the current reachability of the API. You may use KVO to react to reachability changes.
  */
 @property (nonatomic, readonly, assign) DMNetworkStatus currentReachabilityStatus;
+
+
+/**
+ * @name Global Settings
+ */
+
+/**
+ * Global timeout interval for API requests
+ */
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 /**
  * Maximum number of allowed concurrent API calls. By default, this property is automatically
@@ -50,18 +81,12 @@
 @property (nonatomic, assign) NSUInteger maxAggregatedCallCount;
 
 /**
- * The DMOAuthRequest object responsible for API authentication. You may have to set a delegate
- * and call the `setGrantType:withAPIKey:secret:scope:` method on this object if you want to
- * make authenticated API request.
- *
- * @see DMOAuthRequest
+ * @name Getting the Shared API Instance
  */
-@property (nonatomic, strong) DMOAuthClient *oauth;
 
 /**
- * Get the shared DM API instance for the current application.
+ * @name Global Parameters
  */
-+ (DMAPI *)sharedAPI;
 
 /**
  * Set a parameter that will be sent with all API calls like for instance `localization` and
@@ -85,6 +110,10 @@
  * @param name The parameter to get
  */
 - (id)valueForGlobalParameter:(NSString *)name;
+
+/**
+ * @name Performing API Requests
+ */
 
 /**
  * Perform a GET request to Dailymotion's API with the given method name and arguments.
@@ -122,7 +151,7 @@
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
- * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param args An NSDictionnary with key-value pairs containing arguments
  * @param callback A block taking the response as first argument and an error as second argument
  */
 - (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback;
@@ -133,7 +162,7 @@
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
- * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param args An NSDictionnary with key-value pairs containing arguments
  * @param callback A block taking the response as first argument and an error as second argument
  */
 - (DMAPICall *)post:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback;
@@ -144,7 +173,7 @@
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
- * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param args An NSDictionnary with key-value pairs containing arguments
  * @param callback A block taking the response as first argument and an error as second argument
  */
 - (DMAPICall *)delete:(NSString *)path args:(NSDictionary *)args callback:(DMAPICallResultBlock)callback;
@@ -156,23 +185,36 @@
  * See `Dailymotion API reference <http://www.dailymotion.com/doc/api/reference.html>`_
  *
  * @param path An API resource
- * @param arguments An NSDictionnary with key-value pairs containing arguments
+ * @param args An NSDictionnary with key-value pairs containing arguments
  * @param cacheInfo The cache info used to perform the conditional request
  * @param callback A block taking the response as first argument and an error as second argument
  */
 - (DMAPICall *)get:(NSString *)path args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback;
 
 /**
+ * @name Uploading Files
+ */
+
+/**
  * Upload a file to Dailymotion and generate an URL to be used by API fields requiring a file URL like ``POST /me/videos`` ``url`` field.
  *
- * @param filePath The path to the file to upload
+ * @param fileURL The URL path to the file to upload
+ * @param completionHandler The block to be called once upload is complete
  */
 - (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
 
 /**
  * Resume an unfinished upload
+ *
+ * @param uploadOperation An unfinished upload operation returned by uploadFileURL:withCompletionHandler:
+ * @param completionHandler The block to be called once upload is complete
  */
 - (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
+
+#if TARGET_OS_IPHONE
+/**
+ * @name Instanciating Player
+ */
 
 /**
  * Create a DailymtionPlayer object initialized with the specified video ID.
@@ -181,10 +223,22 @@
  * @param params A dictionary containing `player parameters <http://www.dailymotion.com/doc/api/player.html#player-params>`_
  *               that can be used to customize the player.
  */
-#if TARGET_OS_IPHONE
 - (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
 - (DMPlayerViewController *)player:(NSString *)video;
 #endif
+
+/**
+ * @name Authentication
+ */
+
+/**
+ * The DMOAuthClient object responsible for API authentication. You may have to set a delegate
+ * and call the `setGrantType:withAPIKey:secret:scope:` method on this object if you want to
+ * make authenticated API request.
+ *
+ * @see DMOAuthClient
+ */
+@property (nonatomic, strong) DMOAuthClient *oauth;
 
 /**
  * Remove the right for the current API key to access the current user account.
@@ -202,7 +256,7 @@
  * Get an instance of DMItem for a given object type/id
  *
  * @param type The item type name
- * @param objectId The item id
+ * @param itemId The item id
  *
  * @see DMItem
  */

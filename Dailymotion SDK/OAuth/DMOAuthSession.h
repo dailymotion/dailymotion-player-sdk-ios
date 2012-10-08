@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+/**
+ * A (storable) OAuth session.
+ */
 @interface DMOAuthSession : NSObject
 
 @property (nonatomic, copy) NSString *accessToken;
@@ -18,6 +21,8 @@
 
 /**
  * Instanciate a session object with session info dictionary coming from auth server.
+ *
+ * @param sessionInfo A dictionary returned by the token server with all the session information.
  */
 + (DMOAuthSession *)sessionWithSessionInfo:(NSDictionary *)sessionInfo;
 

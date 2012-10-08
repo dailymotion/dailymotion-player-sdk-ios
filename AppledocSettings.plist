@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>--project-name</key>
+	<string>Dailymotion SDK</string>
+	<key>--project-company</key>
+	<string>Dailymotion S.A</string>
+	<key>--company-id</key>
+	<string>com.dailymotion</string>
+	<key>--output</key>
+	<string>Reference</string>
+	<key>--merge-categories</key>
+	<true/>
+	<key>--logformat</key>
+	<string>xcode</string>
+	<key>--create-docset</key>
+	<false/>
+	<key>--input</key>
+	<array>
+		<string>Dailymotion SDK</string>
+	</array>
+	<key>--ignore</key>
+	<array>
+		<string>Dailymotion SDK/API/DMAPICallQueue.h</string>
+		<string>Dailymotion SDK/API/DMAPITest.h</string>
+		<string>.m</string>
+	</array>
+</dict>
+</plist>

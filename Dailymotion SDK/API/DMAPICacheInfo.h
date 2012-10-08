@@ -10,7 +10,26 @@
 
 @class DMAPI;
 
+/**
+ * Cache information about an API ressource.
+ */
 @interface DMAPICacheInfo : NSObject <NSCoding>
+
+/**
+ * @name Instanciating
+ */
+
+/**
+ * Instanciate a new cache info object with data comming from API
+ *
+ * @param cacheInfo A dictionary containing cache info data.
+ * @param api The API object used to retrived the cacheable data.
+ */
+- (id)initWithCacheInfo:(NSDictionary *)cacheInfo fromAPI:(DMAPI *)api;
+
+/**
+ * @name Cache Information
+ */
 
 /**
  * The date when the cache info as been issued
@@ -44,6 +63,10 @@
 @property (nonatomic, readonly) NSTimeInterval maxAge;
 
 /**
+ * @name Handling Cache Validity
+ */
+
+/**
  * Tells if the cached data is currently stalled
  *
  * This parameter is by default dynamic but can be forced to YES by setting it. Setting
@@ -57,10 +80,5 @@
  * refreshed from network.
  */
 @property (nonatomic, assign) BOOL valid;
-
-/**
- * Instanciate a new cache info object with data comming from API
- */
-- (id)initWithCacheInfo:(NSDictionary *)cacheInfo fromAPI:(DMAPI *)api;
 
 @end
