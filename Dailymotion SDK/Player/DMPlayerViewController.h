@@ -34,14 +34,37 @@
 @interface DMPlayerViewController : UIViewController <UIWebViewDelegate>
 
 /**
- * The base URL for the player. Default is http://www.dailymotion.com.
+ * @name Initializing a Player
  */
-@property (nonatomic, copy) NSString *webBaseURLString;
 
 /**
- * The player delegate to send player events to.
+ * Initialize a video player with paramsters
+ *
+ * @param params A dictionary containing initalization parameters. See http://www.dailymotion.com/doc/api/player.html#parameters
+ *               for a list of supported parameters.
  */
-@property (nonatomic, weak) id<DMPlayerDelegate>delegate;
+- (id)initWithParams:(NSDictionary *)params;
+
+/**
+ * Initialize a video player using a video id
+ *
+ * @param videoId A of a video.
+ */
+- (id)initWithVideo:(NSString *)videoId;
+
+/**
+ * Initialize a video player using a video id
+ *
+ * @param videoId A of a video.
+ * @param params A dictionary containing initalization parameters. See http://www.dailymotion.com/doc/api/player.html#parameters
+ *               for a list of supported parameters.
+ */
+- (id)initWithVideo:(NSString *)videoId params:(NSDictionary *)params;
+
+
+/**
+ * @name Player Properties
+ */
 
 /**
  * Determines whether the media resource plays automatically when available (read-only).
@@ -88,15 +111,41 @@
  */
 @property (nonatomic, readonly) NSError *error;
 
+/**
+ * The base URL for the player. Default is http://www.dailymotion.com.
+ */
+@property (nonatomic, copy) NSString *webBaseURLString;
 
-- (id)initWithParams:(NSDictionary *)params;
-- (id)initWithVideo:(NSString *)aVideo;
-- (id)initWithVideo:(NSString *)aVideo params:(NSDictionary *)someParams;
 
+/**
+ * @name Controlling Playback
+ */
+
+/**
+ * Start the video playback.
+ */
 - (void)play;
+
+/**
+ * Toggle the video playback.
+ */
 - (void)togglePlay;
+
+/**
+ * Pause the video playback.
+ */
 - (void)pause;
-- (void)load:(NSString *)video;
+
+/**
+ * Load another video in the player by specifying its id.
+ *
+ * @param videoId The id of the video to load.
+ */
+- (void)load:(NSString *)videoId;
+
+/**
+ * @name Calling Raw API Methods
+ */
 
 /**
  * Call player API method. See `Player API Reference <http://www.dailymotion.com/doc/api/player.html#api-reference>` for more info.
@@ -112,5 +161,15 @@
  * @param method The method name to call
  */
 - (void)api:(NSString *)method;
+
+
+/**
+ * @name Access Delegate
+ */
+
+/**
+ * The player delegate to send player events to.
+ */
+@property (nonatomic, weak) id<DMPlayerDelegate>delegate;
 
 @end

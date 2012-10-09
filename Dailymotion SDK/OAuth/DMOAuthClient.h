@@ -20,11 +20,34 @@
 #import <WebKit/WebKit.h>
 #endif
 
+/**
+ * Test
+ */
 typedef enum
 {
+    /**
+     * Use this grant type to access the API anonymously.
+     */
     DailymotionNoGrant,
+
+    /**
+     * Use this grant type if must want to access the API on the behalf of a user. A UIWebView under iOS or
+     * a WebView on Mac OS X will be opened with an authorization request page presented to the end-user.
+     * You need to implement the DailymotionOAuthDelegate protocol to use this grant type.
+     */
     DailymotionGrantTypeAuthorization,
+
+    /**
+     * Use this grant type if you don't need to access the API on behalf of a user but still need to
+     * authenticate with your API key (i.e.: you API key has special rights).
+     */
     DailymotionGrantTypeClientCredentials,
+
+    /**
+     * If the token grant type doesn’t suits your application workflow, you can request end-user
+     * credentials and use the password grant type to authenticate requests. Note that you MUST NOT
+     * store end-user credentials.
+     */
     DailymotionGrantTypePassword
 } DailymotionGrantType;
 
@@ -40,27 +63,27 @@ typedef enum
 @property (nonatomic, strong) DMNetworking *networkQueue;
 
 /**
- * Set the delegate that conforms to the ``DailymotionDelegate`` protocol.
+ * Set the delegate that conforms to the `DailymotionDelegate` protocol.
  */
 @property (nonatomic, weak) id<DailymotionOAuthDelegate> delegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
  * is normaly autmoatically generated using the provided API key/secret. Although, you can manualy set it if you got,
- * for instance, an ``access_token`` from another source like your own backend.
+ * for instance, an `access_token` from another source like your own backend.
  *
  * A session is an NSDictionary which can contain any of the following keys:
- * - ``access_token``: a token which can be used to access the API
- * - ``expires``: an ``NSDate`` which indicates until when the ``access_token`` remains valid
- * - ``refresh_token``: a token used to request a new valid ``access_token`` without having to ask the end-user again and again
- * - ``scope``: an indication on the permission scope granted by the end-user for this session
+ * - `access_token`: a token which can be used to access the API
+ * - `expires`: an `NSDate` which indicates until when the `access_token` remains valid
+ * - `refresh_token`: a token used to request a new valid `access_token` without having to ask the end-user again and again
+ * - `scope`: an indication on the permission scope granted by the end-user for this session
  */
 @property (nonatomic) DMOAuthSession *session;
 
 /**
- * If this property is set to ``NO``, the session won't be stored automatically for latter use. When not stored, your
+ * If this property is set to `NO`, the session won't be stored automatically for latter use. When not stored, your
  * application will have to ask end-user to authorize your API key each time you restart your application.
- * By default this property is set to ``YES``.
+ * By default this property is set to `YES`.
  */
 @property (nonatomic, assign) BOOL autoSaveSession;
 
@@ -81,10 +104,22 @@ typedef enum
  *
  * To create an API key/secret pair, go to: http://www.dailymotion.com/profile/developer
  *
- * @param grantType Can be one of ``DailymotionGrantTypeAuthorization``, ``DailymotionGrantTypeClientCredentials`` or ``DailymotionGrantTypePassword```.
+ * Supported grant types are:
+ * 
+ * - `DailymotionNoGrant`: Use this grant type to access the API anonymously.
+ * - `DailymotionGrantTypeAuthorization`: Use this grant type if must want to access the API on the behalf of a user.
+ *   A UIWebView under iOS or a WebView on Mac OS X will be opened with an authorization request page presented to the end-user.
+ *   You need to implement the DailymotionOAuthDelegate protocol to use this grant type.
+ * - `DailymotionGrantTypeClientCredentials`: Use this grant type if you don't need to access the API on behalf of a user but still need to
+ *   authenticate with your API key (i.e.: you API key has special rights).
+ * - `DailymotionGrantTypePassword`: If the token grant type doesn’t suits your application workflow, you can request end-user
+ *   credentials and use the password grant type to authenticate requests. Note that you MUST NOT
+ *   store end-user credentials.
+ *
+ * @param grantType Can be one of `DailymotionNoGrant`, `DailymotionGrantTypeAuthorization`, `DailymotionGrantTypeClientCredentials` or `DailymotionGrantTypePassword`.
  * @param apiKey The API key
  * @param apiSecret The API secret
- * @param scope The permission scope requested (can be none of any of ``read``, ``write`` or ``delete``).
+ * @param scope The permission scope requested (can be none of any of `read`, `write` or `delete`).
  *              To specify several scope, separate them with whitespaces.
  */
 - (void)setGrantType:(DailymotionGrantType)grantType withAPIKey:(NSString *)apiKey secret:(NSString *)apiSecret scope:(NSString *)scope;
@@ -130,12 +165,12 @@ typedef enum
 /**
  * This delegate method is called when the Dailymotion SDK needs to show a modal dialog window to the user in order to
  * ask for end-user permission to connect your application with his account. You may implement this method only if you
- * choose ``DailymotionGrantTypeAuthorization`` grant type. In response to this delegate, your application have to present the
+ * choose `DailymotionGrantTypeAuthorization` grant type. In response to this delegate, your application have to present the
  * given view to the end-user.
  *
  * The default implementation of this delegate method is to create a new window with the content of the view.
  *
- * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
+ * You MUST implement this delegate method if you set the grant type to `DailymotionGrantTypeAuthorization`.
  *
  * @param client The DMOAuthClient sending this message.
  * @param view The view to display to the end user.
@@ -150,18 +185,18 @@ typedef enum
  * This delegate method is called when the Dailymotion SDK authorization process is finished and instruct the reciever
  * to close the previousely created modal dialog.
  *
- * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypeAuthorization``.
+ * You MUST implement this delegate method if you set the grant type to `DailymotionGrantTypeAuthorization`.
  *
  * @param client The DMOAuthClient sending this message
  */
 - (void)dailymotionOAuthRequestCloseModalDialog:(DMOAuthClient *)client;
 
 /**
- * Called when the grant method is ``DailymotionGrantTypePassword`` and the credentials are requested by the library.
- * The delegate have to ask the user for her credentials and need to call back the ``handler` method in order for
+ * Called when the grant method is `DailymotionGrantTypePassword` and the credentials are requested by the library.
+ * The delegate have to ask the user for her credentials and need to call back the `handler` method in order for
  * the pending API calls to be completed.
  *
- * You MUST implement this delegate method if you set the grant type to ``DailymotionGrantTypePassword``.
+ * You MUST implement this delegate method if you set the grant type to `DailymotionGrantTypePassword`.
  *
  * @param client The DMOAuthClient requesting this information.
  * @param setCredentials The block to call back with the obtained username and password.

@@ -6,6 +6,15 @@ This repository contains the official open source Objective-C SDK that allows yo
 
 See documentation at http://www.dailymotion.com/doc/api/sdk-objc.html
 
+NOTE: This is the version 2.0 of the Dailymotion SDK. This version raises the minimum iOS deployement version to 5.0. If you need iOS 3+ support, please see https://github.com/dailymotion/dailymotion-sdk-objc/tree/1.8.
+
+Useful Resources
+----------------
+
+- Dailymotion SDK API Reference: http://dailymotion.github.com/dailymotion-sdk-objc/html/index.html
+- Dailymotion API Reference: http://www.dailymotion.com/doc/api/reference.html
+- Dailymotion API Explorer: http://www.dailymotion.com/doc/api/explorer
+
 Installation
 ------------
 
