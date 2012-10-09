@@ -16,6 +16,8 @@
 	<string>xcode</string>
 	<key>--create-docset</key>
 	<false/>
+	<key>--index-desc</key>
+	<string>Dailymotion SDK/index.md</string>
 	<key>--input</key>
 	<array>
 		<string>Dailymotion SDK</string>

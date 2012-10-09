@@ -177,7 +177,7 @@
 - (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 
 /**
- * Editing Collection
+ * @name Editing Collection
  */
 
 /**

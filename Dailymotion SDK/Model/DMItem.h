@@ -40,6 +40,8 @@
  */
 + (DMItem *)itemWithType:(NSString *)type forId:(NSString *)itemId;
 
+/** @name Getting Connected Collections */
+
 /**
  * Get an instance of DMItemCollection of a given connection to the item
  *
