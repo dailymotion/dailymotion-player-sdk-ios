@@ -15,6 +15,10 @@
  */
 @protocol DMItemDataSourceItem <NSObject>
 
+@optional
+
+- (void)setError:(NSError *)error;
+
 @required
 
 - (NSArray *)fieldsNeeded;

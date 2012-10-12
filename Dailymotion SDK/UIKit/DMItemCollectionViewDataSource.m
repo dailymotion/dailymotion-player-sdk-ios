@@ -168,13 +168,20 @@ static char operationKey;
 
             if (error)
             {
-                BOOL notify = !sself.lastError; // prevents from error storms
-                sself.lastError = error;
-                if (notify)
+                if ([scell respondsToSelector:@selector(setError:)])
                 {
-                    if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didFailWithError:)])
+                    [scell setError:error];
+                }
+                else
+                {
+                    BOOL notify = !sself.lastError; // prevents from error storms
+                    sself.lastError = error;
+                    if (notify)
                     {
-                        [sself.delegate itemCollectionViewDataSource:sself didFailWithError:error];
+                        if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didFailWithError:)])
+                        {
+                            [sself.delegate itemCollectionViewDataSource:sself didFailWithError:error];
+                        }
                     }
                 }
             }
