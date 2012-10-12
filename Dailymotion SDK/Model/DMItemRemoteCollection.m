@@ -528,7 +528,6 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     @synchronized(self._listCache)
     {
         [self._listCache removeAllObjects];
-        self.currentEstimatedTotalItemsCount = 0;
         self._total = -1;
     }
 }
