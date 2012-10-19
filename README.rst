@@ -18,31 +18,18 @@ Useful Resources
 Installation
 ------------
 
-Add the Dailymotion SDK project to your project
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Copy DailymotionSDK.framework in your project
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Right-click on the project navigator and select "Add Files to "Your Project"
-- In the dialog, select ``Dailymotion SDK iOS.xcodeproj`` for iOS or ``Dailymotion SDK OSX.xcodeproj`` for OSX
-
-After you’ve added the subproject, it’ll appear below the main project in Xcode’s Navigator tree.
+- Download the last version of the framework from https://github.com/dailymotion/dailymotion-sdk-objc/downloads.
+- Drag and drop the framework on your xcode project navigator and check the "Copy items into destination group's folder (if needed)" checkbox.
 
 Add build target dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- In you application project app’s target settings, find the "Build Phases" section and open the "Target Dependencies" block.
-- Click the "+" button and select ``DailymotionSDK``
-- Open the "Link Binary With Libraries" block
-- Click the "+" button and select ``libDailymotionSDK.a`` library
+- In you application project app's target settings, find the "Build Phases" section and open the "Link Binary With Libraries" block.
 - Click the "+" button again and select the ``Security.framework``
 - Click the "+" button again and select the ``SystemConfiguration.framework``
-
-
-Add headers
-~~~~~~~~~~~
-
-- Open the "Build Settings" tab
-- Locate the "Other Linker Flags" setting and add the ``-ObjC`` and ``-all_load`` flags
-- Locate "Header Search Paths" (and not "User Header Search Paths") and add two settings: ``"$(TARGET_BUILD_DIR)/usr/local/lib/include"`` and ``"$(OBJROOT)/UninstalledProducts/include"``. Make sure to include the quotes here and are plain double quote (not typographic quotes).
 
 Import headers in your source files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
