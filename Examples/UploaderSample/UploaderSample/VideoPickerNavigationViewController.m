@@ -32,7 +32,11 @@
 {
     self.videoInfo = [[VideoInfo alloc] init];
     self.videoInfo.fileURL = [info valueForKey:UIImagePickerControllerMediaURL];
-    [self performSegueWithIdentifier:@"editInfo" sender:self];
+    //[self performSegueWithIdentifier:@"editInfo" sender:self]; // fails under iOS 6 for unknown reason…
+    VideoEditViewController *editVideoViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"editVideoController"];
+    editVideoViewController.delegate = self;
+    editVideoViewController.videoInfo = self.videoInfo;
+    [self pushViewController:editVideoViewController animated:YES];
 }
 
 - (void)videoEditControllerDidFinishEditingVideo:(VideoEditViewController *)videoEditController
