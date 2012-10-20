@@ -31,6 +31,11 @@ Add build target dependencies
 - Click the "+" button again and select the ``Security.framework``
 - Click the "+" button again and select the ``SystemConfiguration.framework``
 
+Add Linker Flag
+~~~~~~~~~~~~~~~
+
+- Open the "Build Settings" tab, in the "Linking" section, locate the "Other Linker Flags" setting and add the "-ObjC" flag:
+
 Import headers in your source files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
