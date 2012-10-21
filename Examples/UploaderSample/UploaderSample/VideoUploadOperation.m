@@ -69,12 +69,11 @@
     self._finished = YES;
 }
 
-- (void)doneWithResult:(NSString *)urlString error:(NSError *)error
+- (void)doneWithResult:(NSURL *)url error:(NSError *)error
 {
     [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isExecuting"];
     self._executing = NO;
-    NSURL *url = [NSURL URLWithString:urlString];
     if ([self.delegate respondsToSelector:@selector(videoUploadOperation:didFinishUploadWithURL:)])
     {
         [self.delegate videoUploadOperation:self didFinishUploadWithURL:url];
