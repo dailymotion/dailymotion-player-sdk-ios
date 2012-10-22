@@ -523,6 +523,33 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }];
 }
 
+- (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL present, NSError *error))callback
+{
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+    NSUInteger idx = [self._listCache indexOfObject:item];
+    if (idx != NSNotFound)
+    {
+        callback(YES, nil);
+        operation.isFinished = YES;
+        return operation;
+    }
+
+    DMAPICall *apiCall = [self.api get:[self._path stringByAppendingFormat:@"/%@", item.itemId] args:@{@"fields": @[@"id"]} callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
+    {
+        operation.isFinished = YES;
+        callback(!error && result[@"id"], error);
+    }];
+
+    operation.cancelBlock = ^
+    {
+        [apiCall cancel];
+    };
+
+    return operation;
+
+}
+
 - (void)flushCache
 {
     @synchronized(self._listCache)

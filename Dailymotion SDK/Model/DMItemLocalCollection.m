@@ -128,6 +128,14 @@ static DMItemOperation *fakeOperation()
     }];
 }
 
+- (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL present, NSError *error))callback
+{
+    DMItemOperation *finishedOperation = [[DMItemOperation alloc] init];
+    finishedOperation.isFinished = YES;
+    callback([self._items containsObject:item], nil);
+    return finishedOperation;
+}
+
 - (void)checkItem:(DMItem *)item
 {
     NSAssert([item.type isEqual:self.type], @"Item type must match collection type");

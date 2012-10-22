@@ -177,6 +177,18 @@
 - (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 
 /**
+ * Check of a given item is present in the collection.
+ * NOTE: This does only work with connections or local collections. For remote collections it generates
+ * the following request: GET /<object>/ID/<connection>/ITEM_ID
+ *
+ * @param item The item to check presence of
+ * @param callback The block to call once operation is completed
+ *
+ * @return A DMItemOperation instance able to cancel the request.
+ */
+- (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL present, NSError *error))callback;
+
+/**
  * @name Editing Collection
  */
 

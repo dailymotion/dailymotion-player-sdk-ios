@@ -165,6 +165,12 @@
     return nil;
 }
 
+- (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL, NSError *))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (void)flushCache
 {
 }
