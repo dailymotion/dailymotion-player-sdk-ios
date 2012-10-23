@@ -538,7 +538,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     DMAPICall *apiCall = [self.api get:[self._path stringByAppendingFormat:@"/%@", item.itemId] args:@{@"fields": @[@"id"]} callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
         operation.isFinished = YES;
-        callback(!error && result[@"id"], error);
+        callback(!error && [result[@"list"] isKindOfClass:NSArray.class] && ((NSArray *)result[@"list"]).count == 1, error);
     }];
 
     operation.cancelBlock = ^
