@@ -8,6 +8,7 @@
 
 #import "DMItemTableViewController.h"
 #import "DMAlert.h"
+#import "DMItemRemoteCollection.h"
 
 @interface DMItemTableViewController ()
 
@@ -26,6 +27,18 @@
     }
 
     return _itemDataSource;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if ([self.itemDataSource.itemCollection isKindOfClass:DMItemRemoteCollection.class])
+    {
+        if (((DMItemRemoteCollection *)self.itemDataSource.itemCollection).cacheInfo.stalled)
+        {
+            [self.itemDataSource reload];
+        }
+    }
 }
 
 #pragma Table Data Source

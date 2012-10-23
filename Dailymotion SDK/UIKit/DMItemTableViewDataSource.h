@@ -152,6 +152,11 @@
 
 /**
  * Reload the data source data from network
+ */
+- (void)reload;
+
+/**
+ * Reload the data source data from network
  *
  * @param completionBlock Block to be called with reload is completed.
  */

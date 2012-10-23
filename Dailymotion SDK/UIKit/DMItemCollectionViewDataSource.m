@@ -56,11 +56,16 @@ static char operationKey;
     [self._operations removeAllObjects];
 }
 
+- (void)reload
+{
+    [self reload:nil];
+}
+
 - (void)reload:(void (^)())completionBlock
 {
     if (![self.itemCollection isKindOfClass:DMItemRemoteCollection.class])
     {
-        completionBlock();
+        if (completionBlock) completionBlock();
         return;
     }
 
@@ -73,7 +78,7 @@ static char operationKey;
         if (!wself) return;
         __strong DMItemCollectionViewDataSource *sself = wself;
         sself._reloading = NO;
-        completionBlock();
+        if (completionBlock) completionBlock();
     }];
 
     if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
