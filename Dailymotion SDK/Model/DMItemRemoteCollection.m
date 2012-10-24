@@ -565,6 +565,33 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     return YES;
 }
 
+- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *, NSError *))callback
+{
+    DMItemOperation *operation = [[DMItemOperation alloc] init];
+
+    __weak DMItemRemoteCollection *wself = self;
+    DMAPICall *apiCall = [self.api post:self._path args:fields callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
+    {
+        if (!wself) return;
+        __strong DMItemRemoteCollection *sself = wself;
+        sself.cacheInfo.stalled = YES;
+        DMItem *item;
+        if (!error && result[@"id"])
+        {
+            item = [DMItem itemWithType:sself.type forId:result[@"id"]];
+        }
+        callback(item, error);
+        operation.isFinished = YES;
+    }];
+
+    operation.cancelBlock = ^
+    {
+        [apiCall cancel];
+    };
+
+    return operation;
+}
+
 - (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
 {
     DMItemOperation *operation = [[DMItemOperation alloc] init];
@@ -581,8 +608,9 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         {
             if (!wself) return;
             __strong DMItemRemoteCollection *sself = wself;
-            sself.cacheInfo.stalled = NO;
+            sself.cacheInfo.stalled = YES;
             callback(error);
+            operation.isFinished = YES;
         }];
 
         operation.cancelBlock = ^

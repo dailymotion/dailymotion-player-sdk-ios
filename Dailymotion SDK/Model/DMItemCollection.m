@@ -180,6 +180,12 @@
     return NO;
 }
 
+- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 - (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
 {
     [self doesNotRecognizeSelector:_cmd];

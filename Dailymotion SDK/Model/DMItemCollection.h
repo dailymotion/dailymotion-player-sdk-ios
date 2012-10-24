@@ -198,11 +198,23 @@
 - (BOOL)canEdit;
 
 /**
+ * Create an item to be added to the collection
+ *
+ * @param fields The fields to create the item with
+ * @param callback A block called when the operation is completed
+ *
+ * @return A DMItemOperation instance able to cancel the request.
+ */
+- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+
+/**
  * Insert an item at the head of the collection if not already present.
  * If the collection hit the `countLimit`, the item at the end of the collection is removed.
  *
  * @param item The item to insert
  * @param callback A block called when the operation is completed
+ *
+ * @return A DMItemOperation instance able to cancel the request.
  */
 - (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *error))callback;
 
