@@ -159,6 +159,10 @@ static char operationKey;
     [previousOperation cancel];
 
     [cell prepareForLoading];
+    if ([cell respondsToSelector:@selector(setItem:)])
+    {
+        [cell setItem:nil];
+    }
 
     __weak DMItemCollectionViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:indexPath.row do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -198,6 +202,14 @@ static char operationKey;
                 if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didLoadCellContentAtIndexPath:withData:)])
                 {
                     [sself.delegate itemCollectionViewDataSource:sself didLoadCellContentAtIndexPath:indexPath withData:data];
+                }
+
+                if ([scell respondsToSelector:@selector(setItem:)])
+                {
+                    [sself.itemCollection itemAtIndex:indexPath.row withFields:nil done:^(DMItem *item, NSError *e2)
+                    {
+                        [scell setItem:item];
+                    }];
                 }
             }
         }
