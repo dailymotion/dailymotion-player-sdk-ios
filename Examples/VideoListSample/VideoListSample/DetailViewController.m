@@ -73,7 +73,7 @@
     [super viewDidLoad];
 
     // Init the player
-    self.playerViewController = [[DMPlayerViewController alloc] init];
+    self.playerViewController = [[DMPlayerViewController alloc] initWithParams:@{@"webkit-playsinline": @(YES)}];
     self.playerViewController.delegate = self;
     [self addChildViewController:self.playerViewController];
     self.playerViewController.view.frame = self.playerContainerView.bounds;
