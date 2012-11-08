@@ -31,6 +31,7 @@ static char operationKey;
 {
     if ((self = [super init]))
     {
+        self.autoReloadData = YES;
         [self addObserver:self forKeyPath:@"itemCollection" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
@@ -246,7 +247,10 @@ static char operationKey;
                 [self.delegate itemCollectionViewDataSourceDidChange:self];
             });
         }
-        [self._lastCollectionView reloadData];
+        if (self.autoReloadData)
+        {
+            [self._lastCollectionView reloadData];
+        }
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
@@ -256,7 +260,10 @@ static char operationKey;
         {
             [self.delegate itemCollectionViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
-        [self._lastCollectionView reloadData];
+        if (self.autoReloadData)
+        {
+            [self._lastCollectionView reloadData];
+        }
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {

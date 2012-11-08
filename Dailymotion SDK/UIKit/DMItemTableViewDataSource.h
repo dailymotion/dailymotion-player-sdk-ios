@@ -102,6 +102,11 @@
  */
 
 /**
+ * Automatic refresh of data source when model changes. Default value is YES
+ */
+@property (nonatomic, assign) BOOL autoReloadData;
+
+/**
  * If set to YES, instruct the data source this DMItemCollection supports editing (insert and delete).
  */
 @property (nonatomic, assign) BOOL editable;

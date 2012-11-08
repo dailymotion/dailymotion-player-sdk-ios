@@ -31,6 +31,7 @@ static char operationKey;
 {
     if ((self = [super init]))
     {
+        self.autoReloadData = YES;
         [self addObserver:self forKeyPath:@"itemCollection" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
@@ -238,6 +239,8 @@ static char operationKey;
     if (editingStyle == UITableViewCellEditingStyleDelete && [self.itemCollection canEdit] && self.editable)
     {
         __weak DMItemTableViewDataSource *wself = self;
+        BOOL formerAutoReloadData = self.autoReloadData;
+        self.autoReloadData = NO;
         [self.itemCollection removeItemAtIndex:indexPath.row done:^(NSError *error)
         {
             if (!wself) return;
@@ -260,6 +263,8 @@ static char operationKey;
                 }
             }
         }];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        self.autoReloadData = formerAutoReloadData;
     }
 }
 
@@ -320,7 +325,10 @@ static char operationKey;
             });
         }
 
-        [self._lastTableView reloadData];
+        if (self.autoReloadData)
+        {
+            [self._lastTableView reloadData];
+        }
     }
     else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
@@ -330,7 +338,10 @@ static char operationKey;
         {
             [self.delegate itemTableViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
-        [self._lastTableView reloadData];
+        if (self.autoReloadData)
+        {
+            [self._lastTableView reloadData];
+        }
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
