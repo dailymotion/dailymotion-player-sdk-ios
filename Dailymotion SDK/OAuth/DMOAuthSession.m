@@ -196,6 +196,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     secItem[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
     secItem[(__bridge id)kSecAttrAccount] = keychainIdentifier;
     secItem[(__bridge id)kSecAttrService] = @"Dailymotion";
+    secItem[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
 
 #if !TARGET_IPHONE_SIMULATOR
     // FIXME
