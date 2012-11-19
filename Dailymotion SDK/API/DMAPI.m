@@ -94,7 +94,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         [__callQueue addObserver:self forKeyPath:@"count" options:0 context:NULL];
         _oauth = [[DMOAuthClient alloc] init];
         _oauth.networkQueue.userAgent = self.userAgent;
-        self.timeout = 15;
         _maxAggregatedCallCount = kDMHardMaxCallsPerRequest;
     }
     return self;
