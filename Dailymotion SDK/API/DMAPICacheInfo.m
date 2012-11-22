@@ -105,7 +105,7 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
 
 - (BOOL)stalled
 {
-    return _stalled || [self.date timeIntervalSinceNow] > self.maxAge;
+    return _stalled || [NSDate.date timeIntervalSinceDate:self.date] > self.maxAge;
 }
 
 - (void)setStalled:(BOOL)stalled
