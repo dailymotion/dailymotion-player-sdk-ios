@@ -39,7 +39,7 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
         _invalidates = cacheInfo[@"invalidates"];
         _etag = cacheInfo[@"etag"];
         _public = [cacheInfo[@"public"] boolValue];
-        _maxAge = [cacheInfo[@"maxAge"] floatValue];
+        _maxAge = MAX([cacheInfo[@"maxAge"] floatValue], 900);
         _valid = YES;
 
         if (_invalidates)
