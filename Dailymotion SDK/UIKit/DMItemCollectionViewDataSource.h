@@ -167,6 +167,11 @@
  */
 - (void)reload:(void (^)())completionBlock;
 
+/**
+ * Reload the data source if data is salled
+ */
+- (void)reloadIfNeeded;
+
 @property (nonatomic, strong) NSError *lastError;
 
 

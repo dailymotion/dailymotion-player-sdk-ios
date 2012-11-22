@@ -32,13 +32,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if ([self.itemDataSource.itemCollection isKindOfClass:DMItemRemoteCollection.class])
-    {
-        if (((DMItemRemoteCollection *)self.itemDataSource.itemCollection).cacheInfo.stalled)
-        {
-            [self.itemDataSource reload];
-        }
-    }
+    [self.itemDataSource reloadIfNeeded];
 }
 
 #pragma Table Data Source

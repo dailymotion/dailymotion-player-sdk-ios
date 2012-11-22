@@ -89,6 +89,14 @@ static char operationKey;
     }
 }
 
+- (void)reloadIfNeeded
+{
+    if ([self.itemCollection isKindOfClass:DMItemRemoteCollection.class] && ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.stalled)
+    {
+        [self reload];
+    }
+}
+
 #pragma Collection Data Source
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
