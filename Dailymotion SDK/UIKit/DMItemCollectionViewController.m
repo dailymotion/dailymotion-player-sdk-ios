@@ -1,3 +1,4 @@
+
 //
 //  DMItemCollectionViewController.m
 //  Dailymotion SDK iOS
@@ -55,6 +56,10 @@
 }
 
 - (void)itemCollectionViewDataSourceDidFinishLoadingData:(DMItemCollectionViewController *)dataSource
+{
+}
+
+- (void)itemCollectionViewDataSourceDidEnterOfflineMode:(DMItemCollectionViewController *)dataSource
 {
 }
 

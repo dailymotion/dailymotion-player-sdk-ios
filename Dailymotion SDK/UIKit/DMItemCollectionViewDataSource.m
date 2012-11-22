@@ -32,7 +32,6 @@ static char operationKey;
     if ((self = [super init]))
     {
         self.autoReloadData = YES;
-        [self addObserver:self forKeyPath:@"itemCollection" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
     }
@@ -42,7 +41,6 @@ static char operationKey;
 - (void)dealloc
 {
     [self cancelAllOperations];
-    [self removeObserver:self forKeyPath:@"itemCollection"];
     [self removeObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount"];
     [self removeObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus"];
 }
@@ -55,6 +53,38 @@ static char operationKey;
     }
     [self._operations makeObjectsPerformSelector:@selector(cancel)];
     [self._operations removeAllObjects];
+}
+
+- (void)setItemCollection:(DMItemCollection *)itemCollection
+{
+    if (_itemCollection != itemCollection)
+    {
+        _itemCollection = itemCollection;
+
+        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) object:self];
+
+        self._loaded = NO;
+        if (_itemCollection.isLocal)
+        {
+            // Local connection doesn't need pre-loading of the list
+            self._loaded = YES;
+            if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidFinishLoadingData:)])
+            {
+                [self.delegate itemCollectionViewDataSourceDidFinishLoadingData:self];
+            }
+        }
+        if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidChange:)])
+        {
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                [self.delegate itemCollectionViewDataSourceDidChange:self];
+            });
+        }
+        if (self.autoReloadData)
+        {
+            [self._lastCollectionView reloadData];
+        }
+    }
 }
 
 - (void)reload
@@ -106,8 +136,6 @@ static char operationKey;
 
     if (!self._loaded && self.itemCollection && !networkLoadingWhileOffline)
     {
-        self._loaded = YES;
-
         UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
         NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
         NSAssert([cell conformsToProtocol:@protocol(DMItemDataSourceItem)], @"DMItemCollectionViewDataSource: UICollectionViewCell returned by DMItemCollectionViewDataSource.cellClass must comform to DMItemDataSourceItem protocol");
@@ -154,6 +182,8 @@ static char operationKey;
                 [self.delegate itemCollectionViewDataSourceDidStartLoadingData:self];
             }
         }
+
+        self._loaded = YES;
     }
     return self.itemCollection.currentEstimatedTotalItemsCount;
 }
@@ -238,29 +268,7 @@ static char operationKey;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"itemCollection"] && object == self)
-    {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) object:self];
-
-        self._loaded = NO;
-        if (self.itemCollection.isLocal)
-        {
-            // Local connection doesn't need pre-loading of the list
-            self._loaded = YES;
-        }
-        if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidChange:)])
-        {
-            dispatch_async(dispatch_get_main_queue(), ^
-            {
-                [self.delegate itemCollectionViewDataSourceDidChange:self];
-            });
-        }
-        if (self.autoReloadData)
-        {
-            [self._lastCollectionView reloadData];
-        }
-    }
-    else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
+    if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
         if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;

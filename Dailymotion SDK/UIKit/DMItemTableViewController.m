@@ -86,6 +86,10 @@
 {
 }
 
+- (void)itemTableViewDataSourceDidEnterOfflineMode:(DMItemTableViewController *)dataSource
+{
+}
+
 - (void)itemTableViewDataSourceDidLeaveOfflineMode:(DMItemTableViewController *)dataSource
 {
 }

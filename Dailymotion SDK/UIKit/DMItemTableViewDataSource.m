@@ -32,7 +32,6 @@ static char operationKey;
     if ((self = [super init]))
     {
         self.autoReloadData = YES;
-        [self addObserver:self forKeyPath:@"itemCollection" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
     }
@@ -42,7 +41,6 @@ static char operationKey;
 - (void)dealloc
 {
     [self cancelAllOperations];
-    [self removeObserver:self forKeyPath:@"itemCollection"];
     [self removeObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount"];
     [self removeObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus"];
 }
@@ -55,6 +53,39 @@ static char operationKey;
     }
     [self._operations makeObjectsPerformSelector:@selector(cancel)];
     [self._operations removeAllObjects];
+}
+
+- (void)setItemCollection:(DMItemCollection *)itemCollection
+{
+    if (_itemCollection != itemCollection)
+    {
+        _itemCollection = itemCollection;
+
+        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
+
+        self._loaded = NO;
+        if (self.itemCollection.isLocal)
+        {
+            // Local connection doesn't need pre-loading of the list
+            self._loaded = YES;
+            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
+            {
+                [self.delegate itemTableViewDataSourceDidFinishLoadingData:self];
+            }
+        }
+        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
+        {
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                [self.delegate itemTableViewDataSourceDidChange:self];
+            });
+        }
+
+        if (self.autoReloadData)
+        {
+            [self._lastTableView reloadData];
+        }
+    }
 }
 
 - (void)reload
@@ -311,34 +342,7 @@ static char operationKey;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"itemCollection"] && object == self)
-    {
-        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
-
-        self._loaded = NO;
-        if (self.itemCollection.isLocal)
-        {
-            // Local connection doesn't need pre-loading of the list
-            self._loaded = YES;
-            if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
-            {
-                [self.delegate itemTableViewDataSourceDidFinishLoadingData:self];
-            }
-        }
-        if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidChange:)])
-        {
-            dispatch_async(dispatch_get_main_queue(), ^
-            {
-                [self.delegate itemTableViewDataSourceDidChange:self];
-            });
-        }
-
-        if (self.autoReloadData)
-        {
-            [self._lastTableView reloadData];
-        }
-    }
-    else if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
+    if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self._loaded) return;
         if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
