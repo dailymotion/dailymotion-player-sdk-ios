@@ -61,8 +61,6 @@ static char operationKey;
     {
         _itemCollection = itemCollection;
 
-        [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
-
         self._loaded = NO;
         if (self.itemCollection.isLocal)
         {
@@ -347,6 +345,7 @@ static char operationKey;
 {
     if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
+        if (!self.itemCollection) return;
         if (!self._loaded) return;
         if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
         if ([self.delegate respondsToSelector:@selector(itemTableViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
@@ -360,11 +359,11 @@ static char operationKey;
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
     {
+        if (!self.itemCollection) return;
         if (change[NSKeyValueChangeOldKey] == NSNull.null)
         {
             if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)])
             {
-                // We always start by getting this status before even when connected, immediately followed by a reachable notif if finaly connected
                 [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
             }
         }

@@ -86,6 +86,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         __autoConcurrency = YES;
         _maxConcurrency = 2;
         self._reach = [DMReachability reachabilityWithHostname:_APIBaseURL.host];
+        _currentReachabilityStatus = self._reach.currentReachabilityStatus;
         [self._reach startNotifier];
         __uploadNetworkQueue = [[DMNetworking alloc] init];
         __uploadNetworkQueue.maxConcurrency = 1;
