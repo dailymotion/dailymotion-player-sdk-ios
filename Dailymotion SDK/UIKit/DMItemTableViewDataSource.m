@@ -83,7 +83,10 @@ static char operationKey;
 
         if (self.autoReloadData)
         {
-            [self._lastTableView reloadData];
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                [self._lastTableView reloadData];
+            });
         }
     }
 }

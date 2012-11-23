@@ -82,7 +82,10 @@ static char operationKey;
         }
         if (self.autoReloadData)
         {
-            [self._lastCollectionView reloadData];
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                [self._lastCollectionView reloadData];
+            });
         }
     }
 }
