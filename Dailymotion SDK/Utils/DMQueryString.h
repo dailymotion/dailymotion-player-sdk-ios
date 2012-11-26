@@ -31,6 +31,11 @@
 @interface NSDictionary (DMURLArguments)
 
 /**
+ * Generate a dictionary from a query string
+ */
++ (NSDictionary *)dictionaryWithWithQueryString:(NSString *)queryString;
+
+/**
  * Return the receiver serialized as a query string
  */
 - (NSString *)stringAsQueryString;
