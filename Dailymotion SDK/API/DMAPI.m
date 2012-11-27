@@ -33,8 +33,8 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 @interface DMAPITransfer (Private)
 
-@property (nonatomic, strong) void (^completionHandler)(id result, NSError *error);
-@property (nonatomic, strong) void (^cancelBlock)();
+@property (nonatomic, copy) void (^completionHandler)(id result, NSError *error);
+@property (nonatomic, copy) void (^cancelBlock)();
 @property (nonatomic, readwrite) NSURL *localURL;
 @property (nonatomic, readwrite) NSURL *remoteURL;
 
@@ -626,6 +626,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         NSUInteger fileSize = [[[[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:NULL] objectForKey:NSFileSize] unsignedIntegerValue];
         uploadOperation.totalBytesExpectedToTransfer = fileSize;
         uploadOperation.remoteURL = [NSURL URLWithString:[((NSURL *)result[@"upload_url"]).absoluteString stringByReplacingOccurrencesOfString:@"/upload?" withString:@"/rupload?"]];
+        uploadOperation.completionHandler = nil;
         [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
     }];
 
@@ -639,14 +640,8 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 
 - (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^)(id result, NSError *error))completionHandler
 {
-    if (!uploadOperation.completionHandler)
-    {
-        uploadOperation.completionHandler = completionHandler;
-    }
-    else
-    {
-        NSAssert(uploadOperation.completionHandler != completionHandler, @"Trying to resume an already running transfer");
-    }
+    NSAssert(uploadOperation.completionHandler != nil, @"Trying to resume an already running transfer");
+    uploadOperation.completionHandler = completionHandler;
 
     if (uploadOperation.cancelled || uploadOperation.finished)
     {
