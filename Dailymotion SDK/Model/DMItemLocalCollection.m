@@ -102,7 +102,10 @@ static DMItemOperation *fakeOperation()
     }
     else
     {
-        callback(nil, NO, nil);
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            callback(nil, NO, nil);
+        });
         DMItemOperation *finishedOperation = [[DMItemOperation alloc] init];
         finishedOperation.isFinished = YES;
         return finishedOperation;
@@ -132,7 +135,10 @@ static DMItemOperation *fakeOperation()
 {
     DMItemOperation *finishedOperation = [[DMItemOperation alloc] init];
     finishedOperation.isFinished = YES;
-    callback([self._items containsObject:item], nil);
+    dispatch_async(dispatch_get_current_queue(), ^
+    {
+        callback([self._items containsObject:item], nil);
+    });
     return finishedOperation;
 }
 
@@ -159,7 +165,10 @@ static DMItemOperation *fakeOperation()
         self.currentEstimatedTotalItemsCount = self._items.count;
     }
 
-    callback(nil);
+    dispatch_async(dispatch_get_current_queue(), ^
+    {
+        callback(nil);
+    });
     return fakeOperation();
 }
 
@@ -169,7 +178,10 @@ static DMItemOperation *fakeOperation()
     [self._items removeObject:item];
     self.currentEstimatedTotalItemsCount = self._items.count;
 
-    callback(nil);
+    dispatch_async(dispatch_get_current_queue(), ^
+    {
+        callback(nil);
+    });
     return fakeOperation();
 }
 
@@ -178,7 +190,10 @@ static DMItemOperation *fakeOperation()
     [self._items removeObjectAtIndex:index];
     self.currentEstimatedTotalItemsCount = self._items.count;
 
-    callback(nil);
+    dispatch_async(dispatch_get_current_queue(), ^
+    {
+        callback(nil);
+    });
     return fakeOperation();
 }
 
@@ -198,7 +213,10 @@ static DMItemOperation *fakeOperation()
     [self._items moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:toIndex];
     self.currentEstimatedTotalItemsCount = self._items.count; // generate KVO notification to indicate the list changed
 
-    callback(nil);
+    dispatch_async(dispatch_get_current_queue(), ^
+    {
+        callback(nil);
+    });
     return fakeOperation();
 }
 

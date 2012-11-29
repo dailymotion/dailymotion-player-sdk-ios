@@ -225,7 +225,10 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
     if (cacheValid)
     {
-        callback(items, more, self._total, cacheStalled, nil);
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            callback(items, more, self._total, cacheStalled, nil);
+        });
     }
 
     if (!cacheValid || cacheStalled)
@@ -530,7 +533,10 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     NSUInteger idx = [self._listCache indexOfObject:item];
     if (idx != NSNotFound)
     {
-        callback(YES, nil);
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            callback(YES, nil);
+        });
         operation.isFinished = YES;
         return operation;
     }
@@ -598,7 +604,10 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
     if ([self._listCache containsObject:item])
     {
-        callback(nil);
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            callback(nil);
+        });
         operation.isFinished = YES;
     }
     else
@@ -706,7 +715,10 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 {
     if (toIndex == fromIndex)
     {
-        callback(nil);
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            callback(nil);
+        });
         DMItemOperation *fakeOperation = DMItemOperation.new;
         fakeOperation.isFinished = YES;
         return fakeOperation;
