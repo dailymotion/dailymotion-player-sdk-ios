@@ -114,7 +114,7 @@ static char operationKey;
         if (completionBlock) completionBlock();
     }];
 
-    if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
+    if (operation && !operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
     {
         [self._operations addObject:operation];
         [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
@@ -257,7 +257,7 @@ static char operationKey;
         }
     }];
 
-    if (!operation.isFinished)
+    if (operation && !operation.isFinished)
     {
         [self._operations addObject:operation];
         [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
