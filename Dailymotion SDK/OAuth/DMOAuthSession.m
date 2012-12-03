@@ -96,7 +96,10 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     if (result == noErr)
     {
         NSDictionary *sessionInfo = [self dictionaryFromSecItem:(__bridge NSDictionary *)secData];
-        return [DMOAuthSession sessionWithSessionInfo:(NSDictionary *)sessionInfo];
+        if (sessionInfo)
+        {
+            return [DMOAuthSession sessionWithSessionInfo:(NSDictionary *)sessionInfo];
+        }
     }
     else if (result != errSecItemNotFound)
     {
@@ -226,12 +229,17 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
         NSString *password = [[NSString alloc] initWithBytes:[(__bridge NSData *)passwordData bytes]
                                                       length:[(__bridge NSData *)passwordData length]
                                                     encoding:NSUTF8StringEncoding];
+        if (!password)
+        {
+            return nil;
+        }
+
         returnDictionary[@"refresh_token"] = password;
     }
     else
     {
         // Don't do anything if nothing is found.
-        NSAssert(NO, @"Serious error, no matching item found in the keychain.\n");
+        return nil;
     }
 
     return returnDictionary;
