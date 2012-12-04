@@ -84,46 +84,54 @@ static char callbackKey;
                                                                             payload:payload
                                                                        networkQueue:self.networkQueue completionHandler:handler];
 
-    NSString *accessToken = self.session.accessToken;
-    if (self.grantType == DailymotionNoGrant)
+    @synchronized(self)
     {
-        // No authentication requested, just forward
-    }
-    else if (accessToken)
-    {
-        // Authentication requeseted and own a valid access token, perform the request by adding the token in the Authorization header
-        request.accessToken = accessToken;
-    }
-    else if (!self.requestQueue.isSuspended)
-    {
-        // OAuth authentication is require but no valid access token is found, request a new one and postpone calls.
-        // NOTE: if several requests are performed before the access token is returned, they are postponed and called
-        // all at once once the token server answered
-        self.requestQueue.suspended = YES;
-        // Register a watchdog so we don't block all API calls waiting for an ever ending auth request
-        [self.requestQueue performSelector:@selector(setSuspended:) withObject:@(NO) afterDelay:5];
-
-        __weak DMOAuthClient *wself = self;
-        [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
+        NSString *accessToken = self.session.accessToken;
+        if (self.grantType == DailymotionNoGrant)
         {
-            if (!wself) return;
-            __strong DMOAuthClient *sself = wself;
+            // No authentication requested, just forward
+            self.requestQueue.suspended = NO;
+        }
+        else if (accessToken)
+        {
+            // Authentication requeseted and own a valid access token, perform the request by adding the token in the Authorization header
+            request.accessToken = accessToken;
+            self.requestQueue.suspended = NO;
+        }
+        else if (!self.requestQueue.isSuspended)
+        {
+            // OAuth authentication is require but no valid access token is found, request a new one and postpone calls.
+            // NOTE: if several requests are performed before the access token is returned, they are postponed and called
+            // all at once once the token server answered
+            self.requestQueue.suspended = YES;
+            // Register a watchdog so we don't block all API calls waiting for an ever ending auth request
+            [self.requestQueue performSelector:@selector(setSuspended:) withObject:@(NO) afterDelay:5];
 
-            if (error)
+            __weak DMOAuthClient *wself = self;
+            [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
             {
-                [sself.requestQueue.operations makeObjectsPerformSelector:@selector(cancelWithError:) withObject:error];
-            }
-            else
-            {
-                [sself.requestQueue.operations makeObjectsPerformSelector:@selector(setAccessToken:) withObject:newAccessToken];
-            }
+                if (!wself) return;
+                __strong DMOAuthClient *sself = wself;
 
-            [NSObject cancelPreviousPerformRequestsWithTarget:sself.requestQueue selector:@selector(setSuspended:) object:@(NO)];
-            sself.requestQueue.suspended = NO;
-        }];
+                @synchronized(sself)
+                {
+                    if (error)
+                    {
+                        [sself.requestQueue.operations makeObjectsPerformSelector:@selector(cancelWithError:) withObject:error];
+                    }
+                    else
+                    {
+                        [sself.requestQueue.operations makeObjectsPerformSelector:@selector(setAccessToken:) withObject:newAccessToken];
+                    }
+
+                    [NSObject cancelPreviousPerformRequestsWithTarget:sself.requestQueue selector:@selector(setSuspended:) object:@(NO)];
+                    sself.requestQueue.suspended = NO;
+                }
+            }];
+        }
+
+        [self.requestQueue addOperation:request];
     }
-
-    [self.requestQueue addOperation:request];
 
     return request;
 }
@@ -237,52 +245,61 @@ static char callbackKey;
     }
     else if (result[@"error"])
     {
-        if (self.session && [result[@"error"] isEqualToString:@"invalid_grant"])
+        @synchronized(self)
         {
-            // If we already have a session and get an invalid_grant, it's certainly because the refresh_token as expired or have been revoked
-            // In such case, we restart the authentication by reseting the session
-            [self clearSession];
-            if ([self.delegate respondsToSelector:@selector(dailymotionOAuthRequestSessionDidExpire:)])
+            if (self.session && [result[@"error"] isEqualToString:@"invalid_grant"])
             {
-                [self.delegate dailymotionOAuthRequestSessionDidExpire:self];
+                // If we already have a session and get an invalid_grant, it's certainly because the refresh_token as expired or have been revoked
+                // In such case, we restart the authentication by reseting the session
+                [self clearSession];
+                if ([self.delegate respondsToSelector:@selector(dailymotionOAuthRequestSessionDidExpire:)])
+                {
+                    [self.delegate dailymotionOAuthRequestSessionDidExpire:self];
+                }
+                [self requestAccessTokenWithCompletionHandler:handler];
             }
-            [self requestAccessTokenWithCompletionHandler:handler];
+            else
+            {
+                handler(nil, [DMAPIError errorWithMessage:result[@"error_description"]
+                                                   domain:DailymotionAuthErrorDomain
+                                                     type:result[@"error"]
+                                                 response:response
+                                                     data:responseData]);
+                self.session = nil;
+            }
         }
-        else
-        {
-            handler(nil, [DMAPIError errorWithMessage:result[@"error_description"]
-                                               domain:DailymotionAuthErrorDomain
-                                                 type:result[@"error"]
-                                             response:response
-                                                 data:responseData]);
-            self.session = nil;
-        }
-    }
-    else if ((self.session = [DMOAuthSession sessionWithSessionInfo:result]))
-    {
-        if (!self.session.accessToken)
-        {
-            self.session = nil;
-            handler(nil, [DMAPIError errorWithMessage:@"No access token found in the token server response."
-                                               domain:DailymotionAuthErrorDomain
-                                                 type:nil
-                                             response:response
-                                                 data:responseData]);
-            return;
-        }
-        if (self.autoSaveSession)
-        {
-            [self storeSession];
-        }
-        handler(self.session.accessToken, nil);
     }
     else
     {
-        handler(nil, [DMAPIError errorWithMessage:@"Invalid session returned by token server."
-                                           domain:DailymotionAuthErrorDomain
-                                             type:nil
-                                         response:response
-                                             data:responseData]);
+        @synchronized(self)
+        {
+            if ((self.session = [DMOAuthSession sessionWithSessionInfo:result]))
+            {
+                if (!self.session.accessToken)
+                {
+                    self.session = nil;
+                    handler(nil, [DMAPIError errorWithMessage:@"No access token found in the token server response."
+                                                       domain:DailymotionAuthErrorDomain
+                                                         type:nil
+                                                     response:response
+                                                         data:responseData]);
+                    return;
+                }
+                if (self.autoSaveSession)
+                {
+                    [self storeSession];
+                }
+                handler(self.session.accessToken, nil);
+            }
+            else
+            {
+                handler(nil, [DMAPIError errorWithMessage:@"Invalid session returned by token server."
+                                                   domain:DailymotionAuthErrorDomain
+                                                     type:nil
+                                                 response:response
+                                                     data:responseData]);
+            }
+        }
     }
 }
 
@@ -340,38 +357,41 @@ static char callbackKey;
 {
     NSDictionary *info = nil;
 
-    if (type == DailymotionNoGrant)
+    @synchronized(self)
     {
-        info = nil;
-    }
-    else
-    {
-        if (!apiKey || !apiSecret)
+        if (type == DailymotionNoGrant)
         {
-            [[NSException exceptionWithName:NSInvalidArgumentException
-                                     reason:@"Missing API key/secret."
-                                   userInfo:nil] raise];
+            info = nil;
+        }
+        else
+        {
+            if (!apiKey || !apiSecret)
+            {
+                [[NSException exceptionWithName:NSInvalidArgumentException
+                                         reason:@"Missing API key/secret."
+                                       userInfo:nil] raise];
+            }
+
+            // Compute a uniq hash key for the current grant type setup
+            const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@&scope=%@", type, apiKey, apiSecret, scope] UTF8String];
+            unsigned char r[CC_MD5_DIGEST_LENGTH];
+            CC_MD5(str, (CC_LONG)strlen(str), r);
+
+            info =
+            @{
+                @"key": apiKey,
+                @"secret": apiSecret,
+                @"scope": (scope ? scope : @""),
+                @"hash": [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+                          r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]]
+            };
         }
 
-        // Compute a uniq hash key for the current grant type setup
-        const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@&scope=%@", type, apiKey, apiSecret, scope] UTF8String];
-        unsigned char r[CC_MD5_DIGEST_LENGTH];
-        CC_MD5(str, (CC_LONG)strlen(str), r);
-
-        info =
-        @{
-            @"key": apiKey,
-            @"secret": apiSecret,
-            @"scope": (scope ? scope : @""),
-            @"hash": [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-                      r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]]
-        };
+        self.grantType = type;
+        self._grantInfo = info;
+        self.session = nil;
+        self.requestQueue.suspended = NO;
     }
-
-    self.grantType = type;
-    self._grantInfo = info;
-    self.session = nil;
-    self.requestQueue.suspended = NO;
 }
 
 - (void)clearSession
