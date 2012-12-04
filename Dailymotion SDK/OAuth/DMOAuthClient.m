@@ -105,7 +105,7 @@ static char callbackKey;
             // all at once once the token server answered
             self.requestQueue.suspended = YES;
             // Register a watchdog so we don't block all API calls waiting for an ever ending auth request
-            [self.requestQueue performSelector:@selector(setSuspended:) withObject:@(NO) afterDelay:5];
+            [self performSelector:@selector(oAuthWaitTimeout) withObject:nil afterDelay:5];
 
             __weak DMOAuthClient *wself = self;
             [self requestAccessTokenWithCompletionHandler:^(NSString *newAccessToken, NSError *error)
@@ -124,7 +124,7 @@ static char callbackKey;
                         [sself.requestQueue.operations makeObjectsPerformSelector:@selector(setAccessToken:) withObject:newAccessToken];
                     }
 
-                    [NSObject cancelPreviousPerformRequestsWithTarget:sself.requestQueue selector:@selector(setSuspended:) object:@(NO)];
+                    [NSObject cancelPreviousPerformRequestsWithTarget:sself selector:@selector(oAuthWaitTimeout) object:nil];
                     sself.requestQueue.suspended = NO;
                 }
             }];
@@ -134,6 +134,14 @@ static char callbackKey;
     }
 
     return request;
+}
+
+- (void)oAuthWaitTimeout
+{
+    @synchronized(self)
+    {
+        self.requestQueue.suspended = NO;
+    }
 }
 
 - (void)requestAccessTokenWithCompletionHandler:(void (^)(NSString *, NSError *))handler
