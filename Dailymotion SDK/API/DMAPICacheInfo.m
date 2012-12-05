@@ -10,7 +10,7 @@
 #import "DMAPI.h"
 #import "DMSubscriptingSupport.h"
 
-static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalidatedNotification";
+NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalidatedNotification";
 
 @interface DMAPICacheInfo ()
 
@@ -116,7 +116,7 @@ static NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoI
 - (void)invalidateNamespaces:(NSNotification *)notification
 {
     NSArray *invalidatedNamespaces = notification.object;
-    if ([invalidatedNamespaces containsObject:self.namespace])
+    if ([invalidatedNamespaces containsObject:self.namespace] || [invalidatedNamespaces containsObject:@"*"])
     {
         self.stalled = YES;
     }
