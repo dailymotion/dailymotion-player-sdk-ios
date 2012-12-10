@@ -91,12 +91,14 @@ static char callbackKey;
         {
             // No authentication requested, just forward
             self.requestQueue.suspended = NO;
+            [self.requestQueue addOperation:request];
         }
         else if (accessToken)
         {
             // Authentication requeseted and own a valid access token, perform the request by adding the token in the Authorization header
             request.accessToken = accessToken;
             self.requestQueue.suspended = NO;
+            [self.requestQueue addOperation:request];
         }
         else if (!self.requestQueue.isSuspended)
         {
@@ -115,6 +117,11 @@ static char callbackKey;
 
                 @synchronized(sself)
                 {
+                    // Add the initiating operation on top of the queue
+                    request.queuePriority = NSOperationQueuePriorityHigh;
+                    request.accessToken = newAccessToken;
+                    [self.requestQueue addOperation:request];
+
                     if (error)
                     {
                         [sself.requestQueue.operations makeObjectsPerformSelector:@selector(cancelWithError:) withObject:error];
@@ -129,8 +136,6 @@ static char callbackKey;
                 }
             }];
         }
-
-        [self.requestQueue addOperation:request];
     }
 
     return request;
