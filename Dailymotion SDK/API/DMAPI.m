@@ -476,6 +476,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         [self._reach stopNotifier];
         self._reach = [DMReachability reachabilityWithHostname:APIBaseURL.host];
         [self._reach startNotifier];
+
+        self.oauth.oAuthAuthorizationEndpointURL = [NSURL URLWithString:[APIBaseURL.absoluteString stringByAppendingString:@"/oauth/authorize"]];
+        self.oauth.oAuthTokenEndpointURL = [NSURL URLWithString:[APIBaseURL.absoluteString stringByAppendingString:@"/oauth/token"]];
     }
     _APIBaseURL = APIBaseURL;
 }
