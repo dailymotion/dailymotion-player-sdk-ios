@@ -31,6 +31,10 @@ static char indexKey;
 
     objc_setAssociatedObject(viewController, &indexKey, [NSNumber numberWithUnsignedInt:index], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [viewController prepareForLoading];
+    if ([viewController respondsToSelector:@selector(setItem:)])
+    {
+        [viewController setItem:nil];
+    }
 
     __weak DMItemPageViewDataSource *wself = self;
     self._operation = [self.itemCollection withItemFields:viewController.fieldsNeeded atIndex:index do:^(NSDictionary *data, BOOL stalled, NSError *error)
@@ -54,6 +58,14 @@ static char indexKey;
         {
             sself.lastError = nil;
             [viewController setFieldsData:data];
+
+            if ([viewController respondsToSelector:@selector(setItem:)])
+            {
+                [sself.itemCollection itemAtIndex:index withFields:nil done:^(DMItem *item, NSError *e2)
+                {
+                    [viewController setItem:item];
+                }];
+            }
         }
     }];
 
