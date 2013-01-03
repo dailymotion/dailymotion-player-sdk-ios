@@ -159,7 +159,19 @@
     return nil;
 }
 
-- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+- (DMItemOperation *)itemBeforeItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
+{
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
+- (DMItemOperation *)itemAfterItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
 {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
@@ -180,7 +192,7 @@
     return NO;
 }
 
-- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *item, NSError *error))callback
 {
     [self doesNotRecognizeSelector:_cmd];
     return nil;

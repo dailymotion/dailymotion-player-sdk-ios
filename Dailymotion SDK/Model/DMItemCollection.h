@@ -177,6 +177,30 @@
 - (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
 
 /**
+ * Fetch the DMItem from the collection located just before the given item if any
+ *
+ * @param item The item to find sibbling item from
+ * @param fields The fields to load with the item
+ * @param callback The block to call once operation is completed
+ *
+ * @return A DMItemOperation instance able to cancel the request.
+ *
+ */
+- (DMItemOperation *)itemBeforeItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+
+/**
+ * Fetch the DMItem from the collection located just after the given item if any
+ *
+ * @param item The item to find sibbling item from
+ * @param fields The fields to load with the item
+ * @param callback The block to call once operation is completed
+ *
+ * @return A DMItemOperation instance able to cancel the request.
+ *
+ */
+- (DMItemOperation *)itemAfterItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback;
+
+/**
  * Check of a given item is present in the collection.
  * NOTE: This does only work with connections or local collections. For remote collections it generates
  * the following request: GET /<object>/ID/<connection>/ITEM_ID

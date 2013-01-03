@@ -526,9 +526,47 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     }];
 }
 
+- (DMItemOperation *)itemBeforeItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
+{
+    NSUInteger idx = [self._listCache indexOfObject:item];
+    if (idx != NSNotFound && idx > 0)
+    {
+        return [self itemAtIndex:idx - 1 withFields:fields done:callback];
+    }
+    else
+    {
+        DMItemOperation *operation = DMItemOperation.new;
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            operation.isFinished = YES;
+            callback(nil, nil);
+        });
+        return operation;
+    }
+}
+
+- (DMItemOperation *)itemAfterItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
+{
+    NSUInteger idx = [self._listCache indexOfObject:item];
+    if (idx != NSNotFound)
+    {
+        return [self itemAtIndex:idx + 1 withFields:fields done:callback];
+    }
+    else
+    {
+        DMItemOperation *operation = DMItemOperation.new;
+        dispatch_async(dispatch_get_current_queue(), ^
+        {
+            operation.isFinished = YES;
+            callback(nil, nil);
+        });
+        return operation;
+    }
+}
+
 - (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL present, NSError *error))callback
 {
-    DMItemOperation *operation = [[DMItemOperation alloc] init];
+    DMItemOperation *operation = DMItemOperation.new;
 
     NSUInteger idx = [self._listCache indexOfObject:item];
     if (idx != NSNotFound)
