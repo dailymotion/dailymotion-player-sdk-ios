@@ -92,6 +92,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 #pragma mark - Implementation
 
+- (NSString *)path
+{
+    return [self._path copy];
+}
+
 - (BOOL)isLocal
 {
     return NO;
