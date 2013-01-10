@@ -138,6 +138,14 @@
 @property (nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
 
 /**
+ * Returns the total number of objects in the collection if known or -1 otherwise.
+ *
+ * In certain circonstances, the backend can't compute the total number of items for the current
+ * context. In such case this property returns -1.
+ */
+@property (nonatomic, readonly, assign) NSInteger itemsCount;
+
+/**
  * @name Writting Collection to Disk
  */
 

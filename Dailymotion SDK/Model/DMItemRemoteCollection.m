@@ -30,6 +30,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 @interface DMItemCollection (Private)
 
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readwrite, assign) NSInteger itemsCount;
 
 - (id)initWithType:(NSString *)type api:(DMAPI *)api;
 
@@ -424,6 +425,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             {
                 sself.currentEstimatedTotalItemsCount = MIN(sself._total, maxEstimatedItemsCount);
             }
+            sself.itemsCount = sself._total;
         }
 
         callback(items, more, sself._total, NO, nil);

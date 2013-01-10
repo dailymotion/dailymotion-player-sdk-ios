@@ -27,6 +27,7 @@ static DMItemOperation *fakeOperation()
 @interface DMItemLocalCollection ()
 
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readwrite, assign) NSInteger itemsCount;
 @property (nonatomic, strong) NSMutableOrderedSet *_items;
 
 @end
@@ -44,7 +45,7 @@ static DMItemOperation *fakeOperation()
             [__items addObject:[DMItem itemWithType:type forId:itemId fromAPI:api]];
         }
         _countLimit = countLimit;
-        self.currentEstimatedTotalItemsCount = __items.count;
+        self.currentEstimatedTotalItemsCount = self.itemsCount = __items.count;
     }
     return self;
 }
@@ -57,7 +58,7 @@ static DMItemOperation *fakeOperation()
     {
         __items = [[coder decodeObjectForKey:@"_items"] mutableCopy];
         _countLimit = [coder decodeIntegerForKey:@"countLimit"];
-        self.currentEstimatedTotalItemsCount = __items.count;
+        self.currentEstimatedTotalItemsCount = self.itemsCount = __items.count;
     }
     return self;
 }
@@ -200,7 +201,7 @@ static DMItemOperation *fakeOperation()
         {
             [self._items removeObjectsInRange:NSMakeRange(self.countLimit, self._items.count - self.countLimit)];
         }
-        self.currentEstimatedTotalItemsCount = self._items.count;
+        self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
     }
 
     dispatch_async(dispatch_get_current_queue(), ^
@@ -214,7 +215,7 @@ static DMItemOperation *fakeOperation()
 {
     [self checkItem:item];
     [self._items removeObject:item];
-    self.currentEstimatedTotalItemsCount = self._items.count;
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
 
     dispatch_async(dispatch_get_current_queue(), ^
     {
@@ -226,7 +227,7 @@ static DMItemOperation *fakeOperation()
 - (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback
 {
     [self._items removeObjectAtIndex:index];
-    self.currentEstimatedTotalItemsCount = self._items.count;
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
 
     dispatch_async(dispatch_get_current_queue(), ^
     {
@@ -238,7 +239,7 @@ static DMItemOperation *fakeOperation()
 - (void)clear
 {
     [self._items removeAllObjects];
-    self.currentEstimatedTotalItemsCount = self._items.count;
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
 }
 
 - (BOOL)canReorder
@@ -249,7 +250,7 @@ static DMItemOperation *fakeOperation()
 - (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
 {
     [self._items moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:toIndex];
-    self.currentEstimatedTotalItemsCount = self._items.count; // generate KVO notification to indicate the list changed
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count; // generate KVO notification to indicate the list changed
 
     dispatch_async(dispatch_get_current_queue(), ^
     {

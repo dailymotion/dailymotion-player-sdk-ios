@@ -34,6 +34,7 @@
 @property (nonatomic, readwrite, copy) NSString *type;
 @property (nonatomic, readwrite, strong) DMAPI *api;
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readwrite, assign) NSInteger itemsCount;
 
 @end
 
@@ -113,6 +114,7 @@
         _type = type;
         _api = api;
         _currentEstimatedTotalItemsCount = 0;
+        _itemsCount = -1;
     }
     return self;
 }
@@ -125,6 +127,7 @@
     if ((self = [self initWithType:type api:api]))
     {
         _currentEstimatedTotalItemsCount = [coder decodeIntegerForKey:@"currentEstimatedTotalItemsCount"];
+        _itemsCount = [coder decodeIntegerForKey:@"itemsCount"];
     }
     return self;
 }
@@ -134,6 +137,7 @@
     [coder encodeObject:_type forKey:@"type"];
     [coder encodeObject:_api forKey:@"api"];
     [coder encodeInteger:_currentEstimatedTotalItemsCount forKey:@"currentEstimatedTotalItemsCount"];
+    [coder encodeInteger:_itemsCount forKey:@"itemsCount"];
 }
 
 - (BOOL)saveToFile:(NSString *)filePath
