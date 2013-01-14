@@ -98,6 +98,16 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder
+{
+    return DMAPI.sharedAPI;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    NSParameterAssert(self == DMAPI.sharedAPI);
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
