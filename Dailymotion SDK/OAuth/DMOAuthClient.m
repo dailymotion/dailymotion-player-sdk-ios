@@ -136,6 +136,10 @@ static char callbackKey;
                 }
             }];
         }
+        else if (self.requestQueue.isSuspended)
+        {
+            [self.requestQueue addOperation:request];
+        }
     }
 
     return request;
