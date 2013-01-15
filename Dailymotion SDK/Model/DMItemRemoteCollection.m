@@ -9,6 +9,7 @@
 #import "DMItemRemoteCollection.h"
 #import "DMAPI.h"
 #import "DMAdditions.h"
+#import "DMQueryString.h"
 #import "DMSubscriptingSupport.h"
 #import "DMAPIArchiverDelegate.h"
 
@@ -92,6 +93,18 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 }
 
 #pragma mark - Implementation
+
+- (NSString *)description
+{
+    if (self.params.count)
+    {
+        return [self.path stringByAppendingFormat:@"?%@", [self.params stringAsQueryString]];
+    }
+    else
+    {
+        return self.path;
+    }
+}
 
 - (NSString *)path
 {
