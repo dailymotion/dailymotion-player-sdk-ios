@@ -589,11 +589,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     DMItemOperation *operation = DMItemOperation.new;
 
     NSUInteger idx = [self._listCache indexOfObject:item];
-    if (idx != NSNotFound)
+    if (idx != NSNotFound || !item)
     {
         dispatch_async(dispatch_get_current_queue(), ^
         {
-            callback(YES, nil);
+            callback(idx != NSNotFound, nil);
         });
         operation.isFinished = YES;
         return operation;
