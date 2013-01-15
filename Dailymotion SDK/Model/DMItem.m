@@ -104,7 +104,15 @@
 
 - (BOOL)isEqual:(DMItem *)object
 {
-    return [object isKindOfClass:self.class] && [self.type isEqualToString:object.type] && [self.itemId isEqualToString:object.itemId];
+    BOOL eq = [object isKindOfClass:self.class] && [self.type isEqualToString:object.type] && [self.itemId isEqualToString:object.itemId];
+
+    if (eq && [self.type isEqualToString:@"tile"] && self.cachedFields[@"video"])
+    {
+        // Fragile workaround to search results behing same tile id with different video property
+        eq = [self.cachedFields[@"video"] isEqualToString:object.cachedFields[@"video"]];
+    }
+
+    return eq;
 }
 
 - (NSUInteger)hash
