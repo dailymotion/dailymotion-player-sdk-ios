@@ -211,6 +211,12 @@
                     sself._fieldsCache[key] = object;
                 }];
 
+                if (result[@"id"] && ![self.itemId isEqualToString:result[@"id"]])
+                {
+                    // The id of the item in response has changed, this can happen when using an id alias like "me"
+                    sself.itemId = result[@"id"];
+                }
+
                 callback([sself._fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues], NO, nil);
             }
 
