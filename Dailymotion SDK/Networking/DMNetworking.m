@@ -126,10 +126,15 @@ NSUInteger totalRequestCount;
         int count = (int)[payload count] - 1;
         while ((key = [enumerator nextObject]))
         {
-            NSString *escapedValue = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes
+            NSString *escapedValue = payload[key];
+            if (![escapedValue isKindOfClass:NSString.class])
+            {
+                escapedValue = [NSString stringWithFormat:@"%@", escapedValue];
+            }
+            escapedValue = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes
             (
                 NULL,
-                (__bridge CFStringRef)payload[key],
+                (__bridge CFStringRef)escapedValue,
                 NULL,
                 CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`"),
                 kCFStringEncodingUTF8
