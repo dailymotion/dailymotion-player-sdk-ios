@@ -11,13 +11,13 @@
 static DMAlertDismissBlock _dismissBlock;
 static DMAlertCancelBlock _cancelBlock;
 
-@implementation UIAlertView (DMBlock)
+@implementation DMAlertView
 
 + (UIAlertView *)showAlertViewWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles dismissBlock:(DMAlertDismissBlock)dismissBlock cancelBlock:(DMAlertCancelBlock)cancelBlock
 {
     _cancelBlock = cancelBlock;
     _dismissBlock = dismissBlock;
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:[self self] cancelButtonTitle:cancelButtonTitle otherButtonTitles:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:nil];
     for (NSString *buttonTitle in otherButtonTitles)
     {
         [alertView addButtonWithTitle:buttonTitle];

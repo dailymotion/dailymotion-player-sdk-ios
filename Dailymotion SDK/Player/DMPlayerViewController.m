@@ -233,10 +233,10 @@
     }
     else
     {
-        [UIAlertView showAlertViewWithTitle:[NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil),
-                                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"]]
+        [DMAlertView showAlertViewWithTitle:[NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil),
+                                                                       [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"]]
                                     message:[NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil),
-                                             request.URL.host]
+                                                                       request.URL.host]
                           cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
                           otherButtonTitles:@[NSLocalizedString(@"Open", nil)]
                                dismissBlock:^(NSInteger buttonIndex) {[[UIApplication sharedApplication] openURL:request.URL];}
