@@ -23,12 +23,10 @@
 
 - (NSString *)stringByURLDencoding
 {
-    NSMutableString *resultString = [NSMutableString stringWithString:self];
-    [resultString replaceOccurrencesOfString:@"+"
-                                  withString:@" "
-                                     options:NSLiteralSearch
-                                       range:NSMakeRange(0, [resultString length])];
-
+    NSString *resultString = [self stringByReplacingOccurrencesOfString:@"+"
+                                                             withString:@" "
+                                                                options:NSLiteralSearch
+                                                                  range:NSMakeRange(0, self.length)];
     return [resultString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
