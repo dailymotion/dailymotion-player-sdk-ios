@@ -33,8 +33,12 @@ NSString *const DMReachabilityChangedNotification = @"DMReachabilityChangedNotif
 @interface DMReachability ()
 
 @property (nonatomic, assign) SCNetworkReachabilityRef _reachabilityRef;
-@property (nonatomic, assign) dispatch_queue_t _reachabilitySerialQueue;
 @property (nonatomic, strong) id _reachabilityObject;
+#if OS_OBJECT_USE_OBJC
+@property (nonatomic, strong) dispatch_queue_t _reachabilitySerialQueue;
+#else
+@property (nonatomic, assign) dispatch_queue_t _reachabilitySerialQueue;
+#endif
 
 - (void)reachabilityChanged:(SCNetworkReachabilityFlags)flags;
 - (BOOL)isReachableWithFlags:(SCNetworkReachabilityFlags)flags;
