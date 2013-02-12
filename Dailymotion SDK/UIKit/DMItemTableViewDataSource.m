@@ -123,7 +123,8 @@ static char operationKey;
 
 - (void)reloadIfNeeded
 {
-    if ([self.itemCollection isKindOfClass:DMItemRemoteCollection.class] && ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.stalled)
+    if ([self.itemCollection isKindOfClass:DMItemRemoteCollection.class]
+        && (self.itemCollection.currentEstimatedTotalItemsCount == 0 || ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.stalled))
     {
         [self reload];
     }
