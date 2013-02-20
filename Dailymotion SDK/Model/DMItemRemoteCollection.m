@@ -30,6 +30,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 @interface DMItemCollection (Private)
 
+@property (nonatomic, readwrite, assign) BOOL isExplicit;
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, readwrite, assign) NSInteger itemsCount;
 
@@ -364,6 +365,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         }
 
         sself._total = result[@"total"] ? [result[@"total"] intValue] : -1;
+        sself.isExplicit = [result[@"explicit"] boolValue];
         BOOL more = [result[@"has_more"] boolValue];
         NSMutableArray *items = [NSMutableArray arrayWithCapacity:itemsPerPage];
 

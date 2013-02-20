@@ -35,6 +35,7 @@
 @property (nonatomic, readwrite, strong) DMAPI *api;
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, readwrite, assign) NSInteger itemsCount;
+@property (nonatomic, readwrite, assign) BOOL isExplicit;
 
 @end
 
@@ -128,6 +129,7 @@
     {
         _currentEstimatedTotalItemsCount = [coder decodeIntegerForKey:@"currentEstimatedTotalItemsCount"];
         _itemsCount = [coder decodeIntegerForKey:@"itemsCount"];
+        _isExplicit = [coder decodeBoolForKey:@"isExplicit"];
     }
     return self;
 }
@@ -136,6 +138,7 @@
 {
     [coder encodeObject:_type forKey:@"type"];
     [coder encodeObject:_api forKey:@"api"];
+    [coder encodeBool:_isExplicit forKey:@"isExplicit"];
     [coder encodeInteger:_currentEstimatedTotalItemsCount forKey:@"currentEstimatedTotalItemsCount"];
     [coder encodeInteger:_itemsCount forKey:@"itemsCount"];
 }

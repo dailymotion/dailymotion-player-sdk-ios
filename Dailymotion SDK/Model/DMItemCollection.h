@@ -123,6 +123,9 @@
 /** The underlaying DMAPI instance */
 @property (nonatomic, readonly, strong) DMAPI *api;
 
+/** This property is NO by default and can turns YES if the list is expected to contain explicit content */
+@property (nonatomic, readonly, assign) BOOL isExplicit;
+
 /**
  * Return YES if the collection isn't comming from the remote API
  */
