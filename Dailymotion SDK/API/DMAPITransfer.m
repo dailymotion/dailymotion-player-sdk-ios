@@ -38,6 +38,29 @@
     return self;
 }
 
+- (id)initWithCoder:(NSCoder *)coder
+{
+    if ((self = [self init]))
+    {
+        _sessionId = [coder decodeObjectForKey:@"sessionId"];
+        _localURL = [coder decodeObjectForKey:@"localURL"];
+        _remoteURL = [coder decodeObjectForKey:@"remoteURL"];
+        _totalBytesExpectedToTransfer = [coder decodeIntegerForKey:@"totalBytesExpectedToTransfer"];
+        _totalBytesTransfered = [coder decodeIntegerForKey:@"totalBytesTransfered"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject:_sessionId forKey:@"sessionId"];
+    [coder encodeObject:_localURL forKey:@"localURL"];
+    [coder encodeObject:_remoteURL forKey:@"remoteURL"];
+    [coder encodeInteger:_totalBytesExpectedToTransfer forKey:@"totalBytesExpectedToTransfer"];
+    [coder encodeInteger:_totalBytesTransfered forKey:@"totalBytesTransfered"];
+    // Do not store cancelled/finished flags so transfer can safely be cancelled, stored, fetched then resumed
+}
+
 - (void)setFinished:(BOOL)finished
 {
     if (finished)

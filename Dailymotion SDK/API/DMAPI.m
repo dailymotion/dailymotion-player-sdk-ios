@@ -670,8 +670,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 {
     uploadOperation.completionHandler = completionHandler;
 
-    if (uploadOperation.cancelled || uploadOperation.finished)
+    if (uploadOperation.isCancelled || uploadOperation.isFinished)
     {
+        completionHandler(nil, nil);
         return;
     }
 
@@ -692,7 +693,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                                                  headers:headers
                                        completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
     {
-        if (uploadOperation.cancelled)
+        if (uploadOperation.isCancelled)
         {
             return;
         }
