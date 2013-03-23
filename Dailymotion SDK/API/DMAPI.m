@@ -670,11 +670,9 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 {
     uploadOperation.completionHandler = completionHandler;
 
-    if (uploadOperation.isCancelled || uploadOperation.isFinished)
-    {
-        completionHandler(nil, nil);
-        return;
-    }
+    // If resumed
+    uploadOperation.cancelled = NO;
+    uploadOperation.finished = NO;
 
     NSRange range = NSMakeRange(uploadOperation.totalBytesTransfered, MIN((int)self.uploadChunkSize, uploadOperation.totalBytesExpectedToTransfer - uploadOperation.totalBytesTransfered));
     DMRangeInputStream *filePartStream = [DMRangeInputStream inputStreamWithFileAtPath:uploadOperation.localURL.path withRange:range];
