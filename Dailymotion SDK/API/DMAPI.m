@@ -712,10 +712,47 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
         }
         else if (statusCode == 201)
         {
-            // TODO: parse Range header to detect removal of remote file
-            uploadOperation.totalBytesTransfered += range.length; // naive
-            [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
-            return;
+            NSString *rangeHeader = ((NSHTTPURLResponse *)response).allHeaderFields[@"Range"];
+            NSScanner *rangeScanner = [NSScanner scannerWithString:rangeHeader];
+            NSInteger start = -1, end = -1, total = -1;
+            if (!([rangeScanner scanInt:&start] &&
+                  [rangeScanner scanString:@"-" intoString:NULL] && [rangeScanner scanInt:&end] &&
+                  [rangeScanner scanString:@"/" intoString:NULL] && [rangeScanner scanInt:&total]))
+            {
+                if (uploadOperation.completionHandler)
+                {
+                    NSError *error = [DMAPIError errorWithMessage:[NSString stringWithFormat:@"Upload Server Error: cannot parse Range header (%@)", rangeHeader]
+                                                           domain:DailymotionTransportErrorDomain
+                                                             type:@400
+                                                         response:response
+                                                             data:responseData];
+
+                    uploadOperation.completionHandler(nil, error);
+                }
+            }
+            else
+            {
+                if (start == 0)
+                {
+                    if (uploadOperation.totalBytesExpectedToTransfer != total)
+                    {
+                        NSLog(@"WARN: Upload server changed the expected bytes to transfer");
+                    }
+                    if (uploadOperation.totalBytesTransfered + range.length != (NSUInteger)end + 1)
+                    {
+                        NSLog(@"WARN: Upload server returned an unexpected range");
+                    }
+                    uploadOperation.totalBytesTransfered = end + 1;
+                }
+                else
+                {
+                    // We don't support discontinious uploads
+                    NSLog(@"WARN: Upload server returned non-zero start byte, restart upload");
+                    uploadOperation.totalBytesTransfered = 0;
+                }
+                [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
+                return;
+            }
         }
         else if (statusCode == 200)
         {
