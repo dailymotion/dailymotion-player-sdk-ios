@@ -390,9 +390,9 @@ static char operationKey;
             }
         }
     }
-    else if ([keyPath isEqualToString:@"isFinished"] && [object isKindOfClass:DMItemOperation.class])
+    else if ([keyPath isEqualToString:@"isFinished"])
     {
-        if (((DMItemOperation *)object).isFinished)
+        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *)object).isFinished)
         {
             [self._operations removeObject:object];
             [object removeObserver:self forKeyPath:@"isFinished"];
