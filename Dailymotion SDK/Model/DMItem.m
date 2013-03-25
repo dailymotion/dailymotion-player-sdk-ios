@@ -268,7 +268,7 @@
 
     NSString *itemId;
 
-    if ((itemId = self._fieldsCache[subItemField]) || (itemId = self._fieldsCache[[subItemField stringByAppendingString:@".id"]]))
+    if (((itemId = self._fieldsCache[subItemField]) || (itemId = self._fieldsCache[[subItemField stringByAppendingString:@".id"]])) && [itemId isKindOfClass:NSString.class])
     {
         operation = DMItemOperation.new;
         operation.isFinished = YES;
