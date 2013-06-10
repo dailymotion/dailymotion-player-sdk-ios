@@ -740,7 +740,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
                     }
                     if (uploadOperation.totalBytesTransfered + range.length != (NSUInteger)end + 1)
                     {
-                        NSLog(@"WARN: Upload server returned an unexpected range");
+                        NSLog(@"WARN: Upload server returned an unexpected range %d + %d != %d + 1", uploadOperation.totalBytesTransfered, range.length, end);
                     }
                     uploadOperation.totalBytesTransfered = end + 1;
                 }
