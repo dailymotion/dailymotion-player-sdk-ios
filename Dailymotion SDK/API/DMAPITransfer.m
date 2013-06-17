@@ -25,7 +25,7 @@
     {
         // Create universally unique identifier
         CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
-        _sessionId = (__bridge NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuidObject);
+        _sessionId = (__bridge_transfer NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuidObject);
         CFRelease(uuidObject);
         _localURL = nil;
         _remoteURL = nil;

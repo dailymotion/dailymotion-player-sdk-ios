@@ -95,7 +95,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     OSStatus result = SecItemCopyMatching((__bridge CFDictionaryRef)keychainQuery, &secData);
     if (result == noErr)
     {
-        NSDictionary *sessionInfo = [self dictionaryFromSecItem:(__bridge NSDictionary *)secData];
+        NSDictionary *sessionInfo = [self dictionaryFromSecItem:(__bridge_transfer NSDictionary *)secData];
         if (sessionInfo)
         {
             return [DMOAuthSession sessionWithSessionInfo:(NSDictionary *)sessionInfo];
@@ -118,7 +118,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     if (SecItemCopyMatching((__bridge CFDictionaryRef)keychainQuery, &attributes) == noErr)
     {
         // First we need the attributes from the Keychain.
-        NSMutableDictionary *updateItem = [NSMutableDictionary dictionaryWithDictionary:(__bridge NSDictionary *)attributes];
+        NSMutableDictionary *updateItem = [NSMutableDictionary dictionaryWithDictionary:(__bridge_transfer NSDictionary *)attributes];
 
         // Second we need to add the appropriate search key/values.
         updateItem[(__bridge id)kSecClass] = keychainQuery[(__bridge id)kSecClass];
@@ -186,7 +186,7 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
 - (NSMutableDictionary *)secItemDictionaryForIdentifier:(NSString *)keychainIdentifier
 {
     // Create a dictionary to return populated with the attributes and data.
-    NSMutableDictionary *secItem = [NSMutableDictionary dictionary];
+    NSMutableDictionary *secItem = [NSMutableDictionary new];
 
     if (self.refreshToken)
     {
@@ -212,22 +212,23 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
 + (NSMutableDictionary *)dictionaryFromSecItem:(NSDictionary *)secItem
 {
     // Create a dictionary to return populated with the attributes and data.
-    NSMutableDictionary *returnDictionary = [NSMutableDictionary dictionaryWithDictionary:secItem];
+    NSMutableDictionary *returnDictionary = [secItem mutableCopy];
 
     // Add the proper search key and class attribute.
     returnDictionary[(__bridge id)kSecReturnData] = (id)kCFBooleanTrue;
     returnDictionary[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
 
     // Acquire the password data from the attributes.
-    CFTypeRef passwordData = NULL;
-    if (SecItemCopyMatching((__bridge CFDictionaryRef)returnDictionary, &passwordData) == noErr)
+    CFTypeRef passwordDataRef = NULL;
+    if (SecItemCopyMatching((__bridge CFDictionaryRef)returnDictionary, &passwordDataRef) == noErr)
     {
         // Remove the search, class, and identifier key/value, we don't need them anymore.
         [returnDictionary removeObjectForKey:(__bridge id)kSecReturnData];
 
         // Add the password as refresh_token to the dictionary, converting from NSData to NSString.
-        NSString *password = [[NSString alloc] initWithBytes:[(__bridge NSData *)passwordData bytes]
-                                                      length:[(__bridge NSData *)passwordData length]
+        NSData *passwordData = (__bridge_transfer NSData *)passwordDataRef;
+        NSString *password = [[NSString alloc] initWithBytes:[passwordData bytes]
+                                                      length:[passwordData length]
                                                     encoding:NSUTF8StringEncoding];
         if (!password)
         {
