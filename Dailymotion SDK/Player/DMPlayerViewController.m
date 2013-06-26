@@ -198,12 +198,12 @@
             else if ([eventName isEqualToString:@"seeking"])
             {
                 self.seeking = YES;
-                self.currentTime = [data[@"time"] floatValue];
+                _currentTime = [data[@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"seeked"])
             {
                 self.seeking = NO;
-                self.currentTime = [data[@"time"] floatValue];
+                _currentTime = [data[@"time"] floatValue];
             }
             else if ([eventName isEqualToString:@"error"])
             {
