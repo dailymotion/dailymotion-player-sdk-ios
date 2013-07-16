@@ -9,8 +9,6 @@
 #import "DMOAuthSession.h"
 #import "DMSubscriptingSupport.h"
 
-NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
-
 #define DMISSET(dict, key) dict[key] && ![dict[key] isKindOfClass:[NSNull class]] && ![dict[key] isEqual:@""]
 
 @interface DMOAuthSession ()
@@ -163,16 +161,11 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
 
 + (NSDictionary *)keychainQueryForIdentifier:(NSString *)keychainIdentifier
 {
-    return
-    @{
+    NSDictionary *query = @
+    {
         (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
         (__bridge id)kSecAttrAccount: keychainIdentifier,
         (__bridge id)kSecAttrService: @"Dailymotion",
-
-#if !TARGET_IPHONE_SIMULATOR
-        // FIXME
-        //(__bridge id)kSecAttrAccessGroup: kDMKeychainAccessGroup,
-#endif
 
         // Return the attributes of the first match only:
         (__bridge id)kSecMatchLimit: (__bridge id)kSecMatchLimitOne,
@@ -181,6 +174,17 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
         // acquired in the secItemFormatToDictionary: method):
         (__bridge id)kSecReturnAttributes: (id)kCFBooleanTrue
     };
+
+#if !TARGET_IPHONE_SIMULATOR
+    if (NSBundle.mainBundle.infoDictionary[@"DMKeychainAccessGroup"])
+    {
+        NSMutableDictionary *mutableQuery = [query mutableCopy];
+        mutableQuery[(__bridge id)kSecAttrAccessGroup] = NSBundle.mainBundle.infoDictionary[@"DMKeychainAccessGroup"];
+        query = [mutableQuery copy];
+    }
+#endif
+
+    return query;
 }
 
 - (NSMutableDictionary *)secItemDictionaryForIdentifier:(NSString *)keychainIdentifier
@@ -202,8 +206,10 @@ NSString *const kDMKeychainAccessGroup = @"com.dailymotion";
     secItem[(__bridge id)kSecAttrAccessible] = (__bridge id)kSecAttrAccessibleAfterFirstUnlock;
 
 #if !TARGET_IPHONE_SIMULATOR
-    // FIXME
-    //secItem[(__bridge id)kSecAttrAccessGroup] = kDMKeychainAccessGroup;
+    if (NSBundle.mainBundle.infoDictionary[@"DMKeychainAccessGroup"])
+    {
+        secItem[(__bridge id)kSecAttrAccessGroup] = NSBundle.mainBundle.infoDictionary[@"DMKeychainAccessGroup"];
+    }
 #endif
 
     return secItem;
