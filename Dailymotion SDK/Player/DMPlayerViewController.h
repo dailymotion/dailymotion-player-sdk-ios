@@ -61,7 +61,17 @@
  */
 - (id)initWithVideo:(NSString *)videoId params:(NSDictionary *)params;
 
+/**
+ * Initialize am empty video player.
+ */
+- (id)initEmpty;
 
+/**
+ * Initialize am empty video player.
+ *
+ * @param params A dictionary containing initalization parameters. See http://www.dailymotion.com/doc/api/player.html#parameters
+ */
+- (id)initEmptyWithParams:(NSDictionary *)params;
 /**
  * @name Player Properties
  */

@@ -72,7 +72,25 @@
     return [self initWithVideo:aVideo params:nil];
 }
 
-- (void)initPlayerWithVideo:(NSString *)video
+- (id)initEmpty
+{
+    if ((self = [self initEmptyWithParams:nil]))
+    {
+        [self initPlayerEmpty];
+    }
+    return self;
+}
+
+- (id)initEmptyWithParams:(NSDictionary *)params
+{
+    if ((self = [self initWithParams:params]))
+    {
+        [self initPlayerEmpty];
+    }
+    return self;
+}
+
+- (void)initPlayerWithBaseURL:(NSString *) url
 {
     if (self._inited) return;
     self._inited = YES;
@@ -109,8 +127,7 @@
         }
     }
 
-
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
+    NSMutableString *buildUrl = [NSMutableString stringWithFormat:@"%@?api=location", url];
     for (NSString *param in [self._params keyEnumerator])
     {
         id value = self._params[param];
@@ -118,11 +135,23 @@
         {
             value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         }
-        [url appendFormat:@"&%@=%@", param, value];
+        [buildUrl appendFormat:@"&%@=%@", param, value];
     }
-    [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
-                  
+    [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:buildUrl]]];
+
     self.view = webview;
+}
+
+- (void)initPlayerEmpty
+{
+    NSString * url = [NSString stringWithFormat:@"%@/embed/", self.webBaseURLString];
+    [self initPlayerWithBaseURL:url];
+}
+
+- (void)initPlayerWithVideo:(NSString *)video
+{
+    NSString * url = [NSString stringWithFormat:@"%@/embed/video/%@", self.webBaseURLString, video];
+    [self initPlayerWithBaseURL:url];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
@@ -227,7 +256,7 @@
 
         return NO;
     }
-    else if ([request.URL.path hasPrefix:@"/embed/video/"])
+    else if ([request.URL.path hasPrefix:@"/embed"])
     {
         return YES;
     }
