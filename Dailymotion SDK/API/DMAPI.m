@@ -611,6 +611,7 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 - (void)logout
 {
     [self get:@"/logout" callback:nil];
+    [self.oauth clearSession];
 }
 
 #pragma mark - Upload
