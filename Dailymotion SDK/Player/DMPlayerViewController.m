@@ -157,7 +157,7 @@
             }
         }
 
-        if (eventName || ![eventName isEqualToString:@""])
+        if (eventName.length)
         {
             if ([eventName isEqualToString:@"timeupdate"])
             {
