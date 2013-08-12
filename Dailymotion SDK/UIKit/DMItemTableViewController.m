@@ -96,7 +96,7 @@
 
 - (void)itemTableViewDataSource:(DMItemTableViewController *)dataSource didFailWithError:(NSError *)error
 {
-    [UIAlertView showAlertViewWithTitle:@"Error"
+    [DMAlertView showAlertViewWithTitle:@"Error"
                                 message:error.localizedDescription
                       cancelButtonTitle:@"Dismiss"
                       otherButtonTitles:nil
