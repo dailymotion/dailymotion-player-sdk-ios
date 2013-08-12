@@ -209,10 +209,10 @@
             {
                 NSDictionary *userInfo =
                 @{
-                    @"code": data[@"code"],
-                    @"title": data[@"title"],
-                    @"message": data[@"message"],
-                    NSLocalizedDescriptionKey: data[@"message"]
+                    @"code": @([data[@"code"] intValue]) ?: @0,
+                    @"title": data[@"title"] ?: @"",
+                    @"message": data[@"message"] ?: @"",
+                    NSLocalizedDescriptionKey: data[@"message"] ?: @"",
                 };
                 self.error = [NSError errorWithDomain:@"DailymotionPlayer"
                                                  code:[data[@"code"] integerValue]
