@@ -45,6 +45,7 @@
         _paused = true;
         _fullscreen = false;
         _webBaseURLString = @"http://www.dailymotion.com";
+        [self initPlayer];
     }
     return self;
 }
@@ -70,24 +71,6 @@
 - (id)initWithVideo:(NSString *)aVideo
 {
     return [self initWithVideo:aVideo params:nil];
-}
-
-- (id)initEmpty
-{
-    if ((self = [self initEmptyWithParams:nil]))
-    {
-        [self initPlayerEmpty];
-    }
-    return self;
-}
-
-- (id)initEmptyWithParams:(NSDictionary *)params
-{
-    if ((self = [self initWithParams:params]))
-    {
-        [self initPlayerEmpty];
-    }
-    return self;
 }
 
 - (void)initPlayerWithBaseURL:(NSString *) url
@@ -142,7 +125,7 @@
     self.view = webview;
 }
 
-- (void)initPlayerEmpty
+- (void)initPlayer
 {
     NSString * url = [NSString stringWithFormat:@"%@/embed/", self.webBaseURLString];
     [self initPlayerWithBaseURL:url];
