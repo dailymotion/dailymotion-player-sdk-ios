@@ -318,7 +318,7 @@
 
 - (void)api:(NSString *)method arg:(NSString *)arg
 {
-    if (!self._inited) return;
+    if (!self._playerReady) return;
     if (!method) return;
     UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];
