@@ -20,6 +20,8 @@
 @property (nonatomic, readwrite) BOOL ended;
 @property (nonatomic, readwrite) NSError *error;
 @property (nonatomic, assign) BOOL _inited;
+@property (nonatomic, assign) BOOL _playerReady;
+@property (nonatomic, assign) NSString *_aVideoToLoad;
 @property (nonatomic, strong) NSDictionary *_params;
 
 @end
@@ -77,6 +79,7 @@
 {
     if (self._inited) return;
     self._inited = YES;
+    self._aVideoToLoad = @"";
 
     UIWebView *webview = [[UIWebView alloc] init];
     webview.delegate = self;
@@ -171,7 +174,14 @@
 
         if (eventName || ![eventName isEqualToString:@""])
         {
-            if ([eventName isEqualToString:@"timeupdate"])
+            if ([eventName isEqualToString:@"apiready"]) {
+                self._playerReady = YES;
+                if (![self._aVideoToLoad isEqualToString:@""])
+                {
+                    [self api:@"load" arg:self._aVideoToLoad];
+                }
+            }
+            else if ([eventName isEqualToString:@"timeupdate"])
             {
                 [self willChangeValueForKey:@"currentTime"];
                 _currentTime = [data[@"time"] floatValue];
@@ -291,9 +301,13 @@
         NSLog(@"Called DMPlayerViewController load: with a nil video id");
         return;
     }
-    if (self._inited)
+    if (self._inited && self._playerReady)
     {
         [self api:@"load" arg:aVideo];
+    }
+    if (self._inited)
+    {
+        self._aVideoToLoad = aVideo;
     }
     else
     {
