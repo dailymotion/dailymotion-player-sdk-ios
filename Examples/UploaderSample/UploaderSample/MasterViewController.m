@@ -93,7 +93,7 @@
 - (void)insertVideo:(id)sender
 {
 #if TARGET_IPHONE_SIMULATOR
-    [UIAlertView showAlertViewWithTitle:@"Simulator Not Support"
+    [DMAlertView showAlertViewWithTitle:@"Simulator Not Support"
                                 message:@"Video capture isn't supported from the simulator"
                       cancelButtonTitle:@"Dismiss"
                       otherButtonTitles:nil
@@ -295,7 +295,7 @@
     {
         if (error)
         {
-            [UIAlertView showAlertViewWithTitle:@"Error"
+            [DMAlertView showAlertViewWithTitle:@"Error"
                                         message:error.localizedDescription
                               cancelButtonTitle:@"Dismiss"
                               otherButtonTitles:nil
