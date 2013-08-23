@@ -7,7 +7,6 @@
 //
 
 #import "DMNetworking.h"
-#import "DMUDID.h"
 #import "DMSubscriptingSupport.h"
 
 NSUInteger totalRequestCount;
@@ -107,8 +106,12 @@ NSUInteger totalRequestCount;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     [request setHTTPMethod:method];
     [request setAllHTTPHeaderFields:headers];
-    [request addValue:[DMUDID deviceIdentifier] forHTTPHeaderField:@"X-DeviceId"];
     [request setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
+    if (self.deviceIdentifier)
+    {
+        [request addValue:self.deviceIdentifier forHTTPHeaderField:@"X-DeviceId"];
+    }
+
     if (self.timeout)
     {
         [request setTimeoutInterval:self.timeout];
@@ -166,6 +169,27 @@ NSUInteger totalRequestCount;
     operation.completionHandler = handler;
     [self._queue addOperation:operation];
     return operation;
+}
+
+- (NSString *)deviceIdentifier
+{
+    static NSString *deviceIdentifier;
+    static BOOL deviceIdentifierInited;
+
+    if (!deviceIdentifierInited)
+    {
+        if (![UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)])
+        {
+            deviceIdentifierInited = YES;
+        }
+        if (UIDevice.currentDevice.identifierForVendor)
+        {
+            deviceIdentifier = UIDevice.currentDevice.identifierForVendor.UUIDString;
+            deviceIdentifierInited = YES;
+        }
+    }
+
+    return deviceIdentifier;
 }
 
 - (NSString *)userAgent
