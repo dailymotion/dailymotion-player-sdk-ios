@@ -47,7 +47,6 @@
         _paused = true;
         _fullscreen = false;
         _webBaseURLString = @"http://www.dailymotion.com";
-        [self initPlayer];
     }
     return self;
 }
@@ -57,6 +56,7 @@
     if ((self = [self init]))
     {
         __params = params;
+        [self initPlayer];
     }
     return self;
 }
