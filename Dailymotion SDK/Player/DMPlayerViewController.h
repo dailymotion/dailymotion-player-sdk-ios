@@ -61,7 +61,6 @@
  */
 - (id)initWithVideo:(NSString *)videoId params:(NSDictionary *)params;
 
-
 /**
  * @name Player Properties
  */

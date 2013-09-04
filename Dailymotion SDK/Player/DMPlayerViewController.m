@@ -20,6 +20,8 @@
 @property (nonatomic, readwrite) BOOL ended;
 @property (nonatomic, readwrite) NSError *error;
 @property (nonatomic, assign) BOOL _inited;
+@property (nonatomic, assign) BOOL _playerReady;
+@property (nonatomic, assign) NSString *_aVideoToLoad;
 @property (nonatomic, strong) NSDictionary *_params;
 
 @end
@@ -54,6 +56,7 @@
     if ((self = [self init]))
     {
         __params = params;
+        [self initPlayer];
     }
     return self;
 }
@@ -72,10 +75,11 @@
     return [self initWithVideo:aVideo params:nil];
 }
 
-- (void)initPlayerWithVideo:(NSString *)video
+- (void)initPlayerWithBaseURL:(NSString *) url
 {
     if (self._inited) return;
     self._inited = YES;
+    self._aVideoToLoad = @"";
 
     UIWebView *webview = [[UIWebView alloc] init];
     webview.delegate = self;
@@ -109,8 +113,7 @@
         }
     }
 
-
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
+    NSMutableString *buildUrl = [NSMutableString stringWithFormat:@"%@?api=location", url];
     for (NSString *param in [self._params keyEnumerator])
     {
         id value = self._params[param];
@@ -118,11 +121,23 @@
         {
             value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         }
-        [url appendFormat:@"&%@=%@", param, value];
+        [buildUrl appendFormat:@"&%@=%@", param, value];
     }
-    [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
-                  
+    [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:buildUrl]]];
+
     self.view = webview;
+}
+
+- (void)initPlayer
+{
+    NSString * url = [NSString stringWithFormat:@"%@/embed/", self.webBaseURLString];
+    [self initPlayerWithBaseURL:url];
+}
+
+- (void)initPlayerWithVideo:(NSString *)video
+{
+    NSString * url = [NSString stringWithFormat:@"%@/embed/video/%@", self.webBaseURLString, video];
+    [self initPlayerWithBaseURL:url];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
@@ -159,7 +174,14 @@
 
         if (eventName.length)
         {
-            if ([eventName isEqualToString:@"timeupdate"])
+            if ([eventName isEqualToString:@"apiready"]) {
+                self._playerReady = YES;
+                if (![self._aVideoToLoad isEqualToString:@""])
+                {
+                    [self api:@"load" arg:self._aVideoToLoad];
+                }
+            }
+            else if ([eventName isEqualToString:@"timeupdate"])
             {
                 [self willChangeValueForKey:@"currentTime"];
                 _currentTime = [data[@"time"] floatValue];
@@ -227,7 +249,7 @@
 
         return NO;
     }
-    else if ([request.URL.path hasPrefix:@"/embed/video/"])
+    else if ([request.URL.path hasPrefix:@"/embed"])
     {
         return YES;
     }
@@ -279,9 +301,13 @@
         NSLog(@"Called DMPlayerViewController load: with a nil video id");
         return;
     }
-    if (self._inited)
+    if (self._inited && self._playerReady)
     {
         [self api:@"load" arg:aVideo];
+    }
+    if (self._inited)
+    {
+        self._aVideoToLoad = aVideo;
     }
     else
     {
@@ -292,7 +318,7 @@
 
 - (void)api:(NSString *)method arg:(NSString *)arg
 {
-    if (!self._inited) return;
+    if (!self._playerReady) return;
     if (!method) return;
     UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];
