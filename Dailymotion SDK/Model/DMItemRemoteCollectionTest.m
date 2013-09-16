@@ -10,7 +10,6 @@
 #import "DMTestUtils.h"
 #import "DMItemRemoteCollection.h"
 #import "DailymotionTestConfig.h"
-#import "DMSubscriptingSupport.h"
 
 @interface DMItemRemoteCollection (Private)
 

@@ -9,7 +9,6 @@
 #import "DMAPITest.h"
 #import "DMTestUtils.h"
 #import "DailymotionTestConfig.h"
-#import "DMSubscriptingSupport.h"
 
 @implementation NSURLRequest (IgnoreSSL)
 

@@ -7,7 +7,6 @@
 //
 
 #import "DMItemPickerLabel.h"
-#import "DMSubscriptingSupport.h"
 
 @interface DMItemPickerLabel ()
 

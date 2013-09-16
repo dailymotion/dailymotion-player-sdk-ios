@@ -8,7 +8,6 @@
 
 #import "DMItemTableViewController.h"
 #import "DMAlert.h"
-#import "DMItemRemoteCollection.h"
 
 @interface DMItemTableViewController ()
 

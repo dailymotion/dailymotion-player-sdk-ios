@@ -9,7 +9,6 @@
 #import "DMItem.h"
 #import "DMAdditions.h"
 #import "DMItemCollection.h"
-#import "DMSubscriptingSupport.h"
 
 @interface DMItemOperation (Private)
 
