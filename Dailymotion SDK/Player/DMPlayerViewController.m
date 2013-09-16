@@ -7,7 +7,6 @@
 //
 
 #import "DMPlayerViewController.h"
-#import "DMSubscriptingSupport.h"
 #import "DMAlert.h"
 
 @interface DMPlayerViewController ()

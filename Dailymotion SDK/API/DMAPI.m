@@ -7,9 +7,7 @@
 //
 
 #import "DMAPI.h"
-#import "DMNetworking.h"
 #import "DMRangeInputStream.h"
-#import "DMSubscriptingSupport.h"
 
 #ifdef __OBJC_GC__
 #error Dailymotion SDK does not support Objective-C Garbage Collection

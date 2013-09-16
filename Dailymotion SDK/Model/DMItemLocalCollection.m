@@ -7,7 +7,6 @@
 //
 
 #import "DMItemLocalCollection.h"
-#import "DMSubscriptingSupport.h"
 
 static DMItemOperation *fakeOperation()
 {

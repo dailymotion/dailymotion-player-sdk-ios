@@ -7,7 +7,6 @@
 //
 
 #import "DMItemTableViewCellDefaultCell.h"
-#import "DMSubscriptingSupport.h"
 
 static UIImage *placeHolderImage;
 

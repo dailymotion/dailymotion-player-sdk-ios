@@ -8,11 +8,8 @@
 
 #import "DMItemTableViewDataSource.h"
 #import "DMItemDataSourceItem.h"
-#import "DMItemLocalCollection.h"
 #import "DMItemRemoteCollection.h"
-#import "DMSubscriptingSupport.h"
 #import "objc/runtime.h"
-#import "objc/message.h"
 
 static char operationKey;
 

@@ -10,8 +10,6 @@
 #import "DMAPI.h"
 #import "DMAdditions.h"
 #import "DMQueryString.h"
-#import "DMSubscriptingSupport.h"
-#import "DMAPIArchiverDelegate.h"
 
 static NSString *const DMEndOfList = @"DMEndOfList";
 

@@ -7,7 +7,6 @@
 //
 
 #import "DMAPIError.h"
-#import "DMSubscriptingSupport.h"
 
 NSString * const DailymotionTransportErrorDomain = @"DailymotionTransportErrorDomain";
 NSString * const DailymotionAuthErrorDomain = @"DailymotionAuthErrorDomain";

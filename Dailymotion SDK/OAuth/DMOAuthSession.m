@@ -7,7 +7,6 @@
 //
 
 #import "DMOAuthSession.h"
-#import "DMSubscriptingSupport.h"
 
 #define DMISSET(dict, key) dict[key] && ![dict[key] isKindOfClass:[NSNull class]] && ![dict[key] isEqual:@""]
 

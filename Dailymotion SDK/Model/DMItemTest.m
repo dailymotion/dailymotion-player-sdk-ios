@@ -10,7 +10,6 @@
 #import "DMTestUtils.h"
 #import "DMItem.h"
 #import "DailymotionTestConfig.h"
-#import "DMSubscriptingSupport.h"
 
 @implementation DMItemTest
 

@@ -7,7 +7,6 @@
 //
 
 #import "DMQueryString.h"
-#import "DMSubscriptingSupport.h"
 
 @implementation NSString (DMQueryString)
 
