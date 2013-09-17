@@ -223,8 +223,10 @@
  * @param params A dictionary containing `player parameters <http://www.dailymotion.com/doc/api/player.html#player-params>`_
  *               that can be used to customize the player.
  */
-- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
-- (DMPlayerViewController *)player:(NSString *)video;
+- (DMPlayerViewController *)playerWithVideo:(NSString *)video params:(NSDictionary *)params;
+- (DMPlayerViewController *)playerWithVideo:(NSString *)video;
+- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params __attribute__((deprecated));
+- (DMPlayerViewController *)player:(NSString *)video __attribute__((deprecated));
 #endif
 
 /**

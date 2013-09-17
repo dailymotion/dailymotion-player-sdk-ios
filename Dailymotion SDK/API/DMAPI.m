@@ -798,15 +798,26 @@ static NSString *const kDMVersion = @"2.0";
 #pragma mark - Player
 
 #if TARGET_OS_IPHONE
-- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params
+- (DMPlayerViewController *)playerWithVideo:(NSString *)video params:(NSDictionary *)params
 {
     return [[DMPlayerViewController alloc] initWithVideo:video params:params];
 }
 
-- (DMPlayerViewController *)player:(NSString *)video
+- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params __attribute__((deprecated))
+{
+    return [self playerWithVideo:(NSString *)video params:(NSDictionary *)params];
+}
+
+- (DMPlayerViewController *)playerWithVideo:(NSString *)video
 {
     return [[DMPlayerViewController alloc] initWithVideo:video];
 }
+
+- (DMPlayerViewController *)player:(NSString *)video __attribute__((deprecated))
+{
+    return [self playerWithVideo:(NSString *)video];
+}
+
 #endif
 
 #pragma mark - Events
