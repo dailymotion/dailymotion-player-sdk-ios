@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "DMNetRequestOperation.h"
 
-@class DMNetworkingShowstopperOperation;
-
 /**
  * Easier to use interface on tope of NSURLConnection using NSOperation to handle maximum settable
  * maximum concurrent connection limit.
