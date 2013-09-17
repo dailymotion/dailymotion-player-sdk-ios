@@ -49,7 +49,7 @@
 
 - (void)setDelegate:(id<NSStreamDelegate>)aDelegate
 {
-    if (aDelegate == nil)
+    if (!aDelegate)
     {
 		delegate = self;
 	}
