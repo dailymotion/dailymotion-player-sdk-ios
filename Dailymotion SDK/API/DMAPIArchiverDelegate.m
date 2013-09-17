@@ -37,7 +37,8 @@
 
 - (id)initWithAPI:(DMAPI *)api
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _api = api;
     }

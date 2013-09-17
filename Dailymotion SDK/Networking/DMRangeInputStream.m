@@ -30,7 +30,8 @@
 
 - (id)initWithFileAtPath:(NSString *)path withRange:(NSRange)range
 {
-    if ((self = [self init]))
+    self = [self init];
+    if (self)
     {
         __parentStream = [[NSInputStream alloc] initWithFileAtPath:path];
         __parentStream.delegate = self;

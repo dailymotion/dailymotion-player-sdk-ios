@@ -28,7 +28,8 @@ static char operationKey;
     NSParameterAssert(itemCollection != nil);
     NSParameterAssert(createRowViewBlock != nil);
 
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         __itemCollection = itemCollection;
         __createRowViewBlock = createRowViewBlock;

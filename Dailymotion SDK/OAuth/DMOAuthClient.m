@@ -56,7 +56,8 @@ static char callbackKey;
 
 - (id)init
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _oAuthAuthorizationEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"];
         _oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];

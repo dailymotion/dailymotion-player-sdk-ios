@@ -18,7 +18,8 @@
 
 - (id)init
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _cancelBlock = ^{}; // no-op by default
         _isCancelled = NO;

@@ -31,7 +31,8 @@ NSUInteger totalRequestCount;
 
 - (id)init
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         __queue = [[NSOperationQueue alloc] init];
         __queue.name = @"DMNetworking Queue";

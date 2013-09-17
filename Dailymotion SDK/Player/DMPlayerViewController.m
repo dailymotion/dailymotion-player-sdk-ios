@@ -28,7 +28,8 @@
 
 - (id)init
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         __params = @{};
 
@@ -50,7 +51,8 @@
 
 - (id)initWithParams:(NSDictionary *)params
 {
-    if ((self = [self init]))
+    self = [self init];
+    if (self)
     {
         __params = params;
     }
@@ -59,7 +61,8 @@
 
 - (id)initWithVideo:(NSString *)video params:(NSDictionary *)params
 {
-    if ((self = [self initWithParams:params]))
+    self = [self initWithParams:params];
+    if (self)
     {
         [self load:video];
     }

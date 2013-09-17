@@ -25,7 +25,8 @@
 
 - (id)initWithRequest:(NSURLRequest *)request
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         __request = request;
         __executing = NO;
