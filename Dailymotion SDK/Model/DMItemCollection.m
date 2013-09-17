@@ -110,7 +110,8 @@
     NSAssert(type != nil, @"The type cannot be nil");
     NSAssert(api != nil, @"The api cannot be nil");
 
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _type = type;
         _api = api;
@@ -125,7 +126,8 @@
     NSString *type = [coder decodeObjectForKey:@"type"];
     DMAPI *api = [coder decodeObjectForKey:@"api"];
 
-    if ((self = [self initWithType:type api:api]))
+    self = [self initWithType:type api:api];
+    if (self)
     {
         _currentEstimatedTotalItemsCount = [coder decodeIntegerForKey:@"currentEstimatedTotalItemsCount"];
         _itemsCount = [coder decodeIntegerForKey:@"itemsCount"];

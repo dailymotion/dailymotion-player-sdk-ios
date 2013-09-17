@@ -31,7 +31,8 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 
 - (id)initWithCacheInfo:(NSDictionary *)cacheInfo fromAPI:(DMAPI *)api
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _date = [NSDate date];
         _namespace = cacheInfo[@"namespace"];
@@ -83,7 +84,8 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
     NSDictionary *cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
     DMAPI *api = [coder decodeObjectForKey:@"_api"];
 
-    if ((self = [self initWithCacheInfo:cacheInfo fromAPI:api]))
+    self = [self initWithCacheInfo:cacheInfo fromAPI:api];
+    if (self)
     {
         _date = [coder decodeObjectForKey:@"date"];
         _valid = [coder decodeBoolForKey:@"valid"];

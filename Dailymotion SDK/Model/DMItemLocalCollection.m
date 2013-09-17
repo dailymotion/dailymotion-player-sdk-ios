@@ -36,7 +36,8 @@ static DMItemOperation *fakeOperation()
 
 - (id)initWithType:(NSString *)type withItemIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
 {
-    if ((self = [self initWithType:type api:api]))
+    self = [self initWithType:type api:api];
+    if (self)
     {
         __items = NSMutableOrderedSet.orderedSet;
         for (NSString *itemId in ids)
@@ -53,7 +54,8 @@ static DMItemOperation *fakeOperation()
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    if ((self = [super initWithCoder:coder]))
+    self = [super initWithCoder:coder];
+    if (self)
     {
         __items = [[coder decodeObjectForKey:@"_items"] mutableCopy];
         _countLimit = [coder decodeIntegerForKey:@"countLimit"];

@@ -133,7 +133,7 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 - (DMReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref
 {
     self = [super init];
-    if (self != nil)
+    if (self = [super init])
     {
         self.reachableOnWWAN = YES;
         self._reachabilityRef = ref;

@@ -27,7 +27,8 @@
 
 - (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:(NSDictionary *)headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))handler
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _URL = URL;
         _method = method;

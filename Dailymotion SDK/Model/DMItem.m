@@ -55,7 +55,8 @@
     NSParameterAssert([itemId isKindOfClass:NSString.class]);
     NSParameterAssert([api isKindOfClass:DMAPI.class]);
 
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         _type = type;
         _itemId = itemId;
@@ -82,7 +83,8 @@
     NSString *itemId = [coder decodeObjectForKey:@"itemId"];
     DMAPI *api = [coder decodeObjectForKey:@"api"];
 
-    if ((self = [self initWithType:type forId:itemId fromAPI:api]))
+    self = [self initWithType:type forId:itemId fromAPI:api];
+    if (self)
     {
         _cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
         __fieldsCache = [coder decodeObjectForKey:@"_fieldsCache"];

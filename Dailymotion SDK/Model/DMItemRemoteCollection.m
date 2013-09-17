@@ -51,7 +51,8 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (id)initWithType:(NSString *)type params:(NSDictionary *)params path:(NSString *)path fromAPI:(DMAPI *)api
 {
-    if ((self = [super initWithType:type api:api]))
+    self = [super initWithType:type api:api];
+    if (self)
     {
         _pageSize = 25;
         _params = params;
@@ -68,7 +69,8 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    if ((self = [super initWithCoder:coder]))
+    self = [super initWithCoder:coder];
+    if (self)
     {
         _pageSize = 25;
         _params = [coder decodeObjectForKey:@"params"];

@@ -21,7 +21,8 @@
 
 - (id)init
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         // Create universally unique identifier
         CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
@@ -40,7 +41,8 @@
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    if ((self = [self init]))
+    self = [self init];
+    if (self)
     {
         _sessionId = [coder decodeObjectForKey:@"sessionId"];
         _localURL = [coder decodeObjectForKey:@"localURL"];

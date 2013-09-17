@@ -26,7 +26,8 @@ static char operationKey;
 
 - (id)init
 {
-    if ((self = [super init]))
+    self = [super init];
+    if (self)
     {
         self.autoReloadData = YES;
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
