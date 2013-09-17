@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum
+typedef NS_ENUM(NSInteger, DMDictionnaryOption)
 {
     DMDictionaryOptionFilterNullValues = 1
-} DMDictionnaryOption;
+} ;
 
 /**
  * Some useful additions to NSDictionary.

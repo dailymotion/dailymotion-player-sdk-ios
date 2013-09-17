@@ -37,12 +37,12 @@
 
 extern NSString *const DMReachabilityChangedNotification;
 
-typedef enum
+typedef NS_ENUM(NSInteger, DMNetworkStatus)
 {
-	DMNotReachable = 0,
-	DMReachableViaWiFi = 2,
-	DMReachableViaWWAN = 1
-} DMNetworkStatus;
+	DMNotReachable,
+	DMReachableViaWiFi,
+	DMReachableViaWWAN
+};
 
 @class DMReachability;
 

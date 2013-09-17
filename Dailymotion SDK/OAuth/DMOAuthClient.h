@@ -23,7 +23,7 @@
 /**
  * Test
  */
-typedef enum
+typedef NS_ENUM(NSInteger, DailymotionGrantType)
 {
     /**
      * Use this grant type to access the API anonymously.
@@ -49,7 +49,7 @@ typedef enum
      * store end-user credentials.
      */
     DailymotionGrantTypePassword
-} DailymotionGrantType;
+};
 
 @protocol DailymotionOAuthDelegate;
 
