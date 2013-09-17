@@ -26,7 +26,6 @@
 #define kDMHardMaxCallsPerRequest 10
 
 static NSString *const kDMVersion = @"2.0";
-static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr08hjRQlEyfsoNzvOwAsgV0C";
 
 @interface DMAPITransfer (Private)
 
@@ -54,7 +53,6 @@ static NSString *const kDMBoundary = @"eWExXwkiXfqlge7DizyGHc8iIxThEz4c1p8YB33Pr
 @implementation DMAPI
 {
     NSUInteger _maxConcurrency;
-    NSUInteger _maxChunkSize;
     NSUInteger _maxAggregatedCallCount;
     NSURL *_APIBaseURL;
 }
