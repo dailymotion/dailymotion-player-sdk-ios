@@ -49,6 +49,15 @@
     return api;
 }
 
+- (void)testEnv
+{
+    STAssertTrue(kDMAPIKey.length != 0, @"kDMAPIKey is missing");
+    STAssertTrue(kDMAPISecret.length != 0, @"kDMAPISecret is missing");
+    STAssertTrue(kDMUsername.length != 0, @"kDMUsername is missing");
+    STAssertTrue(kDMPassword.length != 0, @"kDMPassword is missing");
+    STAssertTrue(kDMTestFilePath.length != 0, @"kDMTestFilePath is missing");
+}
+
 - (void)testSingleCall
 {
     INIT(1)
@@ -156,6 +165,8 @@
 
 - (void)testGrantTypeClientCredentials
 {
+    requireAPIKey;
+
     INIT(1)
 
     DMAPI *api = self.api;
@@ -172,6 +183,8 @@
 
 - (void)testGrantTypeClientCredentialsRefreshToken
 {
+    requireAPIKey;
+
     INIT(1)
 
     DMAPI *api = self.api;
@@ -203,6 +216,8 @@
 
 - (void)testGrantTypeClientCredentialsRefreshWithNoRefreshToken
 {
+    requireAPIKey;
+
     INIT(1)
 
     DMAPI *api = self.api;
@@ -255,6 +270,8 @@
 
 - (void)testSessionChangeInvalidsCache
 {
+    requireAPIKey;
+
     INIT(1)
 
     DMAPI *api = self.api;
@@ -316,6 +333,8 @@
 
 - (void)testSessionStorage
 {
+    requireAPIKey;
+
     INIT(1)
 
     DMAPI *api = self.api;
@@ -361,6 +380,8 @@
 
 - (void)testUploadFile
 {
+    requireAPIKey;
+
     INIT(1)
 
     DMAPI *api = self.api;

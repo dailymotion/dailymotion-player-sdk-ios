@@ -28,3 +28,9 @@
     if (currentTotalRequestCount) {}; // prevent unused var warning
 
 #define networkRequestCount [DMNetworking totalRequestCount] - currentTotalRequestCount
+
+#define requireAPIKey \
+    if (!kDMAPIKey.length) \
+    {\
+         return; \
+    }
