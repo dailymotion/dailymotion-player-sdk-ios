@@ -37,10 +37,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 @end
 
 @interface DMItemRemoteCollection ()
-
+{
+    __strong NSString *_path;
+}
 @property (nonatomic, readwrite, copy) NSDictionary *params;
 @property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
-@property (nonatomic, strong) NSString *path;
 @property (nonatomic, assign) NSInteger total;
 @property (nonatomic, strong) NSMutableDictionary *runningRequests;
 @property (nonatomic, strong) NSMutableArray *listCache;
@@ -109,7 +110,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (NSString *)path
 {
-    return [self.path copy];
+    return [_path copy];
 }
 
 - (BOOL)isLocal
