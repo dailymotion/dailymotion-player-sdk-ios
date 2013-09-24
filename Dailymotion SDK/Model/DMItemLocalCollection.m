@@ -27,7 +27,7 @@ static DMItemOperation *fakeOperation()
 
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, readwrite, assign) NSInteger itemsCount;
-@property (nonatomic, readwrite, strong) NSMutableOrderedSet *privateItems;
+@property (nonatomic, strong) NSMutableOrderedSet *privateItems;
 
 @end
 
@@ -58,7 +58,7 @@ static DMItemOperation *fakeOperation()
     self = [super initWithCoder:coder];
     if (self)
     {
-        _privateItems = [[coder decodeObjectForKey:@"items"] mutableCopy];
+        _privateItems = [[coder decodeObjectForKey:@"_items"] mutableCopy];
         _countLimit = [coder decodeIntegerForKey:@"countLimit"];
         self.currentEstimatedTotalItemsCount = self.itemsCount = [_privateItems count];
     }
@@ -74,7 +74,7 @@ static DMItemOperation *fakeOperation()
 
 - (NSOrderedSet *)items
 {
-    return [NSOrderedSet orderedSetWithOrderedSet:self.privateItems];
+    return [NSOrderedSet orderedSetWithOrderedSet:_privateItems];
 }
 
 #pragma mark - Implementation
@@ -130,7 +130,7 @@ static DMItemOperation *fakeOperation()
         else
         {
             callback(nil, nil);
-        }                                                 
+        }
     }];
 }
 
