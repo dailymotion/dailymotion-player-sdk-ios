@@ -15,10 +15,10 @@ static char operationKey;
 
 @interface DMItemCollectionViewDataSource ()
 
-@property (nonatomic, assign) BOOL _reloading;
-@property (nonatomic, assign) BOOL _loaded;
-@property (nonatomic, strong) NSMutableArray *_operations;
-@property (nonatomic, weak) UICollectionView *_lastCollectionView;
+@property (nonatomic, assign) BOOL reloading;
+@property (nonatomic, assign) BOOL loaded;
+@property (nonatomic, strong) NSMutableArray *operations;
+@property (nonatomic, weak) UICollectionView *lastCollectionView;
 
 @end
 
@@ -45,12 +45,12 @@ static char operationKey;
 
 - (void)cancelAllOperations
 {
-    for (DMItemOperation *operation in self._operations)
+    for (DMItemOperation *operation in self.operations)
     {
         [operation removeObserver:self forKeyPath:@"isFinished"];
     }
-    [self._operations makeObjectsPerformSelector:@selector(cancel)];
-    [self._operations removeAllObjects];
+    [self.operations makeObjectsPerformSelector:@selector(cancel)];
+    [self.operations removeAllObjects];
 }
 
 - (void)setItemCollection:(DMItemCollection *)itemCollection
@@ -59,11 +59,11 @@ static char operationKey;
     {
         _itemCollection = itemCollection;
 
-        self._loaded = NO;
+        self.loaded = NO;
         if (_itemCollection.isLocal)
         {
             // Local connection doesn't need pre-loading of the list
-            self._loaded = YES;
+            self.loaded = YES;
             if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidFinishLoadingData:)])
             {
                 [self.delegate itemCollectionViewDataSourceDidFinishLoadingData:self];
@@ -80,7 +80,7 @@ static char operationKey;
         {
             dispatch_async(dispatch_get_main_queue(), ^
             {
-                [self._lastCollectionView reloadData];
+                [self.lastCollectionView reloadData];
             });
         }
     }
@@ -99,7 +99,7 @@ static char operationKey;
         return;
     }
 
-    self._reloading = YES;
+    self.reloading = YES;
     ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
     UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
     __weak DMItemCollectionViewDataSource *wself = self;
@@ -107,13 +107,13 @@ static char operationKey;
     {
         if (!wself) return;
         __strong DMItemCollectionViewDataSource *sself = wself;
-        sself._reloading = NO;
+        sself.reloading = NO;
         if (completionBlock) completionBlock();
     }];
 
     if (operation && !operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
     {
-        [self._operations addObject:operation];
+        [self.operations addObject:operation];
         [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
     }
 }
@@ -131,10 +131,10 @@ static char operationKey;
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    self._lastCollectionView = collectionView;
+    self.lastCollectionView = collectionView;
     BOOL networkLoadingWhileOffline = self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.itemCollection isKindOfClass:DMItemRemoteCollection.class];
 
-    if (!self._loaded && self.itemCollection && !networkLoadingWhileOffline)
+    if (!self.loaded && self.itemCollection && !networkLoadingWhileOffline)
     {
         UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
         NSAssert(cell, @"DMItemCollectionViewDataSource: You must set DMItemCollectionViewDataSource.cellClass to a child of UICollectionViewCell conforming to the DMItemDataSourceItem protocol");
@@ -149,7 +149,7 @@ static char operationKey;
             if (error)
             {
                 sself.lastError = error;
-                sself._loaded = NO;
+                sself.loaded = NO;
                 if ([sself.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didFailWithError:)])
                 {
                     [sself.delegate itemCollectionViewDataSource:sself didFailWithError:error];
@@ -165,15 +165,15 @@ static char operationKey;
                 {
                     [sself.delegate itemCollectionViewDataSource:sself didUpdateWithEstimatedTotalItemsCount:sself.itemCollection.currentEstimatedTotalItemsCount];
                 }
-                [sself._lastCollectionView reloadData];
+                [sself.lastCollectionView reloadData];
             }
         }];
         // Cleanup running operations
         [self cancelAllOperations];
-        self._operations = [NSMutableArray array];
+        self.operations = [NSMutableArray array];
         if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
         {
-            [self._operations addObject:operation];
+            [self.operations addObject:operation];
             [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
 
             // Only notify about loading if we have something to load on the network
@@ -183,14 +183,14 @@ static char operationKey;
             }
         }
 
-        self._loaded = YES;
+        self.loaded = YES;
     }
     return self.itemCollection.currentEstimatedTotalItemsCount;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    self._lastCollectionView = collectionView;
+    self.lastCollectionView = collectionView;
     __weak UICollectionViewCell <DMItemDataSourceItem> *cell = [collectionView dequeueReusableCellWithReuseIdentifier:self.cellIdentifier forIndexPath:indexPath];
     NSAssert([cell isKindOfClass:self.cellClass], @"The cellIdentifier must point to a reuseable cell nib pointing to the same class as defined in cellClass");
 
@@ -256,7 +256,7 @@ static char operationKey;
 
     if (operation && !operation.isFinished)
     {
-        [self._operations addObject:operation];
+        [self.operations addObject:operation];
         [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
         objc_setAssociatedObject(cell, &operationKey, operation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
@@ -271,15 +271,15 @@ static char operationKey;
     if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self.itemCollection) return;
-        if (!self._loaded) return;
-        if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
+        if (!self.loaded) return;
+        if (self.reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
         if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
         {
             [self.delegate itemCollectionViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
         if (self.autoReloadData)
         {
-            [self._lastCollectionView reloadData];
+            [self.lastCollectionView reloadData];
         }
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
@@ -303,7 +303,7 @@ static char operationKey;
                 {
                     [self.delegate itemCollectionViewDataSourceDidLeaveOfflineMode:self];
                 }
-                [self._lastCollectionView reloadData];
+                [self.lastCollectionView reloadData];
             }
             else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousReachabilityStatus != DMNotReachable)
             {
@@ -318,7 +318,7 @@ static char operationKey;
     {
         if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *)object).isFinished)
         {
-            [self._operations removeObject:object];
+            [self.operations removeObject:object];
             [object removeObserver:self forKeyPath:@"isFinished"];
         }
     }

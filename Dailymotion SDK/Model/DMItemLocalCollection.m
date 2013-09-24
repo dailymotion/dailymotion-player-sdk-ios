@@ -27,25 +27,26 @@ static DMItemOperation *fakeOperation()
 
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, readwrite, assign) NSInteger itemsCount;
-@property (nonatomic, strong) NSMutableOrderedSet *_items;
+@property (nonatomic, readwrite, strong) NSMutableOrderedSet *privateItems;
 
 @end
 
 
 @implementation DMItemLocalCollection
 
+
 - (id)initWithType:(NSString *)type withItemIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
 {
     self = [self initWithType:type api:api];
     if (self)
     {
-        __items = NSMutableOrderedSet.orderedSet;
+        _privateItems = [NSMutableOrderedSet orderedSet];
         for (NSString *itemId in ids)
         {
-            [__items addObject:[DMItem itemWithType:type forId:itemId fromAPI:api]];
+            [_privateItems addObject:[DMItem itemWithType:type forId:itemId fromAPI:api]];
         }
         _countLimit = countLimit;
-        self.currentEstimatedTotalItemsCount = self.itemsCount = __items.count;
+        self.currentEstimatedTotalItemsCount = self.itemsCount = _privateItems.count;
     }
     return self;
 }
@@ -57,9 +58,9 @@ static DMItemOperation *fakeOperation()
     self = [super initWithCoder:coder];
     if (self)
     {
-        __items = [[coder decodeObjectForKey:@"_items"] mutableCopy];
+        _privateItems = [[coder decodeObjectForKey:@"items"] mutableCopy];
         _countLimit = [coder decodeIntegerForKey:@"countLimit"];
-        self.currentEstimatedTotalItemsCount = self.itemsCount = __items.count;
+        self.currentEstimatedTotalItemsCount = self.itemsCount = _privateItems.count;
     }
     return self;
 }
@@ -67,20 +68,20 @@ static DMItemOperation *fakeOperation()
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [super encodeWithCoder:coder];
-    [coder encodeObject:__items forKey:@"_items"];
+    [coder encodeObject:_privateItems forKey:@"_items"];
     [coder encodeInteger:_countLimit forKey:@"countLimit"];
 }
 
 - (NSOrderedSet *)items
 {
-    return [NSOrderedSet orderedSetWithOrderedSet:self._items];
+    return [NSOrderedSet orderedSetWithOrderedSet:self.privateItems];
 }
 
 #pragma mark - Implementation
 
 - (DMItem *)itemWithId:(NSString *)itemId;
 {
-    for (DMItem *item in self._items)
+    for (DMItem *item in self.privateItems)
     {
         if ([item isKindOfClass:DMItem.class] && [item.itemId isEqualToString:itemId])
         {
@@ -98,9 +99,9 @@ static DMItemOperation *fakeOperation()
 
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
 {
-    if (index < [self._items count])
+    if (index < [self.privateItems count])
     {
-        return [(DMItem *)[self._items objectAtIndex:index] withFields:fields do:callback];
+        return [(DMItem *)[self.privateItems objectAtIndex:index] withFields:fields do:callback];
     }
     else
     {
@@ -122,9 +123,9 @@ static DMItemOperation *fakeOperation()
         {
             callback(nil, error);
         }
-        else if (index < [self._items count])
+        else if (index < [self.privateItems count])
         {
-            callback([self._items objectAtIndex:index], nil);
+            callback([self.privateItems objectAtIndex:index], nil);
         }
         else
         {
@@ -135,7 +136,7 @@ static DMItemOperation *fakeOperation()
 
 - (DMItemOperation *)itemBeforeItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
 {
-    NSInteger idx = [self._items indexOfObject:item];
+    NSInteger idx = [self.privateItems indexOfObject:item];
     if (idx != NSNotFound && idx > 0)
     {
         return [self itemAtIndex:idx - 1 withFields:fields done:callback];
@@ -154,7 +155,7 @@ static DMItemOperation *fakeOperation()
 
 - (DMItemOperation *)itemAfterItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
 {
-    NSInteger idx = [self._items indexOfObject:item];
+    NSInteger idx = [self.privateItems indexOfObject:item];
     if (idx != NSNotFound)
     {
         return [self itemAtIndex:idx + 1 withFields:fields done:callback];
@@ -177,7 +178,7 @@ static DMItemOperation *fakeOperation()
     finishedOperation.isFinished = YES;
     dispatch_async(dispatch_get_current_queue(), ^
     {
-        callback([self._items containsObject:item], nil);
+        callback([self.privateItems containsObject:item], nil);
     });
     return finishedOperation;
 }
@@ -194,15 +195,15 @@ static DMItemOperation *fakeOperation()
 
 - (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
 {
-    if (![self._items containsObject:item])
+    if (![self.privateItems containsObject:item])
     {
         [self checkItem:item];
-        [self._items insertObject:item atIndex:0];
-        if (self.countLimit != 0 && self._items.count > self.countLimit)
+        [self.privateItems insertObject:item atIndex:0];
+        if (self.countLimit != 0 && self.privateItems.count > self.countLimit)
         {
-            [self._items removeObjectsInRange:NSMakeRange(self.countLimit, self._items.count - self.countLimit)];
+            [self.privateItems removeObjectsInRange:NSMakeRange(self.countLimit, self.privateItems.count - self.countLimit)];
         }
-        self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
+        self.currentEstimatedTotalItemsCount = self.itemsCount = self.privateItems.count;
     }
 
     dispatch_async(dispatch_get_current_queue(), ^
@@ -215,8 +216,8 @@ static DMItemOperation *fakeOperation()
 - (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *))callback
 {
     [self checkItem:item];
-    [self._items removeObject:item];
-    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
+    [self.privateItems removeObject:item];
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self.privateItems.count;
 
     dispatch_async(dispatch_get_current_queue(), ^
     {
@@ -227,8 +228,8 @@ static DMItemOperation *fakeOperation()
 
 - (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback
 {
-    [self._items removeObjectAtIndex:index];
-    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
+    [self.privateItems removeObjectAtIndex:index];
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self.privateItems.count;
 
     dispatch_async(dispatch_get_current_queue(), ^
     {
@@ -239,8 +240,8 @@ static DMItemOperation *fakeOperation()
 
 - (void)clear
 {
-    [self._items removeAllObjects];
-    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count;
+    [self.privateItems removeAllObjects];
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self.privateItems.count;
 }
 
 - (BOOL)canReorder
@@ -250,8 +251,8 @@ static DMItemOperation *fakeOperation()
 
 - (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
 {
-    [self._items moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:toIndex];
-    self.currentEstimatedTotalItemsCount = self.itemsCount = self._items.count; // generate KVO notification to indicate the list changed
+    [self.privateItems moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:toIndex];
+    self.currentEstimatedTotalItemsCount = self.itemsCount = self.privateItems.count; // generate KVO notification to indicate the list changed
 
     dispatch_async(dispatch_get_current_queue(), ^
     {

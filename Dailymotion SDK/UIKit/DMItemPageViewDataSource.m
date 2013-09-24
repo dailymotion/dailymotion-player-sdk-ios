@@ -13,7 +13,7 @@ static char indexKey;
 
 @interface DMItemPageViewDataSource ()
 
-@property (nonatomic, strong) DMItemOperation *_operation;
+@property (nonatomic, strong) DMItemOperation *operation;
 
 @end
 
@@ -21,8 +21,8 @@ static char indexKey;
 
 - (UIViewController<DMItemDataSourceItem> *)viewControllerAtIndex:(NSUInteger)index
 {
-    [self._operation cancel];
-    self._operation = nil;
+    [self.operation cancel];
+    self.operation = nil;
 
     UIViewController<DMItemDataSourceItem> *viewController = self.createViewControllerBlock();
     NSAssert(viewController != nil, @"The createViewControllerBlock must return a valid view controller");
@@ -35,7 +35,7 @@ static char indexKey;
     }
 
     __weak DMItemPageViewDataSource *wself = self;
-    self._operation = [self.itemCollection withItemFields:viewController.fieldsNeeded atIndex:index do:^(NSDictionary *data, BOOL stalled, NSError *error)
+    self.operation = [self.itemCollection withItemFields:viewController.fieldsNeeded atIndex:index do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (!wself) return;
         __strong DMItemPageViewDataSource *sself = wself;

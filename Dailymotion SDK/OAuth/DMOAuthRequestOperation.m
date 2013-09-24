@@ -15,10 +15,10 @@
 @property (nonatomic, copy, readwrite) NSString *method;
 @property (nonatomic, strong, readwrite) NSDictionary *headers;
 @property (nonatomic, strong, readwrite) id payload;
-@property (nonatomic, strong) DMNetworking *_networkQueue;
-@property (nonatomic, strong) DMNetRequestOperation *_request;
-@property (nonatomic, assign) BOOL _executing;
-@property (nonatomic, assign) BOOL _finished;
+@property (nonatomic, strong) DMNetworking *networkQueue;
+@property (nonatomic, strong) DMNetRequestOperation *request;
+@property (nonatomic, assign) BOOL executing;
+@property (nonatomic, assign) BOOL finished;
 
 @end
 
@@ -35,21 +35,21 @@
         _headers = headers;
         _payload = payload;
         _completionHandler = handler;
-        __networkQueue = networkQueue;
-        __executing = NO;
-        __finished = NO;
+        _networkQueue = networkQueue;
+        _executing = NO;
+        _finished = NO;
     }
     return self;
 }
 
 - (void)setProgressHandler:(void (^)(NSInteger, NSInteger, NSInteger))progressHandler
 {
-    self._request.progressHandler = progressHandler;
+    self.request.progressHandler = progressHandler;
 }
 
 - (void (^)(NSInteger, NSInteger, NSInteger))progressHandler
 {
-    return self._request.progressHandler;
+    return self.request.progressHandler;
 }
 
 - (void)start
@@ -57,7 +57,7 @@
     if (self.isCancelled)
     {
         [self willChangeValueForKey:@"isFinished"];
-        self._finished = YES;
+        self.finished = YES;
         [self didChangeValueForKey:@"isFinished"];
         return;
     }
@@ -79,7 +79,7 @@
 
     [self willChangeValueForKey:@"isExecuting"];
     __weak DMOAuthRequestOperation *wself = self;
-    self._request = [self._networkQueue performRequestWithURL:self.URL
+    self.request = [self.networkQueue performRequestWithURL:self.URL
                                                        method:self.method
                                                       payload:self.payload
                                                       headers:headers
@@ -89,13 +89,13 @@
         if (!wself) return;
         __strong DMOAuthRequestOperation *sself = wself;
         [sself doneWithResponse:response data:responseData error:error];
-        sself._request = nil;
+        sself.request = nil;
     }];
     if (self.progressHandler)
     {
-        self._request.progressHandler = self.progressHandler;
+        self.request.progressHandler = self.progressHandler;
     }
-    self._executing = YES;
+    self.executing = YES;
     [self didChangeValueForKey:@"isExecuting"];
 }
 
@@ -115,23 +115,23 @@
     if (self.isFinished) return;
     [super cancel];
 
-    if (self._request)
+    if (self.request)
     {
-        [self._request cancel];
-        self._request = nil;
+        [self.request cancel];
+        self.request = nil;
 
         // As we cancelled the request, its callback won't be called and thus won't
         // maintain the isFinished and isExecuting flags.
         if (!self.isFinished)
         {
             [self willChangeValueForKey:@"isFinished"];
-            self._finished = YES;
+            self.finished = YES;
             [self didChangeValueForKey:@"isFinished"];
         }
         if (self.isExecuting)
         {
             [self willChangeValueForKey:@"isExecuting"];
-            self._executing = NO;
+            self.executing = NO;
             [self didChangeValueForKey:@"isExecuting"];
         }
     }
@@ -141,13 +141,13 @@
 {
     [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isExecuting"];
-    self._executing = NO;
+    self.executing = NO;
     if (self.completionHandler && !self.isCancelled)
     {
         self.completionHandler(response, responseData, error);
         self.completionHandler = nil;
     }
-    self._finished = YES;
+    self.finished = YES;
     [self didChangeValueForKey:@"isExecuting"];
     [self didChangeValueForKey:@"isFinished"];
 }
@@ -159,12 +159,12 @@
 
 - (BOOL)isExecuting
 {
-    return self._executing;
+    return self.executing;
 }
 
 - (BOOL)isFinished
 {
-    return self._finished;
+    return self.finished;
 }
 
 @end

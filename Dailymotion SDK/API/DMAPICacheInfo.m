@@ -19,7 +19,7 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 @property (nonatomic, readwrite) NSString *etag;
 @property (nonatomic, readwrite, assign) BOOL public;
 @property (nonatomic, readwrite, assign) NSTimeInterval maxAge;
-@property (nonatomic, weak) DMAPI *_api;
+@property (nonatomic, weak) DMAPI *api;
 
 @end
 
@@ -55,8 +55,6 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 
         if (!_public)
         {
-            __api = api;
-            [__api addObserver:self forKeyPath:@"oauth.session" options:0 context:NULL];
         }
     }
 
@@ -76,7 +74,7 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
     [coder encodeObject:_date forKey:@"date"];
     [coder encodeBool:_valid forKey:@"valid"];
     [coder encodeBool:_stalled forKey:@"stalled"];
-    [coder encodeObject:__api forKey:@"_api"];
+    [coder encodeObject:_api forKey:@"_api"];
 }
 
 - (id)initWithCoder:(NSCoder *)coder
@@ -100,7 +98,7 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 
     if (!self.public)
     {
-        [self._api removeObserver:self forKeyPath:@"oauth.session"];
+        [self.api removeObserver:self forKeyPath:@"oauth.session"];
     }
 }
 
@@ -126,7 +124,7 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     // Flush cache of private objects when session change
-    if (self._api == object && !self.public && [keyPath isEqualToString:@"oauth.session"])
+    if (self.api == object && !self.public && [keyPath isEqualToString:@"oauth.session"])
     {
         self.valid = NO;
     }

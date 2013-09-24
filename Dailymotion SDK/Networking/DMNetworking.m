@@ -12,7 +12,7 @@ NSUInteger totalRequestCount;
 
 @interface DMNetworking ()
 
-@property (nonatomic, strong) NSOperationQueue *_queue;
+@property (nonatomic, strong) NSOperationQueue *queue;
 
 @end
 
@@ -34,8 +34,8 @@ NSUInteger totalRequestCount;
     self = [super init];
     if (self)
     {
-        __queue = [[NSOperationQueue alloc] init];
-        __queue.name = @"DMNetworking Queue";
+        _queue = [[NSOperationQueue alloc] init];
+        _queue.name = @"DMNetworking Queue";
     }
     return self;
 }
@@ -47,17 +47,17 @@ NSUInteger totalRequestCount;
 
 - (void)setMaxConcurrency:(NSUInteger)maxConcurrency
 {
-    self._queue.maxConcurrentOperationCount = maxConcurrency;
+    self.queue.maxConcurrentOperationCount = maxConcurrency;
 }
 
 - (NSUInteger)maxConcurrency
 {
-    return self._queue.maxConcurrentOperationCount;
+    return self.queue.maxConcurrentOperationCount;
 }
 
 - (void)cancelAllConnections
 {
-    [self._queue cancelAllOperations];
+    [self.queue cancelAllOperations];
 }
 
 - (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler
@@ -167,7 +167,7 @@ NSUInteger totalRequestCount;
     totalRequestCount++;
     DMNetRequestOperation *operation = [[DMNetRequestOperation alloc] initWithRequest:request];
     operation.completionHandler = handler;
-    [self._queue addOperation:operation];
+    [self.queue addOperation:operation];
     return operation;
 }
 

@@ -16,8 +16,8 @@
     id <NSStreamDelegate> delegate;
 }
 
-@property (nonatomic, assign) NSRange _range;
-@property (nonatomic, strong) NSInputStream *_parentStream;
+@property (nonatomic, assign) NSRange range;
+@property (nonatomic, strong) NSInputStream *parentStream;
 
 @end
 
@@ -33,10 +33,10 @@
     self = [self init];
     if (self)
     {
-        __parentStream = [[NSInputStream alloc] initWithFileAtPath:path];
-        __parentStream.delegate = self;
+        _parentStream = [[NSInputStream alloc] initWithFileAtPath:path];
+        _parentStream.delegate = self;
         self.delegate = self;
-        __range = range;
+        _range = range;
         [self setProperty:@0 forKey:NSStreamFileCurrentOffsetKey];
     }
     return self;
@@ -61,41 +61,41 @@
 
 - (void)open
 {
-    [self._parentStream open];
+    [self.parentStream open];
 }
 
 - (void)close
 {
-    [self._parentStream close];
+    [self.parentStream close];
 }
 
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {
-    [self._parentStream scheduleInRunLoop:aRunLoop forMode:mode];
+    [self.parentStream scheduleInRunLoop:aRunLoop forMode:mode];
 }
 
 - (void)removeFromRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode
 {
-    [self._parentStream removeFromRunLoop:aRunLoop forMode:mode];
+    [self.parentStream removeFromRunLoop:aRunLoop forMode:mode];
 }
 
 - (BOOL)setProperty:(id)property forKey:(NSString *)key
 {
-    if (key == NSStreamFileCurrentOffsetKey && self._range.location > 0)
+    if (key == NSStreamFileCurrentOffsetKey && self.range.location > 0)
     {
-        property = @(((NSNumber *)property).intValue + self._range.location);
+        property = @(((NSNumber *)property).intValue + self.range.location);
     }
 
-    return [self._parentStream setProperty:property forKey:key];
+    return [self.parentStream setProperty:property forKey:key];
 }
 
 - (id)propertyForKey:(NSString *)key
 {
-    id property = [self._parentStream propertyForKey:key];
+    id property = [self.parentStream propertyForKey:key];
 
-    if (key == NSStreamFileCurrentOffsetKey && self._range.location > 0)
+    if (key == NSStreamFileCurrentOffsetKey && self.range.location > 0)
     {
-        property = @(((NSNumber *)property).intValue - self._range.location);
+        property = @(((NSNumber *)property).intValue - self.range.location);
     }
 
     return property;
@@ -103,7 +103,7 @@
 
 - (NSStreamStatus)streamStatus
 {
-    NSStreamStatus status = [self._parentStream streamStatus];
+    NSStreamStatus status = [self.parentStream streamStatus];
 
     if (status == NSStreamStatusOpen && ![self hasBytesAvailable])
     {
@@ -115,18 +115,18 @@
 
 - (NSError *)streamError
 {
-    return [self._parentStream streamError];
+    return [self.parentStream streamError];
 }
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len
 {
     NSInteger pos = ((NSNumber *)[self propertyForKey:NSStreamFileCurrentOffsetKey]).intValue;
-    if (pos + len > self._range.length)
+    if (pos + len > self.range.length)
     {
-        len = self._range.length - pos;
+        len = self.range.length - pos;
         if (len == 0) return 0;
     }
-    return [self._parentStream read:buffer maxLength:len];
+    return [self.parentStream read:buffer maxLength:len];
 }
 
 - (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len
@@ -136,20 +136,20 @@
 
 - (BOOL)hasBytesAvailable
 {
-    if (![self._parentStream hasBytesAvailable])
+    if (![self.parentStream hasBytesAvailable])
     {
         return NO;
     }
 
     NSUInteger pos = ((NSNumber *)[self propertyForKey:NSStreamFileCurrentOffsetKey]).unsignedIntegerValue;
-    return pos < self._range.length;
+    return pos < self.range.length;
 }
 
 #pragma mark - Undocumented CFReadStream bridged methods
 
 - (void)_scheduleInCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)mode
 {
-    CFReadStreamScheduleWithRunLoop((__bridge CFReadStreamRef)self._parentStream, runLoop, mode);
+    CFReadStreamScheduleWithRunLoop((__bridge CFReadStreamRef)self.parentStream, runLoop, mode);
 }
 
 - (BOOL)_setCFClientFlags:(CFOptionFlags)flags callback:(CFReadStreamClientCallBack)callback context:(CFStreamClientContext *)context
@@ -182,14 +182,14 @@
 
 - (void)_unscheduleFromCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)mode
 {
-	CFReadStreamUnscheduleFromRunLoop((__bridge CFReadStreamRef)self._parentStream, runLoop, mode);
+	CFReadStreamUnscheduleFromRunLoop((__bridge CFReadStreamRef)self.parentStream, runLoop, mode);
 }
 
 #pragma mark NSStreamDelegate methods
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)eventCode
 {
-	assert(stream == self._parentStream);
+	assert(stream == self.parentStream);
 
 	switch (eventCode)
     {

@@ -10,7 +10,7 @@
 
 @interface DMItemPickerLabel ()
 
-@property (nonatomic, strong) NSString *_fieldName;
+@property (nonatomic, strong) NSString *fieldName;
 
 @end
 
@@ -21,7 +21,7 @@
     self = [super init];
     if (self)
     {
-        __fieldName = fieldName;
+        _fieldName = fieldName;
         self.font = [UIFont boldSystemFontOfSize:20];
         self.backgroundColor = [UIColor clearColor];
         self.opaque = NO;
@@ -38,7 +38,7 @@
 
 - (NSArray *)fieldsNeeded
 {
-    return @[self._fieldName];
+    return @[self.fieldName];
 }
 
 - (void)prepareForLoading
@@ -48,7 +48,7 @@
 
 - (void)setFieldsData:(NSDictionary *)data
 {
-    self.text = data[self._fieldName];
+    self.text = data[self.fieldName];
 }
 
 @end

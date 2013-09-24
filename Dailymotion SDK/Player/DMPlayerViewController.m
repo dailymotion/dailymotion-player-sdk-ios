@@ -18,8 +18,8 @@
 @property (nonatomic, readwrite) BOOL paused;
 @property (nonatomic, readwrite) BOOL ended;
 @property (nonatomic, readwrite) NSError *error;
-@property (nonatomic, assign) BOOL _inited;
-@property (nonatomic, strong) NSDictionary *_params;
+@property (nonatomic, assign) BOOL inited;
+@property (nonatomic, strong) NSDictionary *params;
 
 @end
 
@@ -31,9 +31,9 @@
     self = [super init];
     if (self)
     {
-        __params = @{};
+        _params = @{};
 
-        _autoplay = [self._params[@"autoplay"] boolValue] == YES;
+        _autoplay = [self.params[@"autoplay"] boolValue] == YES;
         _currentTime = 0;
         _bufferedTime = 0;
         _duration = NAN;
@@ -54,7 +54,7 @@
     self = [self init];
     if (self)
     {
-        __params = params;
+        _params = params;
     }
     return self;
 }
@@ -76,8 +76,8 @@
 
 - (void)initPlayerWithVideo:(NSString *)video
 {
-    if (self._inited) return;
-    self._inited = YES;
+    if (self.inited) return;
+    self.inited = YES;
 
     UIWebView *webview = [[UIWebView alloc] init];
     webview.delegate = self;
@@ -92,7 +92,7 @@
         webview.mediaPlaybackRequiresUserAction = NO;
     }
 
-    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)] && self._params[@"webkit-playsinline"])
+    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)] && self.params[@"webkit-playsinline"])
     {
         webview.allowsInlineMediaPlayback = YES;
     }
@@ -113,9 +113,9 @@
 
 
     NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
-    for (NSString *param in [self._params keyEnumerator])
+    for (NSString *param in [self.params keyEnumerator])
     {
-        id value = self._params[param];
+        id value = self.params[param];
         if ([value isKindOfClass:NSString.class])
         {
             value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -281,7 +281,7 @@
         NSLog(@"Called DMPlayerViewController load: with a nil video id");
         return;
     }
-    if (self._inited)
+    if (self.inited)
     {
         [self api:@"load" arg:aVideo];
     }
@@ -294,7 +294,7 @@
 
 - (void)api:(NSString *)method arg:(NSString *)arg
 {
-    if (!self._inited) return;
+    if (!self.inited) return;
     if (!method) return;
     UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];

@@ -24,9 +24,9 @@
 
 @interface DMAPICallQueue ()
 
-@property (nonatomic, assign) NSUInteger _callNextId;
-@property (nonatomic, strong) NSMutableDictionary *_callQueue;
-@property (nonatomic, strong) NSMutableDictionary *_callHandlers;
+@property (nonatomic, assign) NSUInteger callNextId;
+@property (nonatomic, strong) NSMutableDictionary *callQueue;
+@property (nonatomic, strong) NSMutableDictionary *callHandlers;
 
 @end
 
@@ -38,16 +38,16 @@
     if (self)
     {
         _count = 0;
-        __callNextId = 0;
-        __callQueue = [[NSMutableDictionary alloc] init];
-        __callHandlers = [[NSMutableDictionary alloc] init];
+        _callNextId = 0;
+        _callQueue = [[NSMutableDictionary alloc] init];
+        _callHandlers = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    for (NSString *callId in [self._callQueue allKeys])
+    for (NSString *callId in [self.callQueue allKeys])
     {
         [self removeCallWithId:callId];
     }
@@ -59,7 +59,7 @@
 {
     @synchronized(self)
     {
-        NSString *callId = [NSString stringWithFormat:@"%d", self._callNextId++];
+        NSString *callId = [NSString stringWithFormat:@"%d", self.callNextId++];
         DMAPICall *call = [[DMAPICall alloc] init];
         call.callId = callId;
         call.path = path;
@@ -75,12 +75,12 @@
             call.callback = ^(id result, DMAPICacheInfo *cache, NSError *error) {/* noop */};
         }
 
-        self._callQueue[callId] = call;
-        self._callHandlers[callId] = [NSNull null];
+        self.callQueue[callId] = call;
+        self.callHandlers[callId] = [NSNull null];
 
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
 
-        self.count = [self._callQueue.allValues count];
+        self.count = [self.callQueue.allValues count];
         return call;
     }
 }
@@ -88,7 +88,7 @@
 
 - (DMAPICall *)callWithId:(NSString *)callId
 {
-    return self._callQueue[callId];
+    return self.callQueue[callId];
 }
 
 - (DMAPICall *)removeCallWithId:(NSString *)callId
@@ -97,9 +97,9 @@
     {
         DMAPICall *call = [self callWithId:callId];
         [call removeObserver:self forKeyPath:@"isCancelled"];
-        [self._callQueue removeObjectForKey:callId];
-        [self._callHandlers removeObjectForKey:callId];
-        self.count = [self._callQueue.allValues count];
+        [self.callQueue removeObjectForKey:callId];
+        [self.callHandlers removeObjectForKey:callId];
+        self.count = [self.callQueue.allValues count];
         return call;
     }
 }
@@ -108,12 +108,12 @@
 {
     @synchronized(self)
     {
-        if (self._callQueue[call.callId])
+        if (self.callQueue[call.callId])
         {
             [call removeObserver:self forKeyPath:@"isCancelled"];
-            [self._callQueue removeObjectForKey:call.callId];
-            [self._callHandlers removeObjectForKey:call.callId];
-            self.count = [self._callQueue.allValues count];
+            [self.callQueue removeObjectForKey:call.callId];
+            [self.callHandlers removeObjectForKey:call.callId];
+            self.count = [self.callQueue.allValues count];
             return YES;
         }
         else
@@ -128,9 +128,9 @@
 
 - (BOOL)handleCall:(DMAPICall *)call withHandler:(id)handler
 {
-    if ([self._callHandlers[call.callId] isEqual:[NSNull null]])
+    if ([self.callHandlers[call.callId] isEqual:[NSNull null]])
     {
-        self._callHandlers[call.callId] = handler;
+        self.callHandlers[call.callId] = handler;
         return YES;
     }
     else
@@ -141,25 +141,25 @@
 
 - (void)unhandleCall:(DMAPICall *)call
 {
-    self._callHandlers[call.callId] = [NSNull null];
+    self.callHandlers[call.callId] = [NSNull null];
 }
 
 - (id)handlerForCall:(DMAPICall *)call
 {
-    if ([self._callHandlers[call.callId] isEqual:[NSNull null]])
+    if ([self.callHandlers[call.callId] isEqual:[NSNull null]])
     {
         return nil;
     }
     else
     {
-        return self._callHandlers[call.callId];
+        return self.callHandlers[call.callId];
     }
 }
 
 - (NSSet *)handlersOfKind:(Class)kind
 {
     NSMutableSet *handlers = [NSMutableSet set];
-    [self._callHandlers.allValues enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+    [self.callHandlers.allValues enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
     {
         if ([obj isKindOfClass:kind])
         {
@@ -171,12 +171,12 @@
 
 - (BOOL)hasUnhandledCalls
 {
-    return [[self._callHandlers allKeysForObject:[NSNull null]] count] > 0;
+    return [[self.callHandlers allKeysForObject:[NSNull null]] count] > 0;
 }
 
 - (NSArray *)callsWithHandler:(id)handler
 {
-    return [self._callQueue objectsForExistingKeys:[self._callHandlers allKeysForObject:handler]];
+    return [self.callQueue objectsForExistingKeys:[self.callHandlers allKeysForObject:handler]];
 }
 
 - (NSArray *)callsWithNoHandler

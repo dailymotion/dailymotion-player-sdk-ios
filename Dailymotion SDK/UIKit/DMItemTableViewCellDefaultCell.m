@@ -12,7 +12,7 @@ static UIImage *placeHolderImage;
 
 @interface DMItemTableViewDefaultCell ()
 
-@property (nonatomic, copy) NSURL *_URL;
+@property (nonatomic, copy) NSURL *URL;
 
 @end
 
@@ -50,8 +50,8 @@ static UIImage *placeHolderImage;
     [self setNeedsLayout];
 
     __weak DMItemTableViewDefaultCell *wself = self;
-    self._URL = data[@"thumbnail_small_url"];
-    NSURL *localURL = [self._URL copy];
+    self.URL = data[@"thumbnail_small_url"];
+    NSURL *localURL = [self.URL copy];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
     {
         UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:localURL]];
@@ -63,7 +63,7 @@ static UIImage *placeHolderImage;
             // Only set downloaded image if still the current image for the cell.
             // Using cancellable operation for image downloading is highly recommended here.
             // See http://github.com/rs/SDWebImage for a library that handle this for you.
-            if ([localURL isEqual:sself._URL])
+            if ([localURL isEqual:sself.URL])
             {
                 sself.imageView.image = image;
                 [sself setNeedsLayout];

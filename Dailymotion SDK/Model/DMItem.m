@@ -23,8 +23,8 @@
 @property (nonatomic, readwrite, copy) NSString *itemId;
 @property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
 @property (nonatomic, readwrite, strong) DMAPI *api;
-@property (nonatomic, strong) NSString *_path;
-@property (nonatomic, strong) NSMutableDictionary *_fieldsCache;
+@property (nonatomic, strong) NSString *path;
+@property (nonatomic, strong) NSMutableDictionary *fieldsCache;
 
 @end
 
@@ -61,8 +61,8 @@
         _type = type;
         _itemId = itemId;
         _api = api;
-        __path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
-        __fieldsCache = [[NSMutableDictionary alloc] init];
+        _path = [NSString stringWithFormat:@"/%@/%@", type, itemId];
+        _fieldsCache = [[NSMutableDictionary alloc] init];
     }
 
     return self;
@@ -74,7 +74,7 @@
     [coder encodeObject:_itemId forKey:@"itemId"];
     [coder encodeObject:_cacheInfo forKey:@"cacheInfo"];
     [coder encodeObject:_api forKey:@"api"];
-    [coder encodeObject:__fieldsCache forKey:@"_fieldsCache"];
+    [coder encodeObject:_fieldsCache forKey:@"_fieldsCache"];
 }
 
 - (id)initWithCoder:(NSCoder *)coder
@@ -87,7 +87,7 @@
     if (self)
     {
         _cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
-        __fieldsCache = [coder decodeObjectForKey:@"_fieldsCache"];
+        _fieldsCache = [coder decodeObjectForKey:@"_fieldsCache"];
     }
 
     return self;
@@ -123,17 +123,17 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@(%@): %@", self.type, self.itemId, [self._fieldsCache description]];
+    return [NSString stringWithFormat:@"%@(%@): %@", self.type, self.itemId, [self.fieldsCache description]];
 }
 
 - (NSDictionary *)cachedFields
 {
-    return [NSDictionary dictionaryWithDictionary:self._fieldsCache];
+    return [NSDictionary dictionaryWithDictionary:self.fieldsCache];
 }
 
 - (void)loadInfo:(NSDictionary *)info withCacheInfo:(DMAPICacheInfo *)cacheInfo
 {
-    __block NSMutableDictionary *fieldsCache = self._fieldsCache;
+    __block NSMutableDictionary *fieldsCache = self.fieldsCache;
 
     [info enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
     {
@@ -145,7 +145,7 @@
 
 - (void)flushCache
 {
-    [self._fieldsCache removeAllObjects];
+    [self.fieldsCache removeAllObjects];
     self.cacheInfo = nil;
 }
 
@@ -157,7 +157,7 @@
     }
 
     fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
-    NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields];
+    NSDictionary *data = [self.fieldsCache dictionaryForKeys:fields];
     return [data count] == [fields count];
 }
 
@@ -170,7 +170,7 @@
 
     DMItemOperation *operation = [[DMItemOperation alloc] init];
     fields = [[NSSet setWithArray:fields] allObjects]; // Ensure unique fields
-    NSDictionary *data = [self._fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues];
+    NSDictionary *data = [self.fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues];
     BOOL allFieldsCached = [self areFieldsCached:fields];
     BOOL someFieldsCached = allFieldsCached || [data count] > 0;
     BOOL cacheStalled = self.cacheInfo ? self.cacheInfo.stalled : YES;
@@ -186,7 +186,7 @@
         BOOL conditionalRequest = allFieldsCached && cacheStalled;
 
         __weak DMItem *wself = self;
-        DMAPICall *apiCall = [self.api get:self._path
+        DMAPICall *apiCall = [self.api get:self.path
                                       args:@{@"fields": fields}
                                  cacheInfo:(conditionalRequest ? self.cacheInfo : nil)
                                   callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
@@ -209,7 +209,7 @@
             {
                 [result enumerateKeysAndObjectsUsingBlock:^(id key, id object, BOOL *stop)
                 {
-                    sself._fieldsCache[key] = object;
+                    sself.fieldsCache[key] = object;
                 }];
 
                 if (result[@"id"] && ![self.itemId isEqualToString:result[@"id"]])
@@ -218,7 +218,7 @@
                     sself.itemId = result[@"id"];
                 }
 
-                callback([sself._fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues], NO, nil);
+                callback([sself.fieldsCache dictionaryForKeys:fields options:DMDictionaryOptionFilterNullValues], NO, nil);
             }
 
             operation.isFinished = YES;
@@ -249,7 +249,7 @@
     [self loadInfo:data withCacheInfo:self.cacheInfo];
 
     __weak DMItem *wself = self;
-    DMAPICall *apiCall = [self.api post:self._path args:data callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
+    DMAPICall *apiCall = [self.api post:self.path args:data callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error)
     {
         if (!wself) return;
         __strong DMItem *sself = wself;
@@ -269,13 +269,13 @@
 
     NSString *itemId;
 
-    if (((itemId = self._fieldsCache[subItemField]) || (itemId = self._fieldsCache[[subItemField stringByAppendingString:@".id"]])) && [itemId isKindOfClass:NSString.class])
+    if (((itemId = self.fieldsCache[subItemField]) || (itemId = self.fieldsCache[[subItemField stringByAppendingString:@".id"]])) && [itemId isKindOfClass:NSString.class])
     {
         operation = DMItemOperation.new;
         operation.isFinished = YES;
         NSString *fieldPrefix = [subItemField stringByAppendingString:@"."];
         NSMutableDictionary *subItemCache = NSMutableDictionary.dictionary;
-        [self._fieldsCache enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
+        [self.fieldsCache enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
         {
             if ([key hasPrefix:fieldPrefix])
             {
@@ -283,7 +283,7 @@
             }
         }];
         DMItem *subItem = [DMItem itemWithType:type forId:itemId];
-        subItem._fieldsCache = subItemCache;
+        subItem.fieldsCache = subItemCache;
         callback(subItem, nil);
     }
     else

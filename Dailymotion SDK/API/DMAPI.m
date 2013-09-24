@@ -40,12 +40,12 @@ static NSString *const kDMVersion = @"2.0";
 @interface DMAPI ()
 
 @property (nonatomic, readwrite, assign) DMNetworkStatus currentReachabilityStatus;
-@property (nonatomic, strong) DMReachability *_reach;
-@property (nonatomic, strong) DMNetworking *_uploadNetworkQueue;
-@property (nonatomic, strong) DMAPICallQueue *_callQueue;
-@property (nonatomic, assign) BOOL _autoConcurrency;
-@property (nonatomic, assign) BOOL _autoChunkSize;
-@property (nonatomic, strong) NSMutableDictionary *_globalParameters;
+@property (nonatomic, strong) DMReachability *reach;
+@property (nonatomic, strong) DMNetworking *uploadNetworkQueue;
+@property (nonatomic, strong) DMAPICallQueue *callQueue;
+@property (nonatomic, assign) BOOL autoConcurrency;
+@property (nonatomic, assign) BOOL autoChunkSize;
+@property (nonatomic, strong) NSMutableDictionary *globalParameters;
 
 @end
 
@@ -76,18 +76,18 @@ static NSString *const kDMVersion = @"2.0";
                                                    object:nil];
 
         _APIBaseURL = [NSURL URLWithString:@"https://api.dailymotion.com"];
-        __autoChunkSize = YES;
+        _autoChunkSize = YES;
         _uploadChunkSize = 100000;
-        __autoConcurrency = YES;
+        _autoConcurrency = YES;
         _maxConcurrency = 2;
-        self._reach = [DMReachability reachabilityWithHostname:_APIBaseURL.host];
-        _currentReachabilityStatus = self._reach.currentReachabilityStatus;
-        [self._reach startNotifier];
-        __uploadNetworkQueue = [[DMNetworking alloc] init];
-        __uploadNetworkQueue.maxConcurrency = 1;
-        __uploadNetworkQueue.userAgent = self.userAgent;
-        __callQueue = [[DMAPICallQueue alloc] init];
-        [__callQueue addObserver:self forKeyPath:@"count" options:0 context:NULL];
+        self.reach = [DMReachability reachabilityWithHostname:_APIBaseURL.host];
+        _currentReachabilityStatus = self.reach.currentReachabilityStatus;
+        [self.reach startNotifier];
+        _uploadNetworkQueue = [[DMNetworking alloc] init];
+        _uploadNetworkQueue.maxConcurrency = 1;
+        _uploadNetworkQueue.userAgent = self.userAgent;
+        _callQueue = [[DMAPICallQueue alloc] init];
+        [_callQueue addObserver:self forKeyPath:@"count" options:0 context:NULL];
         _oauth = [[DMOAuthClient alloc] init];
         _oauth.networkQueue.userAgent = self.userAgent;
         _maxAggregatedCallCount = kDMHardMaxCallsPerRequest;
@@ -109,34 +109,34 @@ static NSString *const kDMVersion = @"2.0";
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSRunLoop mainRunLoop] cancelPerformSelectorsWithTarget:self];
-    [self._uploadNetworkQueue cancelAllConnections];
-    [__callQueue removeObserver:self forKeyPath:@"count"];
+    [self.uploadNetworkQueue cancelAllConnections];
+    [_callQueue removeObserver:self forKeyPath:@"count"];
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
     DMReachability *reach = notification.object;
-    if (self._reach != reach)
+    if (self.reach != reach)
     {
         return;
     }
 
-    switch (self._reach.currentReachabilityStatus)
+    switch (self.reach.currentReachabilityStatus)
     {
         case DMReachableViaWiFi:
 #ifdef DEBUG
             NSLog(@"Dailymotion API is reachable via Wifi");
 #endif
-            if (self._autoConcurrency) _maxConcurrency = 6;
-            if (self._autoChunkSize) _uploadChunkSize = 1000000;
+            if (self.autoConcurrency) _maxConcurrency = 6;
+            if (self.autoChunkSize) _uploadChunkSize = 1000000;
             break;
 
         case DMReachableViaWWAN:
 #ifdef DEBUG
             NSLog(@"Dailymotion API is reachable via cellular network");
 #endif
-            if (self._autoConcurrency) _maxConcurrency = 2;
-            if (self._autoChunkSize) _uploadChunkSize = 100000;
+            if (self.autoConcurrency) _maxConcurrency = 2;
+            if (self.autoChunkSize) _uploadChunkSize = 100000;
             break;
 
         case DMNotReachable:
@@ -146,7 +146,7 @@ static NSString *const kDMVersion = @"2.0";
             break;
     }
 
-    self.currentReachabilityStatus = self._reach.currentReachabilityStatus;
+    self.currentReachabilityStatus = self.reach.currentReachabilityStatus;
 }
 
 #pragma mark - API
@@ -155,12 +155,12 @@ static NSString *const kDMVersion = @"2.0";
 {
     @synchronized(self)
     {
-        while ([[self._callQueue handlersOfKind:[DMOAuthRequestOperation class]] count] < self.maxConcurrency && [self._callQueue hasUnhandledCalls])
+        while ([[self.callQueue handlersOfKind:[DMOAuthRequestOperation class]] count] < self.maxConcurrency && [self.callQueue hasUnhandledCalls])
         {
             NSMutableArray *calls = [[NSMutableArray alloc] init];
             // Process calls in FIFO order
             uint_fast8_t total = 0;
-            for (DMAPICall *call in [self._callQueue callsWithNoHandler])
+            for (DMAPICall *call in [self.callQueue callsWithNoHandler])
             {
                 NSAssert(call != nil, @"Call id from request pool is present in call queue");
                 if (![call isCancelled])
@@ -215,7 +215,7 @@ static NSString *const kDMVersion = @"2.0";
 
     for (DMAPICall *call in calls)
     {
-        NSAssert([self._callQueue handleCall:call withHandler:request], @"Call handled by request not already handled");
+        NSAssert([self.callQueue handleCall:call withHandler:request], @"Call handled by request not already handled");
     }
 }
 
@@ -264,7 +264,7 @@ static NSString *const kDMVersion = @"2.0";
                 // Reschedule calls
                 for (DMAPICall *call in calls)
                 {
-                    [self._callQueue unhandleCall:call];
+                    [self.callQueue unhandleCall:call];
                 }
                 [self scheduleDequeuing];
                 return;
@@ -330,7 +330,7 @@ static NSString *const kDMVersion = @"2.0";
                 return;
             }
 
-            DMAPICall *call = [self._callQueue removeCallWithId:callId];
+            DMAPICall *call = [self.callQueue removeCallWithId:callId];
             if (!call)
             {
                 NSLog(@"DMAPI BUG: API returned a result for an unknown call id: %@", callId);
@@ -387,7 +387,7 @@ static NSString *const kDMVersion = @"2.0";
         // Search for pending calls that wouldn't have been answered by this response and inform delegate(s) about the error
         for (DMAPICall *call in calls)
         {
-            if ([self._callQueue removeCall:call])
+            if ([self.callQueue removeCall:call])
             {
                 NSError *error = [DMAPIError errorWithMessage:@"Invalid API server response: no result."
                                                        domain:DailymotionApiErrorDomain
@@ -466,7 +466,7 @@ static NSString *const kDMVersion = @"2.0";
     {
         for (DMAPICall *call in calls)
         {
-            if ([self._callQueue removeCall:call])
+            if ([self.callQueue removeCall:call])
             {
                 call.callback(nil, nil, error);
             }
@@ -480,9 +480,9 @@ static NSString *const kDMVersion = @"2.0";
 {
     if (_APIBaseURL != APIBaseURL)
     {
-        [self._reach stopNotifier];
-        self._reach = [DMReachability reachabilityWithHostname:APIBaseURL.host];
-        [self._reach startNotifier];
+        [self.reach stopNotifier];
+        self.reach = [DMReachability reachabilityWithHostname:APIBaseURL.host];
+        [self.reach startNotifier];
 
         self.oauth.oAuthAuthorizationEndpointURL = [NSURL URLWithString:[APIBaseURL.absoluteString stringByAppendingString:@"/oauth/authorize"]];
         self.oauth.oAuthTokenEndpointURL = [NSURL URLWithString:[APIBaseURL.absoluteString stringByAppendingString:@"/oauth/token"]];
@@ -498,13 +498,13 @@ static NSString *const kDMVersion = @"2.0";
 - (void)setUploadChunkSize:(NSUInteger)uploadChunkSize
 {
     _uploadChunkSize = uploadChunkSize;
-    self._autoChunkSize = NO;
+    self.autoChunkSize = NO;
 }
 
 - (void)setMaxConcurrency:(NSUInteger)maxConcurrency
 {
     _maxConcurrency = maxConcurrency;
-    self._autoConcurrency = NO;
+    self.autoConcurrency = NO;
 }
 
 - (void)setMaxAggregatedCallCount:(NSUInteger)maxAggregatedCallCount
@@ -521,14 +521,14 @@ static NSString *const kDMVersion = @"2.0";
 
 - (void)setValue:(id)value forGlobalParameter:(NSString *)name
 {
-    if (!self._globalParameters)
+    if (!self.globalParameters)
     {
-        self._globalParameters = NSMutableDictionary.new;
+        self.globalParameters = NSMutableDictionary.new;
     }
 
     if (value)
     {
-        self._globalParameters[name] = value;
+        self.globalParameters[name] = value;
     }
     else
     {
@@ -538,19 +538,19 @@ static NSString *const kDMVersion = @"2.0";
 
 - (void)removeGlobalParameter:(NSString *)name
 {
-    if (self._globalParameters)
+    if (self.globalParameters)
     {
-        [self._globalParameters removeObjectForKey:name];
-        if (self._globalParameters.count == 0)
+        [self.globalParameters removeObjectForKey:name];
+        if (self.globalParameters.count == 0)
         {
-            self._globalParameters = nil;
+            self.globalParameters = nil;
         }
     }
 }
 
 - (id)valueForGlobalParameter:(NSString *)name
 {
-    return self._globalParameters[name];
+    return self.globalParameters[name];
 }
 
 - (DMAPICall *)get:(NSString *)path callback:(DMAPICallResultBlock)callback
@@ -586,14 +586,14 @@ static NSString *const kDMVersion = @"2.0";
 
 - (DMAPICall *)request:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback
 {
-    if (self._globalParameters)
+    if (self.globalParameters)
     {
-        NSMutableDictionary *mergedArgs = [self._globalParameters mutableCopy];
+        NSMutableDictionary *mergedArgs = [self.globalParameters mutableCopy];
         [mergedArgs addEntriesFromDictionary:args];
         args = mergedArgs;
     }
 
-    DMAPICall *call = [self._callQueue addCallWithPath:path method:method args:args cacheInfo:cacheInfo callback:callback];
+    DMAPICall *call = [self.callQueue addCallWithPath:path method:method args:args cacheInfo:cacheInfo callback:callback];
     return call;
 }
 
@@ -684,7 +684,7 @@ static NSString *const kDMVersion = @"2.0";
         @"Content-Disposition": [NSString stringWithFormat:@"attachment; filename=\"%@\"", uploadOperation.localURL.path.lastPathComponent]
     };
     DMNetRequestOperation *networkOperation;
-    networkOperation = [self._uploadNetworkQueue postURL:uploadOperation.remoteURL
+    networkOperation = [self.uploadNetworkQueue postURL:uploadOperation.remoteURL
                                                  payload:(NSInputStream *)filePartStream
                                                  headers:headers
                                        completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError)
@@ -839,7 +839,7 @@ static NSString *const kDMVersion = @"2.0";
 - (void)setTimeout:(NSTimeInterval)timeout
 {
     self.oauth.networkQueue.timeout = timeout;
-    self._uploadNetworkQueue.timeout = timeout;
+    self.uploadNetworkQueue.timeout = timeout;
 }
 
 - (NSTimeInterval)timeout

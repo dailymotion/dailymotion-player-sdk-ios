@@ -15,10 +15,10 @@ static char operationKey;
 
 @interface DMItemTableViewDataSource ()
 
-@property (nonatomic, assign) BOOL _reloading;
-@property (nonatomic, assign) BOOL _loaded;
-@property (nonatomic, strong) NSMutableArray *_operations;
-@property (nonatomic, weak) UITableView *_lastTableView;
+@property (nonatomic, assign) BOOL reloading;
+@property (nonatomic, assign) BOOL loaded;
+@property (nonatomic, strong) NSMutableArray *operations;
+@property (nonatomic, weak) UITableView *lastTableView;
 
 @end
 
@@ -45,12 +45,12 @@ static char operationKey;
 
 - (void)cancelAllOperations
 {
-    for (DMItemOperation *operation in self._operations)
+    for (DMItemOperation *operation in self.operations)
     {
         [operation removeObserver:self forKeyPath:@"isFinished"];
     }
-    [self._operations makeObjectsPerformSelector:@selector(cancel)];
-    [self._operations removeAllObjects];
+    [self.operations makeObjectsPerformSelector:@selector(cancel)];
+    [self.operations removeAllObjects];
 }
 
 - (void)setItemCollection:(DMItemCollection *)itemCollection
@@ -59,11 +59,11 @@ static char operationKey;
     {
         _itemCollection = itemCollection;
 
-        self._loaded = NO;
+        self.loaded = NO;
         if (self.itemCollection.isLocal)
         {
             // Local connection doesn't need pre-loading of the list
-            self._loaded = YES;
+            self.loaded = YES;
             if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidFinishLoadingData:)])
             {
                 [self.delegate itemTableViewDataSourceDidFinishLoadingData:self];
@@ -81,7 +81,7 @@ static char operationKey;
         {
             dispatch_async(dispatch_get_main_queue(), ^
             {
-                [self._lastTableView reloadData];
+                [self.lastTableView reloadData];
             });
         }
     }
@@ -100,21 +100,21 @@ static char operationKey;
         return;
     }
 
-    self._reloading = YES;
+    self.reloading = YES;
     ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
-    UITableViewCell <DMItemDataSourceItem> *cell = [self._lastTableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
+    UITableViewCell <DMItemDataSourceItem> *cell = [self.lastTableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
     __weak DMItemTableViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
     {
         if (!wself) return;
         __strong DMItemTableViewDataSource *sself = wself;
-        sself._reloading = NO;
+        sself.reloading = NO;
         if (completionBlock) completionBlock();
     }];
 
     if (operation && !operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
     {
-        [self._operations addObject:operation];
+        [self.operations addObject:operation];
         [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
     }
 }
@@ -132,10 +132,10 @@ static char operationKey;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    self._lastTableView = tableView;
+    self.lastTableView = tableView;
     BOOL networkLoadingWhileOffline = self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.itemCollection isKindOfClass:DMItemRemoteCollection.class];
 
-    if (!self._loaded && self.itemCollection && !networkLoadingWhileOffline)
+    if (!self.loaded && self.itemCollection && !networkLoadingWhileOffline)
     {
         UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
         NSAssert(cell, @"DMItemTableViewDataSource: You must set DMItemTableViewDataSource.cellIdentifier to a reusable cell identifier pointing to an instance of UITableViewCell conform to the DMItemDataSourceItem protocol");
@@ -150,7 +150,7 @@ static char operationKey;
             if (error)
             {
                 sself.lastError = error;
-                sself._loaded = NO;
+                sself.loaded = NO;
                 if ([sself.delegate respondsToSelector:@selector(itemTableViewDataSource:didFailWithError:)])
                 {
                     [sself.delegate itemTableViewDataSource:sself didFailWithError:error];
@@ -166,15 +166,15 @@ static char operationKey;
                 {
                     [sself.delegate itemTableViewDataSource:sself didUpdateWithEstimatedTotalItemsCount:sself.itemCollection.currentEstimatedTotalItemsCount];
                 }
-                [sself._lastTableView reloadData];
+                [sself.lastTableView reloadData];
             }
         }];
         // Cleanup running operations
         [self cancelAllOperations];
-        self._operations = [NSMutableArray array];
+        self.operations = [NSMutableArray array];
         if (!operation.isFinished) // The operation can be synchrone in case the itemCollection was already loaded or restored from disk
         {
-            [self._operations addObject:operation];
+            [self.operations addObject:operation];
             [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
 
             // Only notify about loading if we have something to load on the network
@@ -184,14 +184,14 @@ static char operationKey;
             }
         }
 
-        self._loaded = YES;
+        self.loaded = YES;
     }
     return self.itemCollection.currentEstimatedTotalItemsCount;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    self._lastTableView = tableView;
+    self.lastTableView = tableView;
     __weak UITableViewCell <DMItemDataSourceItem> *cell = [tableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
 
     DMItemOperation *previousOperation = objc_getAssociatedObject(cell, &operationKey);
@@ -258,7 +258,7 @@ static char operationKey;
 
     if (operation && !operation.isFinished)
     {
-        [self._operations addObject:operation];
+        [self.operations addObject:operation];
         [operation addObserver:self forKeyPath:@"isFinished" options:0 context:NULL];
         objc_setAssociatedObject(cell, &operationKey, operation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
@@ -345,15 +345,15 @@ static char operationKey;
     if ([keyPath isEqualToString:@"itemCollection.currentEstimatedTotalItemsCount"] && object == self)
     {
         if (!self.itemCollection) return;
-        if (!self._loaded) return;
-        if (self._reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
+        if (!self.loaded) return;
+        if (self.reloading && self.itemCollection.currentEstimatedTotalItemsCount == 0) return;
         if ([self.delegate respondsToSelector:@selector(itemTableViewDataSource:didUpdateWithEstimatedTotalItemsCount:)])
         {
             [self.delegate itemTableViewDataSource:self didUpdateWithEstimatedTotalItemsCount:self.itemCollection.currentEstimatedTotalItemsCount];
         }
         if (self.autoReloadData)
         {
-            [self._lastTableView reloadData];
+            [self.lastTableView reloadData];
         }
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self)
@@ -377,7 +377,7 @@ static char operationKey;
                 {
                     [self.delegate itemTableViewDataSourceDidLeaveOfflineMode:self];
                 }
-                [self._lastTableView reloadData];
+                [self.lastTableView reloadData];
             }
             else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousReachabilityStatus != DMNotReachable)
             {
@@ -392,7 +392,7 @@ static char operationKey;
     {
         if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *)object).isFinished)
         {
-            [self._operations removeObject:object];
+            [self.operations removeObject:object];
             [object removeObserver:self forKeyPath:@"isFinished"];
         }
     }

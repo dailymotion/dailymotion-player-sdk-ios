@@ -41,8 +41,8 @@ else\
 
 @property (nonatomic, strong) NSOperationQueue *requestQueue;
 @property (nonatomic, readwrite) DailymotionGrantType grantType;
-@property (nonatomic, assign) BOOL _sessionLoaded;
-@property (nonatomic, strong) NSDictionary *_grantInfo;
+@property (nonatomic, assign) BOOL sessionLoaded;
+@property (nonatomic, strong) NSDictionary *grantInfo;
 
 @end
 
@@ -64,7 +64,7 @@ static char callbackKey;
         _networkQueue = [[DMNetworking alloc] init];
         _requestQueue = [[NSOperationQueue alloc] init];
         _requestQueue.name = @"DMOauth Request Queue";
-        __sessionLoaded = NO;
+        _sessionLoaded = NO;
         _autoSaveSession = YES;
     }
     return self;
@@ -166,9 +166,9 @@ static char callbackKey;
         NSDictionary *payload =
         @{
             @"grant_type": @"refresh_token",
-            @"client_id": self._grantInfo[@"key"],
-            @"client_secret": self._grantInfo[@"secret"],
-            @"scope": self._grantInfo[@"scope"],
+            @"client_id": self.grantInfo[@"key"],
+            @"client_secret": self.grantInfo[@"secret"],
+            @"scope": self.grantInfo[@"scope"],
             @"refresh_token": self.session.refreshToken
         };
         [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
@@ -182,8 +182,8 @@ static char callbackKey;
     {
         // Perform authorization server request
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?response_type=code&client_id=%@&scope=%@&redirect_uri=%@",
-                                           [self.oAuthAuthorizationEndpointURL absoluteString], self._grantInfo[@"key"],
-                                           [self._grantInfo[@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                                           [self.oAuthAuthorizationEndpointURL absoluteString], self.grantInfo[@"key"],
+                                           [self.grantInfo[@"scope"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
                                            [kDMOAuthRedirectURI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
 
@@ -210,9 +210,9 @@ static char callbackKey;
             NSDictionary *payload =
             @{
                 @"grant_type": @"password",
-                @"client_id": self._grantInfo[@"key"],
-                @"client_secret": self._grantInfo[@"secret"],
-                @"scope": self._grantInfo[@"scope"],
+                @"client_id": self.grantInfo[@"key"],
+                @"client_secret": self.grantInfo[@"secret"],
+                @"scope": self.grantInfo[@"scope"],
                 @"username": username ? username : @"",
                 @"password": password ? password : @""
             };
@@ -232,9 +232,9 @@ static char callbackKey;
         NSDictionary *payload =
         @{
             @"grant_type": @"client_credentials",
-            @"client_id": self._grantInfo[@"key"],
-            @"client_secret": self._grantInfo[@"secret"],
-            @"scope": self._grantInfo[@"scope"]
+            @"client_id": self.grantInfo[@"key"],
+            @"client_secret": self.grantInfo[@"secret"],
+            @"scope": self.grantInfo[@"scope"]
         };
         [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error)
         {
@@ -348,8 +348,8 @@ static char callbackKey;
         NSDictionary *payload =
         @{
             @"grant_type": @"authorization_code",
-            @"client_id": self._grantInfo[@"key"],
-            @"client_secret": self._grantInfo[@"secret"],
+            @"client_id": self.grantInfo[@"key"],
+            @"client_secret": self.grantInfo[@"secret"],
             @"code": result[@"code"],
             @"redirect_uri": kDMOAuthRedirectURI
         };
@@ -405,7 +405,7 @@ static char callbackKey;
         }
 
         self.grantType = type;
-        self._grantInfo = info;
+        self.grantInfo = info;
         self.session = nil;
         self.requestQueue.suspended = NO;
     }
@@ -427,10 +427,10 @@ static char callbackKey;
 
 - (DMOAuthSession *)session
 {
-    if (!_session && !self._sessionLoaded)
+    if (!_session && !self.sessionLoaded)
     {
         [self setSession: [self readSession]];
-        self._sessionLoaded = YES; // If read session returns nil, prevent session from trying each time
+        self.sessionLoaded = YES; // If read session returns nil, prevent session from trying each time
     }
 
     return _session;
@@ -446,11 +446,11 @@ static char callbackKey;
 
 - (NSString *)sessionStoreKey
 {
-    if (self.grantType == DailymotionNoGrant || !self._grantInfo[@"hash"])
+    if (self.grantType == DailymotionNoGrant || !self.grantInfo[@"hash"])
     {
         return nil;
     }
-    return [NSString stringWithFormat:@"com.dailymotion.api.%@", self._grantInfo[@"hash"]];
+    return [NSString stringWithFormat:@"com.dailymotion.api.%@", self.grantInfo[@"hash"]];
 }
 
 - (void)storeSession
