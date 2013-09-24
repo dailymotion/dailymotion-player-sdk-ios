@@ -97,7 +97,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (NSString *)description
 {
-    if (self.params.count)
+    if ([self.params count])
     {
         return [self.path stringByAppendingFormat:@"?%@", [self.params stringAsQueryString]];
     }
@@ -142,11 +142,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     {
         item = [DMItem itemWithType:self.type forId:itemId fromAPI:self.api];
 
-        if (self.listCache.count > index)
+        if ([self.listCache count] > index)
         {
             self.listCache[index] = item;
         }
-        else if (self.listCache.count == index)
+        else if ([self.listCache count] == index)
         {
             [self.listCache addObject:item];
         }
@@ -317,7 +317,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                     [(NSMutableArray *)_requestInfo[@"operations"] removeObject:boperation];
                     NSMutableArray *callbacks = _requestInfo[@"callbacks"];
                     [callbacks removeObject:bcallback];
-                    if (callbacks.count == 0)
+                    if ([callbacks count] == 0)
                     {
                         [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
                         ((void (^)())_requestInfo[@"cleanupBlock"])();
@@ -604,7 +604,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
     DMAPICall *apiCall = [self.api get:[self.path stringByAppendingFormat:@"/%@", item.itemId] args:@{@"fields": @[@"id"]} callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error)
     {
         operation.isFinished = YES;
-        callback(!error && [result[@"list"] isKindOfClass:NSArray.class] && ((NSArray *)result[@"list"]).count == 1, error);
+        callback(!error && [result[@"list"] isKindOfClass:NSArray.class] && [((NSArray *)result[@"list"]) count] == 1, error);
     }];
 
     operation.cancelBlock = ^
@@ -800,7 +800,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             [sself.listCache removeObjectAtIndex:fromIndex];
             [sself.listCache insertObject:obj atIndex:toIndex];
 
-            NSMutableArray *ids = [NSMutableArray arrayWithCapacity:items.count];
+            NSMutableArray *ids = [NSMutableArray arrayWithCapacity:[items count]];
             for (id item in sself.listCache)
             {
                 if (item == DMEndOfList) break;

@@ -238,7 +238,7 @@
 {
     DMItemOperation *operation = [[DMItemOperation alloc] init];
 
-    if (!data || data.count == 0)
+    if (!data || [data count] == 0)
     {
         operation.isFinished = YES;
         callback(nil);
