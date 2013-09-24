@@ -409,7 +409,7 @@ static NSString *const kDMVersion = @"2.0";
 {
     if ([result isKindOfClass:NSArray.class])
     {
-        NSMutableArray *list = [NSMutableArray arrayWithCapacity:[((NSArray *)result) count]];
+        NSMutableArray *list = [NSMutableArray arrayWithCapacity:[(NSArray *)result count]];
         for (id obj in result)
         {
             id parsedObj = [self parseResult:obj forKey:parentKey root:NO];
@@ -420,7 +420,7 @@ static NSString *const kDMVersion = @"2.0";
     }
     else if ([result isKindOfClass:NSDictionary.class])
     {
-        __block NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:[((NSDictionary *)result) count]];
+        __block NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:[(NSDictionary *)result count]];
         [(NSDictionary *)result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop)
         {
             id parsedObj = [self parseResult:obj forKey:key root:NO];
