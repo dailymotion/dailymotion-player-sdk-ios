@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, '5.0'
 
-  s.source       = { :git => "https://github.com/Pluto-tv/dailymotion-sdk-objc.git", :commit => "879f904e22b67f6b517ad575b2cbf13fab03ea9c" }
+  s.source       = { :git => "https://github.com/dailymotion/dailymotion-sdk-objc.git", :commit => "879f904e22b67f6b517ad575b2cbf13fab03ea9c" }
 
   s.source_files  = 'Dailymotion SDK'
 
