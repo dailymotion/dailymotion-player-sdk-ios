@@ -19,11 +19,16 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/dailymotion/dailymotion-sdk-objc.git", :commit => "879f904e22b67f6b517ad575b2cbf13fab03ea9c" }
 
-  s.source_files  = 'Dailymotion SDK'
+  s.source_files  = 'Dailymotion SDK/**/*.{h,m}'
+  s.exclude_files = 'Dailymotion SDK/**/*test*.{h,m}'
+
+  s.header_dir = 'DailymotionSDK'
 
   s.frameworks = 'Security', 'SystemConfiguration'
 
   s.requires_arc = true
+
+  s.prefix_header_contents = '#undef DEBUG'
 
   non_arc_files = 'DMAPIArchiverDelegate.m',
                   'DMAPICall.m',
