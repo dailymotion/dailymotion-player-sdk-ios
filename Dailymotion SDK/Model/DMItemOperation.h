@@ -18,14 +18,14 @@
  *
  * Only the owner of the operation should change this property.
  */
-@property (nonatomic, assign) BOOL isFinished;
+@property(nonatomic, assign) BOOL isFinished;
 
 /**
  * Defines if the operation has been cancelled.
  *
  * Only the owner of the operation should change this property.
  */
-@property (nonatomic, assign) BOOL isCancelled;
+@property(nonatomic, assign) BOOL isCancelled;
 
 /**
  * Cancels the operation.

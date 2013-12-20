@@ -13,15 +13,12 @@
 
 @implementation NSString (Plural)
 
-- (NSString *)stringByApplyingPluralForm
-{
+- (NSString *)stringByApplyingPluralForm {
     if (self.length == 0) return self;
-    if ([self characterAtIndex:self.length - 1] == 'y')
-    {
+    if ([self characterAtIndex:self.length - 1] == 'y') {
         return [[self substringToIndex:self.length - 1] stringByAppendingString:@"ies"];
     }
-    else
-    {
+    else {
         return [self stringByAppendingString:@"s"];
     }
 }
@@ -31,11 +28,11 @@
 
 @interface DMItemCollection ()
 
-@property (nonatomic, readwrite, copy) NSString *type;
-@property (nonatomic, readwrite, strong) DMAPI *api;
-@property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
-@property (nonatomic, readwrite, assign) NSInteger itemsCount;
-@property (nonatomic, readwrite, assign) BOOL isExplicit;
+@property(nonatomic, readwrite, copy) NSString *type;
+@property(nonatomic, readwrite, strong) DMAPI *api;
+@property(nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property(nonatomic, readwrite, assign) NSInteger itemsCount;
+@property(nonatomic, readwrite, assign) BOOL isExplicit;
 
 @end
 
@@ -43,59 +40,49 @@
 
 #pragma mark - Initializers
 
-+ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit
-{
++ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit {
     return [self itemLocalConnectionWithType:type countLimit:countLimit fromAPI:DMAPI.sharedAPI];
 }
 
-+ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
-{
-    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:nil countLimit:(NSUInteger)countLimit fromAPI:api];
++ (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api {
+    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:nil countLimit:(NSUInteger) countLimit fromAPI:api];
 }
 
-+ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit
-{
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit {
     return [self itemLocalConnectionWithType:type withIds:ids countLimit:countLimit fromAPI:DMAPI.sharedAPI];
 }
 
-+ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api
-{
-    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids countLimit:(NSUInteger)countLimit fromAPI:api];
++ (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api {
+    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids countLimit:(NSUInteger) countLimit fromAPI:api];
 }
 
-+ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params
-{
++ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params {
     return [self itemCollectionWithType:type forParams:params fromAPI:DMAPI.sharedAPI];
 }
 
-+ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api
-{
++ (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params fromAPI:(DMAPI *)api {
     return [[DMItemRemoteCollection alloc] initWithType:type
                                                  params:params
                                                    path:[NSString stringWithFormat:@"/%@", [type stringByApplyingPluralForm]]
                                                 fromAPI:api];
 }
 
-+ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item
-{
++ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item {
     return [self itemCollectionWithConnection:connection ofType:type forItem:item withParams:nil];
 }
 
-+ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item withParams:(NSDictionary *)params
-{
++ (id)itemCollectionWithConnection:(NSString *)connection ofType:(NSString *)type forItem:(DMItem *)item withParams:(NSDictionary *)params {
     return [[DMItemRemoteCollection alloc] initWithType:type
                                                  params:params
                                                    path:[NSString stringWithFormat:@"/%@/%@/%@", item.type, item.itemId, connection]
                                                 fromAPI:item.api];
 }
 
-+ (id)itemCollectionFromFile:(NSString *)filePath
-{
++ (id)itemCollectionFromFile:(NSString *)filePath {
     return [self itemCollectionFromFile:filePath withAPI:DMAPI.sharedAPI];
 }
 
-+ (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api
-{
++ (id)itemCollectionFromFile:(NSString *)filePath withAPI:(DMAPI *)api {
     NSData *data = [NSData dataWithContentsOfFile:filePath];
     NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     DMAPIArchiverDelegate *archiverDelegate = [[DMAPIArchiverDelegate alloc] initWithAPI:api];
@@ -105,14 +92,12 @@
     return itemCollection;
 }
 
-- (id)initWithType:(NSString *)type api:(DMAPI *)api
-{
+- (id)initWithType:(NSString *)type api:(DMAPI *)api {
     NSAssert(type != nil, @"The type cannot be nil");
     NSAssert(api != nil, @"The api cannot be nil");
 
     self = [super init];
-    if (self)
-    {
+    if (self) {
         _type = type;
         _api = api;
         _currentEstimatedTotalItemsCount = 0;
@@ -121,14 +106,12 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)coder
-{
+- (id)initWithCoder:(NSCoder *)coder {
     NSString *type = [coder decodeObjectForKey:@"type"];
     DMAPI *api = [coder decodeObjectForKey:@"api"];
 
     self = [self initWithType:type api:api];
-    if (self)
-    {
+    if (self) {
         _currentEstimatedTotalItemsCount = [coder decodeIntegerForKey:@"currentEstimatedTotalItemsCount"];
         _itemsCount = [coder decodeIntegerForKey:@"itemsCount"];
         _isExplicit = [coder decodeBoolForKey:@"isExplicit"];
@@ -136,8 +119,7 @@
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
+- (void)encodeWithCoder:(NSCoder *)coder {
     [coder encodeObject:_type forKey:@"type"];
     [coder encodeObject:_api forKey:@"api"];
     [coder encodeBool:_isExplicit forKey:@"isExplicit"];
@@ -145,8 +127,7 @@
     [coder encodeInteger:_itemsCount forKey:@"itemsCount"];
 }
 
-- (BOOL)saveToFile:(NSString *)filePath
-{
+- (BOOL)saveToFile:(NSString *)filePath {
     NSMutableData *data = [NSMutableData data];
     NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
     DMAPIArchiverDelegate *archiverDelegate = [[DMAPIArchiverDelegate alloc] initWithAPI:self.api];
@@ -156,88 +137,73 @@
     return [data writeToFile:filePath atomically:YES];
 }
 
-- (BOOL)isLocal
-{
+- (BOOL)isLocal {
     [self doesNotRecognizeSelector:_cmd];
     return NO;
 }
 
-- (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback
-{
+- (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
-{
+- (DMItemOperation *)itemAtIndex:(NSUInteger)index withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)itemBeforeItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
-{
+- (DMItemOperation *)itemBeforeItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)itemAfterItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback
-{
+- (DMItemOperation *)itemAfterItem:(DMItem *)item withFields:(NSArray *)fields done:(void (^)(DMItem *item, NSError *error))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL, NSError *))callback
-{
+- (DMItemOperation *)checkPresenceOfItem:(DMItem *)item do:(void (^)(BOOL, NSError *))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (void)flushCache
-{
+- (void)flushCache {
 }
 
-- (BOOL)canEdit
-{
+- (BOOL)canEdit {
     return NO;
 }
 
-- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *item, NSError *error))callback
-{
+- (DMItemOperation *)createItemWithFields:(NSDictionary *)fields done:(void (^)(DMItem *item, NSError *error))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback
-{
+- (DMItemOperation *)addItem:(DMItem *)item done:(void (^)(NSError *))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *))callback
-{
+- (DMItemOperation *)removeItem:(DMItem *)item done:(void (^)(NSError *))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback
-{
+- (DMItemOperation *)removeItemAtIndex:(NSUInteger)index done:(void (^)(NSError *))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (BOOL)canReorder
-{
+- (BOOL)canReorder {
     return NO;
 }
 
-- (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback
-{
+- (DMItemOperation *)moveItemAtIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex done:(void (^)(NSError *))callback {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }
 
-- (DMItem *)itemWithId:(NSString *)itemId
-{
+- (DMItem *)itemWithId:(NSString *)itemId {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }

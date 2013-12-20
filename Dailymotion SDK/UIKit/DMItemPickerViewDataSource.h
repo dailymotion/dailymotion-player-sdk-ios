@@ -14,6 +14,6 @@
  */
 @interface DMItemPickerViewDataSource : NSObject <UIPickerViewDataSource, UIPickerViewDelegate>
 
-@property (nonatomic, strong) NSArray *components;
+@property(nonatomic, strong) NSArray *components;
 
 @end

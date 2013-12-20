@@ -13,13 +13,13 @@ typedef void (^DMAPICallResultBlock)(id result, DMAPICacheInfo *cacheInfo, NSErr
 
 @interface DMAPICall : NSObject
 
-@property (nonatomic, copy, readonly) NSString *callId;
-@property (nonatomic, copy, readonly) NSString *method;
-@property (nonatomic, copy, readonly) NSString *path;
-@property (nonatomic, copy, readonly) NSDictionary *args;
-@property (nonatomic, strong, readonly) DMAPICacheInfo *cacheInfo;
-@property (nonatomic, strong, readonly) DMAPICallResultBlock callback;
-@property (nonatomic, assign, readonly) BOOL isCancelled;
+@property(nonatomic, copy, readonly) NSString *callId;
+@property(nonatomic, copy, readonly) NSString *method;
+@property(nonatomic, copy, readonly) NSString *path;
+@property(nonatomic, copy, readonly) NSDictionary *args;
+@property(nonatomic, strong, readonly) DMAPICacheInfo *cacheInfo;
+@property(nonatomic, strong, readonly) DMAPICallResultBlock callback;
+@property(nonatomic, assign, readonly) BOOL isCancelled;
 
 - (void)cancel;
 

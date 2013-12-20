@@ -13,32 +13,25 @@ static DMAlertCancelBlock _cancelBlock;
 
 @implementation DMAlertView
 
-+ (UIAlertView *)showAlertViewWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles dismissBlock:(DMAlertDismissBlock)dismissBlock cancelBlock:(DMAlertCancelBlock)cancelBlock
-{
++ (UIAlertView *)showAlertViewWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSArray *)otherButtonTitles dismissBlock:(DMAlertDismissBlock)dismissBlock cancelBlock:(DMAlertCancelBlock)cancelBlock {
     _cancelBlock = cancelBlock;
     _dismissBlock = dismissBlock;
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:nil];
-    for (NSString *buttonTitle in otherButtonTitles)
-    {
+    for (NSString *buttonTitle in otherButtonTitles) {
         [alertView addButtonWithTitle:buttonTitle];
     }
     [alertView show];
     return alertView;
 }
 
-+ (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == [alertView cancelButtonIndex])
-    {
-        if (_cancelBlock)
-        {
++ (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == [alertView cancelButtonIndex]) {
+        if (_cancelBlock) {
             _cancelBlock();
         }
     }
-    else
-    {
-        if (_dismissBlock)
-        {
+    else {
+        if (_dismissBlock) {
             _dismissBlock(buttonIndex - 1); // cancel button is button 0
         }
     }

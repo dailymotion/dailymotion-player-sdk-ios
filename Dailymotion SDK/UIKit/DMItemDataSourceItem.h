@@ -18,12 +18,15 @@
 @optional
 
 - (void)setError:(NSError *)error;
-@property (strong, nonatomic) DMItem *item;
+
+@property(strong, nonatomic) DMItem *item;
 
 @required
 
 - (NSArray *)fieldsNeeded;
+
 - (void)prepareForLoading;
+
 - (void)setFieldsData:(NSDictionary *)data;
 
 @end

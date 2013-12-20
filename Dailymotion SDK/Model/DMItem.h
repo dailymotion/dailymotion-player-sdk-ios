@@ -66,15 +66,15 @@
 /** @name Properties */
 
 /** The item type (ie: video, comment, user) */
-@property (nonatomic, readonly, copy) NSString *type;
+@property(nonatomic, readonly, copy) NSString *type;
 /** The item id */
-@property (nonatomic, readonly, copy) NSString *itemId;
+@property(nonatomic, readonly, copy) NSString *itemId;
 /** Current cache info for the item */
-@property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
+@property(nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
 /** The underlaying DMAPI instance */
-@property (nonatomic, readonly, strong) DMAPI *api;
+@property(nonatomic, readonly, strong) DMAPI *api;
 /** Cached fields */
-@property (nonatomic, readonly, copy) NSDictionary *cachedFields;
+@property(nonatomic, readonly, copy) NSDictionary *cachedFields;
 
 /** @name Reading and Writing Item Fields */
 

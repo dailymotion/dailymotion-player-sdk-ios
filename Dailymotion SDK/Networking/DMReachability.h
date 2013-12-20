@@ -39,48 +39,61 @@ extern NSString *const DMReachabilityChangedNotification;
 
 typedef NS_ENUM(NSInteger, DMNetworkStatus)
 {
-	DMNotReachable,
-	DMReachableViaWiFi,
-	DMReachableViaWWAN
+    DMNotReachable,
+    DMReachableViaWiFi,
+    DMReachableViaWWAN
 };
 
 @class DMReachability;
 
 typedef void (^DMNetworkReachable)(DMReachability *reachability);
+
 typedef void (^DMNetworkUnreachable)(DMReachability *reachability);
+
 typedef void (^DMNetworkReachabilityChanged)(DMReachability *reachability);
 
 @interface DMReachability : NSObject
 
-@property (nonatomic, copy) DMNetworkReachable reachableBlock;
-@property (nonatomic, copy) DMNetworkUnreachable unreachableBlock;
+@property(nonatomic, copy) DMNetworkReachable reachableBlock;
+@property(nonatomic, copy) DMNetworkUnreachable unreachableBlock;
 
-@property (nonatomic, assign) BOOL reachableOnWWAN;
+@property(nonatomic, assign) BOOL reachableOnWWAN;
 
-+ (DMReachability *)reachabilityWithHostname:(NSString*)hostname;
++ (DMReachability *)reachabilityWithHostname:(NSString *)hostname;
+
 + (DMReachability *)reachabilityForInternetConnection;
-+ (DMReachability *)reachabilityWithAddress:(const struct sockaddr_in*)hostAddress;
+
++ (DMReachability *)reachabilityWithAddress:(const struct sockaddr_in *)hostAddress;
+
 + (DMReachability *)reachabilityForLocalWiFi;
 
 - (DMReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref;
 
 - (BOOL)startNotifier;
+
 - (void)stopNotifier;
 
 - (BOOL)isReachable;
+
 - (BOOL)isReachableViaWWAN;
+
 - (BOOL)isReachableViaWiFi;
 
 // WWAN may be available, but not active until a connection has been established.
 // WiFi may require a connection for VPN on Demand.
 - (BOOL)isConnectionRequired;
+
 - (BOOL)isConnectionOnDemand;
+
 // Is user intervention required?
 - (BOOL)isInterventionRequired;
 
 - (DMNetworkStatus)currentReachabilityStatus;
+
 - (SCNetworkReachabilityFlags)reachabilityFlags;
+
 - (NSString *)currentReachabilityString;
+
 - (NSString *)currentReachabilityFlags;
 
 @end

@@ -11,12 +11,12 @@
 typedef NS_ENUM(NSInteger, DMDictionnaryOption)
 {
     DMDictionaryOptionFilterNullValues = 1
-} ;
+};
 
 /**
  * Some useful additions to NSDictionary.
  */
-@interface NSDictionary(DMAdditions)
+@interface NSDictionary (DMAdditions)
 
 /**
  * Return a new NSDictionnary with only the given keys if they are present

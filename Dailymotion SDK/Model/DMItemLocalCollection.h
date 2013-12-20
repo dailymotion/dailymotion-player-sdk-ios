@@ -38,12 +38,12 @@
  * Tells the maxiumum number of items in the collection. If more items are added to the collection,
  * the items at the opposite side of the collection will be removed. A limit of 0 means no limit.
  */
-@property (nonatomic, readonly) NSUInteger countLimit;
+@property(nonatomic, readonly) NSUInteger countLimit;
 
 /**
  * The list of DMItem objects stored in this collection
  */
-@property (nonatomic, readonly) NSOrderedSet *items;
+@property(nonatomic, readonly) NSOrderedSet *items;
 
 
 /**

@@ -11,36 +11,32 @@
 
 @interface DMAPICall ()
 
-@property (nonatomic, copy, readwrite) NSString *callId;
-@property (nonatomic, copy, readwrite) NSString *method;
-@property (nonatomic, copy, readwrite) NSString *path;
-@property (nonatomic, copy, readwrite) NSDictionary *args;
-@property (nonatomic, strong, readwrite) DMAPICacheInfo *cacheInfo;
-@property (nonatomic, strong, readwrite) DMAPICallResultBlock callback;
-@property (nonatomic, assign, readwrite) BOOL isCancelled;
+@property(nonatomic, copy, readwrite) NSString *callId;
+@property(nonatomic, copy, readwrite) NSString *method;
+@property(nonatomic, copy, readwrite) NSString *path;
+@property(nonatomic, copy, readwrite) NSDictionary *args;
+@property(nonatomic, strong, readwrite) DMAPICacheInfo *cacheInfo;
+@property(nonatomic, strong, readwrite) DMAPICallResultBlock callback;
+@property(nonatomic, assign, readwrite) BOOL isCancelled;
 
 @end
 
 
 @implementation DMAPICall
 
-- (id)init
-{
+- (id)init {
     self = [super init];
-    if (self)
-    {
+    if (self) {
         _isCancelled = NO;
     }
     return self;
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
     return [NSString stringWithFormat:@"DMAPICall(%@): %@ %@?%@", self.callId, self.method, self.path, [self.args stringAsQueryString]];
 }
 
-- (void)cancel
-{
+- (void)cancel {
     self.isCancelled = YES;
 }
 

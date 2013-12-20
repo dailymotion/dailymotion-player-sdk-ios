@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 typedef void (^DMAlertDismissBlock)(NSInteger buttonIndex);
+
 typedef void (^DMAlertCancelBlock)();
 
 @interface DMAlertView : UIAlertView

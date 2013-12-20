@@ -16,7 +16,7 @@
  */
 @interface DMAPICallQueue : NSObject
 
-@property (nonatomic, assign) NSUInteger count;
+@property(nonatomic, assign) NSUInteger count;
 
 /**
  * Queue an API call and return a DMAPICall object

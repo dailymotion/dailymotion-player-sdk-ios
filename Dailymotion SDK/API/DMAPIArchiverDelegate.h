@@ -15,7 +15,7 @@
  */
 @interface DMAPIArchiverDelegate : NSObject <NSKeyedArchiverDelegate, NSKeyedUnarchiverDelegate>
 
-@property (nonatomic, readonly, strong) DMAPI *api;
+@property(nonatomic, readonly, strong) DMAPI *api;
 
 - (id)initWithAPI:(DMAPI *)api;
 

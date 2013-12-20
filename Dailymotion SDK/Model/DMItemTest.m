@@ -13,8 +13,7 @@
 
 @implementation DMItemTest
 
-- (DMAPI *)api
-{
+- (DMAPI *)api {
     DMAPI *api = [[DMAPI alloc] init];
 #ifdef kDMAPIEndpointURL
     api.APIBaseURL = kDMAPIEndpointURL;
@@ -28,15 +27,13 @@
     return api;
 }
 
-- (void)testGetItemFields
-{
+- (void)testGetItemFields {
     DMAPI *api = self.api;
     DMItem *video = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
 
     INIT(1)
 
-    [video withFields:@[@"id", @"title"] do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [video withFields:@[@"id", @"title"] do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -48,16 +45,14 @@
     WAIT
 }
 
-- (void)testGetStalledItemFields
-{
+- (void)testGetStalledItemFields {
     DMAPI *api = self.api;
     DMItem *video = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
     [video flushCache];
 
     INIT(1)
 
-    [video withFields:@[@"id", @"title"] do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [video withFields:@[@"id", @"title"] do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         STAssertTrue(YES, @"First load wram the cache");
         DONE
     }];
@@ -70,18 +65,15 @@
 
     __block BOOL firstLoad = YES;
 
-    [video withFields:@[@"id", @"title", @"description"] do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
-        if (firstLoad)
-        {
+    [video withFields:@[@"id", @"title", @"description"] do:^(NSDictionary *data, BOOL stalled, NSError *error) {
+        if (firstLoad) {
             STAssertTrue(stalled, @"First callback returns salled cached data");
             STAssertNil(error, @"No error");
             STAssertEqualObjects(@"xmcyw2", data[@"id"], @"Got the requested id");
             STAssertNil(data[@"description"], @"Description not loaded yet");
             firstLoad = NO;
         }
-        else
-        {
+        else {
             STAssertFalse(stalled, @"Second callback returns fresh data");
             STAssertNil(error, @"No error");
             STAssertEqualObjects(@"xmcyw2", data[@"id"], @"Got the requested id");
@@ -93,8 +85,7 @@
     WAIT
 }
 
-- (void)testEqual
-{
+- (void)testEqual {
     DMAPI *api = self.api;
     DMItem *video1 = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];
     DMItem *video1bis = [DMItem itemWithType:@"video" forId:@"xmcyw2" fromAPI:api];

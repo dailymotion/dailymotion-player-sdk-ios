@@ -20,17 +20,17 @@
  *
  * Nil value means default NSURLConnection user-agent.
  */
-@property (nonatomic, copy) NSString *userAgent;
+@property(nonatomic, copy) NSString *userAgent;
 
 /**
  * Set the maximum number of concurrent connection allowed for this network queue.
  */
-@property (nonatomic, assign) NSUInteger maxConcurrency;
+@property(nonatomic, assign) NSUInteger maxConcurrency;
 
 /**
  * Defines the default timeout for connections created in this queue
  */
-@property (nonatomic, assign) NSUInteger timeout;
+@property(nonatomic, assign) NSUInteger timeout;
 
 /**
  * A global accross all queues number of requests sent by this call for accounting
@@ -45,7 +45,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)getURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a GET request with custom additional headers
@@ -56,7 +56,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)getURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a POST request with a given payload
@@ -67,7 +67,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a POST request with a given payload and some custom additional headers
@@ -79,7 +79,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)postURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a PUT request with a given payload
@@ -90,7 +90,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a PUT request with a given payload and some custom additional headers
@@ -102,7 +102,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)putURL:(NSURL *)URL payload:(id)payload headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a DELETE request
@@ -112,7 +112,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform a DELETE request with some custom additional headers
@@ -123,7 +123,7 @@
  *
  * @return A cancallable operation
  */
-- (DMNetRequestOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)deleteURL:(NSURL *)URL headers:(NSDictionary *)headers completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Perform ah HTTP request
@@ -137,7 +137,7 @@
  *
  * @return A cancellable DMNetRequestOperation setup and queued in the current network queue.
  */
-- (DMNetRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMNetRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Cancel all currently running requests of this queue

@@ -28,27 +28,27 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
     /**
      * Use this grant type to access the API anonymously.
      */
-    DailymotionNoGrant,
+            DailymotionNoGrant,
 
     /**
      * Use this grant type if must want to access the API on the behalf of a user. A UIWebView under iOS or
      * a WebView on Mac OS X will be opened with an authorization request page presented to the end-user.
      * You need to implement the DailymotionOAuthDelegate protocol to use this grant type.
      */
-    DailymotionGrantTypeAuthorization,
+            DailymotionGrantTypeAuthorization,
 
     /**
      * Use this grant type if you don't need to access the API on behalf of a user but still need to
      * authenticate with your API key (i.e.: you API key has special rights).
      */
-    DailymotionGrantTypeClientCredentials,
+            DailymotionGrantTypeClientCredentials,
 
     /**
      * If the token grant type doesn’t suits your application workflow, you can request end-user
      * credentials and use the password grant type to authenticate requests. Note that you MUST NOT
      * store end-user credentials.
      */
-    DailymotionGrantTypePassword
+            DailymotionGrantTypePassword
 };
 
 @protocol DailymotionOAuthDelegate;
@@ -58,14 +58,14 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
  */
 @interface DMOAuthClient : NSObject PLATFORM_DELEGATES
 
-@property (nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
-@property (nonatomic, copy) NSURL *oAuthTokenEndpointURL;
-@property (nonatomic, strong) DMNetworking *networkQueue;
+@property(nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
+@property(nonatomic, copy) NSURL *oAuthTokenEndpointURL;
+@property(nonatomic, strong) DMNetworking *networkQueue;
 
 /**
  * Set the delegate that conforms to the `DailymotionDelegate` protocol.
  */
-@property (nonatomic, weak) id<DailymotionOAuthDelegate> delegate;
+@property(nonatomic, weak) id <DailymotionOAuthDelegate> delegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
@@ -78,14 +78,14 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
  * - `refresh_token`: a token used to request a new valid `access_token` without having to ask the end-user again and again
  * - `scope`: an indication on the permission scope granted by the end-user for this session
  */
-@property (nonatomic) DMOAuthSession *session;
+@property(nonatomic) DMOAuthSession *session;
 
 /**
  * If this property is set to `NO`, the session won't be stored automatically for latter use. When not stored, your
  * application will have to ask end-user to authorize your API key each time you restart your application.
  * By default this property is set to `YES`.
  */
-@property (nonatomic, assign) BOOL autoSaveSession;
+@property(nonatomic, assign) BOOL autoSaveSession;
 
 /**
  * Perform a request with oauth authentication
@@ -97,7 +97,7 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
  * @param cachePolicy The cache policy for the request.
  * @param handler The block to be called with the response.
  */
-- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Set the grant type to be used for API requests.
@@ -127,7 +127,7 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
 /**
  * Get the grantType currently in use for API requests
  */
-@property (nonatomic, readonly) DailymotionGrantType grantType;
+@property(nonatomic, readonly) DailymotionGrantType grantType;
 
 /**
  * Clears the session for the current grant type.
@@ -177,6 +177,7 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
  */
 #if TARGET_OS_IPHONE
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(UIView *)view;
+
 #else
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(NSView *)view;
 #endif

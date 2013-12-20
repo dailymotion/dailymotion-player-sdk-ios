@@ -19,8 +19,7 @@
 
 @implementation DMItemRemoteCollectionTest
 
-- (DMAPI *)api
-{
+- (DMAPI *)api {
     DMAPI *api = [[DMAPI alloc] init];
 #ifdef kDMAPIEndpointURL
     api.APIBaseURL = kDMAPIEndpointURL;
@@ -34,15 +33,13 @@
     return api;
 }
 
-- (void)testCachedCollection
-{
+- (void)testCachedCollection {
     DMAPI *api = self.api;
-    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
+    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test"} fromAPI:api];
 
     INIT(1)
 
-    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
-    {
+    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -53,8 +50,7 @@
 
     REINIT(1)
 
-    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
-    {
+    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -64,15 +60,13 @@
     WAIT
 }
 
-- (void)testItemFromCollectionAtIndex
-{
+- (void)testItemFromCollectionAtIndex {
     DMAPI *api = self.api;
-    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
+    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test"} fromAPI:api];
 
     INIT(1)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -83,33 +77,29 @@
     WAIT
 }
 
-- (void)testItemFromCollectionAtOutOfBoundIndex
-{
+- (void)testItemFromCollectionAtOutOfBoundIndex {
     DMAPI *api = self.api;
-    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test"} fromAPI:api];
+    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test"} fromAPI:api];
 
     INIT(1)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:videoSearch.pageSize * 100 - 1 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-     {
-         if (error) NSLog(@"ERROR: %@", error);
-         STAssertNil(error, @"No error");
-         STAssertNil(data, @"No item");
-         DONE
-     }];
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:videoSearch.pageSize * 100 - 1 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
+        if (error) NSLog(@"ERROR: %@", error);
+        STAssertNil(error, @"No error");
+        STAssertNil(data, @"No item");
+        DONE
+    }];
 
     WAIT
 }
 
-- (void)testItemsFromCollectionAtIndexWithinSamePageAreAggregated
-{
+- (void)testItemsFromCollectionAtIndexWithinSamePageAreAggregated {
     DMAPI *api = self.api;
-    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test2"} fromAPI:api];
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test2"} fromAPI:api];
 
     INIT(2)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -120,8 +110,7 @@
     // Prevents from request aggregation, we want to test DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -134,15 +123,13 @@
     STAssertEquals(networkRequestCount, 1U, @"Two items from collection within same page generates a single request");
 }
 
-- (void)testItemsFromCollectionAtIndexWithinDiffPagesAreNotAggregated
-{
+- (void)testItemsFromCollectionAtIndexWithinDiffPagesAreNotAggregated {
     DMAPI *api = self.api;
-    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test1"} fromAPI:api];
+    DMItemCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test1"} fromAPI:api];
 
     INIT(2)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:40 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:40 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -153,8 +140,7 @@
     // Prevents from request aggregation, we want to test DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:9 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -167,15 +153,13 @@
     STAssertEquals(networkRequestCount, 2U, @"Two items from collection NOT within same pages generates two requests");
 }
 
-- (void)testItemsFromCollectionAtIndexWithinSameCachedPageButUncachedItemAreAccumulated
-{
+- (void)testItemsFromCollectionAtIndexWithinSameCachedPageButUncachedItemAreAccumulated {
     DMAPI *api = self.api;
-    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test3"} fromAPI:api];
+    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test3"} fromAPI:api];
 
     INIT(1)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertNotNil(data[@"id"], @"Got an id field");
@@ -191,8 +175,7 @@
 
     REINIT(2)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertNotNil(data[@"id"], @"Got an id field");
@@ -202,8 +185,7 @@
     // Prevents from request aggregation, we want to test DMItemCollection aggregation
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:1 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:1 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertNotNil(data[@"id"], @"Got an id field");
@@ -216,8 +198,7 @@
 
     REINIT(1)
 
-    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error)
-    {
+    [videoSearch withItemFields:@[@"id", @"title"] atIndex:2 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertNotNil(data[@"id"], @"Got an id field");
@@ -230,15 +211,14 @@
 }
 
 #warning skipped this test due to a bug that make this test crash under seantest
-- (void)skiptestItemCollectionArchiving
-{
+
+- (void)skiptestItemCollectionArchiving {
     DMAPI *api = self.api;
-    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search": @"test archiving"} fromAPI:api];
+    DMItemRemoteCollection *videoSearch = [DMItemCollection itemCollectionWithType:@"video" forParams:@{@"search" : @"test archiving"} fromAPI:api];
 
     INIT(1)
 
-    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
-    {
+    [videoSearch itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
@@ -264,8 +244,7 @@
 
     REINIT(1)
 
-    [videoSearchUnarchived itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error)
-    {
+    [videoSearchUnarchived itemsWithFields:@[@"id", @"title"] forPage:1 withPageSize:10 do:^(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error) {
         if (error) NSLog(@"ERROR: %@", error);
         STAssertNil(error, @"No error");
         STAssertFalse(stalled, @"Newly loaded data is not stall");
