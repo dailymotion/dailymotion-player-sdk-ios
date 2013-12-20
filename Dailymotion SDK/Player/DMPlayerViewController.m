@@ -111,7 +111,6 @@
         }
     }
 
-
     NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
     for (NSString *param in [self.params keyEnumerator])
     {
@@ -122,6 +121,10 @@
         }
         [url appendFormat:@"&%@=%@", param, value];
     }
+
+    NSString *appName = NSBundle.mainBundle.bundleIdentifier;
+    [url appendFormat:@"&app=%@", [appName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
                   
     self.view = webview;
