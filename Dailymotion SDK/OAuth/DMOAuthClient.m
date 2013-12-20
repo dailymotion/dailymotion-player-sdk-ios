@@ -63,7 +63,7 @@ static char callbackKey;
     if ((self = [super init]))
     {
         _oAuthAuthorizationEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/authorize"];
-        _oAuthTokenEndpointURL = [NSURL URLWithString:@"http://api.preprod.dailymotion.com/oauth/token"];
+        _oAuthTokenEndpointURL = [NSURL URLWithString:@"https://api.dailymotion.com/oauth/token"];
         _networkQueue = [[DMNetworking alloc] init];
         _requestQueue = [[NSOperationQueue alloc] init];
         _requestQueue.name = @"DMOauth Request Queue";
