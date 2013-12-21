@@ -166,7 +166,7 @@ NSUInteger totalRequestCount;
         NSString *appName = NSBundle.mainBundle.infoDictionary[@"CFBundleName"];
         NSString *appVersion = NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"];
         UIDevice *device = UIDevice.currentDevice;
-        _userAgent = [NSString.alloc initWithFormat:@"%@/%@ (%@ %@; %@)", appName, appVersion, device.systemName, device.systemVersion, device.model];
+        _userAgent = [[NSString alloc] initWithFormat:@"%@/%@ (%@ %@; %@)", appName, appVersion, device.systemName, device.systemVersion, device.model];
     }
 
     return _userAgent;
