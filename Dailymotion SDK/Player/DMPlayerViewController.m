@@ -31,7 +31,7 @@
     if (self) {
         _params = @{};
 
-        _autoplay = [self.params[@"autoplay"] boolValue] == YES;
+        _autoplay = [self.params[@"autoplay"] boolValue];
         _currentTime = 0;
         _bufferedTime = 0;
         _duration = NAN;
