@@ -30,6 +30,6 @@
 /**
  * The DMItemTableViewDataSource data source.
  */
-@property(nonatomic, readonly) DMItemTableViewDataSource *itemDataSource;
+@property (nonatomic, readonly) DMItemTableViewDataSource *itemDataSource;
 
 @end

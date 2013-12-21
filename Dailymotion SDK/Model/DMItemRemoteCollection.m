@@ -22,15 +22,15 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 @interface DMItemOperation (Private)
 
-@property(nonatomic, strong) void (^cancelBlock)();
+@property (nonatomic, strong) void (^cancelBlock)();
 
 @end
 
 @interface DMItemCollection (Private)
 
-@property(nonatomic, readwrite, assign) BOOL isExplicit;
-@property(nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
-@property(nonatomic, readwrite, assign) NSInteger itemsCount;
+@property (nonatomic, readwrite, assign) BOOL isExplicit;
+@property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readwrite, assign) NSInteger itemsCount;
 
 - (id)initWithType:(NSString *)type api:(DMAPI *)api;
 
@@ -39,11 +39,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 @interface DMItemRemoteCollection () {
     __strong NSString *_path;
 }
-@property(nonatomic, readwrite, copy) NSDictionary *params;
-@property(nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
-@property(nonatomic, assign) NSInteger total;
-@property(nonatomic, strong) NSMutableDictionary *runningRequests;
-@property(nonatomic, strong) NSMutableArray *listCache;
+@property (nonatomic, readwrite, copy) NSDictionary *params;
+@property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, assign) NSInteger total;
+@property (nonatomic, strong) NSMutableDictionary *runningRequests;
+@property (nonatomic, strong) NSMutableArray *listCache;
 
 @end
 
@@ -180,11 +180,11 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             DMItem *item;
 
             for (item in cachedItems) {
-                if ((id) item == null) {
+                if ((id)item == null) {
                     cacheValid = NO;
                     break;
                 }
-                else if ((id) item == DMEndOfList) {
+                else if ((id)item == DMEndOfList) {
                     NSAssert(NO, @"Unexpected presence of the end-of-list marker");
                 }
                 else {
@@ -246,20 +246,20 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                         NSMutableDictionary *_requestInfo = sself.runningRequests[requestKey];
                         if (!_requestInfo) return;
                         void (^cb)(NSArray *, BOOL, NSInteger, BOOL, NSError *);
-                        for (cb in (NSMutableArray *) _requestInfo[@"callbacks"]) {
+                        for (cb in (NSMutableArray *)_requestInfo[@"callbacks"]) {
                             cb(cItems, cMore, cTotal, cStalled, cError);
                         }
-                        for (DMItemOperation *op in (NSMutableArray *) _requestInfo[@"operations"]) {
+                        for (DMItemOperation *op in (NSMutableArray *)_requestInfo[@"operations"]) {
                             op.isFinished = YES;
                         }
-                        ((void (^)()) _requestInfo[@"cleanupBlock"])();
+                        ((void (^)())_requestInfo[@"cleanupBlock"])();
                     }
                 }];
                 self.runningRequests[requestKey] = requestInfo;
             }
             else {
-                [(NSMutableArray *) requestInfo[@"callbacks"] addObject:bcallback];
-                [(NSMutableArray *) requestInfo[@"operations"] addObject:boperation];
+                [(NSMutableArray *)requestInfo[@"callbacks"] addObject:bcallback];
+                [(NSMutableArray *)requestInfo[@"operations"] addObject:boperation];
             }
 
             operation.cancelBlock = ^{
@@ -269,12 +269,12 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                 @synchronized (sself.runningRequests) {
                     NSMutableDictionary *_requestInfo = sself.runningRequests[requestKey];
                     if (!_requestInfo) return;
-                    [(NSMutableArray *) _requestInfo[@"operations"] removeObject:boperation];
+                    [(NSMutableArray *)_requestInfo[@"operations"] removeObject:boperation];
                     NSMutableArray *callbacks = _requestInfo[@"callbacks"];
                     [callbacks removeObject:bcallback];
                     if ([callbacks count] == 0) {
-                        [(DMAPICall *) _requestInfo[@"apiCall"] cancel];
-                        ((void (^)()) _requestInfo[@"cleanupBlock"])();
+                        [(DMAPICall *)_requestInfo[@"apiCall"] cancel];
+                        ((void (^)())_requestInfo[@"cleanupBlock"])();
                     }
                 }
             };
@@ -373,7 +373,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                     sself.currentEstimatedTotalItemsCount = fakedTotal;
                 }
             }
-            else if (sself.currentEstimatedTotalItemsCount != MIN((NSUInteger) sself.total, maxEstimatedItemsCount)) {
+            else if (sself.currentEstimatedTotalItemsCount != MIN((NSUInteger)sself.total, maxEstimatedItemsCount)) {
                 sself.currentEstimatedTotalItemsCount = MIN(sself.total, maxEstimatedItemsCount);
             }
             sself.itemsCount = sself.total;
@@ -508,7 +508,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
     DMAPICall *apiCall = [self.api get:[self.path stringByAppendingFormat:@"/%@", item.itemId] args:@{@"fields" : @[@"id"]} callback:^(NSDictionary *result, DMAPICacheInfo *cacheInfo, NSError *error) {
         operation.isFinished = YES;
-        callback(!error && [result[@"list"] isKindOfClass:NSArray.class] && [((NSArray *) result[@"list"]) count] == 1, error);
+        callback(!error && [result[@"list"] isKindOfClass:NSArray.class] && [((NSArray *)result[@"list"]) count] == 1, error);
     }];
 
     operation.cancelBlock = ^{
@@ -673,7 +673,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             NSMutableArray *ids = [NSMutableArray arrayWithCapacity:[items count]];
             for (id item in sself.listCache) {
                 if (item == DMEndOfList) break;
-                [ids addObject:((DMItem *) item).itemId];
+                [ids addObject:((DMItem *)item).itemId];
             }
 
             DMAPICall *apiCall = [sself.api post:sself.path args:@{@"ids" : ids} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error2) {

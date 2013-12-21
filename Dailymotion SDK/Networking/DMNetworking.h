@@ -20,17 +20,17 @@
  *
  * Nil value means default NSURLConnection user-agent.
  */
-@property(nonatomic, copy) NSString *userAgent;
+@property (nonatomic, copy) NSString *userAgent;
 
 /**
  * Set the maximum number of concurrent connection allowed for this network queue.
  */
-@property(nonatomic, assign) NSUInteger maxConcurrency;
+@property (nonatomic, assign) NSUInteger maxConcurrency;
 
 /**
  * Defines the default timeout for connections created in this queue
  */
-@property(nonatomic, assign) NSUInteger timeout;
+@property (nonatomic, assign) NSUInteger timeout;
 
 /**
  * A global accross all queues number of requests sent by this call for accounting

@@ -27,7 +27,7 @@
 
 @interface DMAPIArchiverDelegate ()
 
-@property(nonatomic, readwrite, strong) DMAPI *api;
+@property (nonatomic, readwrite, strong) DMAPI *api;
 
 @end
 

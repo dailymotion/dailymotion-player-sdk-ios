@@ -10,7 +10,7 @@
 
 @interface DMItemOperation ()
 
-@property(nonatomic, strong) void (^cancelBlock)();
+@property (nonatomic, strong) void (^cancelBlock)();
 
 @end
 

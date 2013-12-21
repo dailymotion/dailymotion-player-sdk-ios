@@ -13,7 +13,7 @@ static char indexKey;
 
 @interface DMItemPageViewDataSource ()
 
-@property(nonatomic, strong) DMItemOperation *operation;
+@property (nonatomic, strong) DMItemOperation *operation;
 
 @end
 
@@ -62,7 +62,7 @@ static char indexKey;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
-    NSUInteger itemIdx = ((NSNumber *) objc_getAssociatedObject(viewController, &indexKey)).unsignedIntValue;
+    NSUInteger itemIdx = ((NSNumber *)objc_getAssociatedObject(viewController, &indexKey)).unsignedIntValue;
     UIViewController <DMItemDataSourceItem> *prevViewController = nil;
 
     if (itemIdx - 1 > 0) {
@@ -73,7 +73,7 @@ static char indexKey;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
-    NSUInteger itemIdx = ((NSNumber *) objc_getAssociatedObject(viewController, &indexKey)).unsignedIntValue;
+    NSUInteger itemIdx = ((NSNumber *)objc_getAssociatedObject(viewController, &indexKey)).unsignedIntValue;
     UIViewController <DMItemDataSourceItem> *nextViewController = nil;
 
     if (itemIdx + 1 < self.itemCollection.currentEstimatedTotalItemsCount) {

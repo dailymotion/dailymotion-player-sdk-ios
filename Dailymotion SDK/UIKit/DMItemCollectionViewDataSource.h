@@ -104,32 +104,32 @@
 /**
  * Automatic refresh of data source when model changes. Default value is YES
  */
-@property(nonatomic, assign) BOOL autoReloadData;
+@property (nonatomic, assign) BOOL autoReloadData;
 
 /**
  * If set to YES, instruct the data source this DMItemCollection supports editing (insert and delete).
  */
-@property(nonatomic, assign) BOOL editable;
+@property (nonatomic, assign) BOOL editable;
 
 /**
  * If set to YES, instruct the data source this DMItemCollection supports reordering of rows.
  */
-@property(nonatomic, assign) BOOL reorderable;
+@property (nonatomic, assign) BOOL reorderable;
 
 /**
  * The UICollectionViewCell reusable identifier to be used for items.
  */
-@property(nonatomic, assign) NSString *cellIdentifier;
+@property (nonatomic, assign) NSString *cellIdentifier;
 
 /**
  * The UICollectionViewCell to be used for items.
  */
-@property(nonatomic, assign) Class cellClass;
+@property (nonatomic, assign) Class cellClass;
 
 /**
  * The DMItemCollection used as source to access data.
  */
-@property(nonatomic, strong) DMItemCollection *itemCollection;
+@property (nonatomic, strong) DMItemCollection *itemCollection;
 
 /**
  * @name Accessing the Delegate
@@ -140,7 +140,7 @@
  *
  * This object must implement the DMItemCollectionViewDataSourceDelegate protocol.
  */
-@property(nonatomic, weak) id <DMItemCollectionViewDataSourceDelegate> delegate;
+@property (nonatomic, weak) id <DMItemCollectionViewDataSourceDelegate> delegate;
 
 /**
  * @name Cancelling
@@ -172,7 +172,7 @@
  */
 - (void)reloadIfNeeded;
 
-@property(nonatomic, strong) NSError *lastError;
+@property (nonatomic, strong) NSError *lastError;
 
 
 @end

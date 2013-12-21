@@ -10,14 +10,14 @@
 
 @interface DMNetRequestOperation ()
 
-@property(nonatomic, copy) NSURLRequest *request;
-@property(nonatomic, strong) NSMutableData *responseData;
-@property(nonatomic, strong) NSURLResponse *response;
-@property(nonatomic, strong) NSError *error;
-@property(nonatomic, strong) NSURLConnection *connection;
-@property(nonatomic, assign) BOOL executing;
-@property(nonatomic, assign) BOOL finished;
-@property(nonatomic, strong) NSTimer *timeoutTimer;
+@property (nonatomic, copy) NSURLRequest *request;
+@property (nonatomic, strong) NSMutableData *responseData;
+@property (nonatomic, strong) NSURLResponse *response;
+@property (nonatomic, strong) NSError *error;
+@property (nonatomic, strong) NSURLConnection *connection;
+@property (nonatomic, assign) BOOL executing;
+@property (nonatomic, assign) BOOL finished;
+@property (nonatomic, strong) NSTimer *timeoutTimer;
 
 @end
 

@@ -19,7 +19,7 @@ NSString *const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 }
 
 + (NSError *)errorWithMessage:(NSString *)message domain:(NSString *)domain type:(id)type response:(NSURLResponse *)response data:(NSData *)data userInfo:(NSDictionary *)additionnalUserInfo {
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSMutableDictionary *userInfo = additionnalUserInfo ? [additionnalUserInfo mutableCopy] : [NSMutableDictionary dictionary];
     if (type) {
         userInfo[@"error"] = [type description];
@@ -40,11 +40,10 @@ NSString *const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
 
     NSInteger code = 0;
     if ([type isKindOfClass:[NSNumber class]]) {
-        code = ((NSNumber *) type).intValue;
+        code = ((NSNumber *)type).intValue;
     }
 
     return [NSError errorWithDomain:domain code:code userInfo:userInfo];
 }
-
 
 @end

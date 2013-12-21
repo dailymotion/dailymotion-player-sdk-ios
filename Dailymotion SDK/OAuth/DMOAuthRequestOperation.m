@@ -11,14 +11,14 @@
 
 @interface DMOAuthRequestOperation ()
 
-@property(nonatomic, strong, readwrite) NSURL *URL;
-@property(nonatomic, copy, readwrite) NSString *method;
-@property(nonatomic, strong, readwrite) NSDictionary *headers;
-@property(nonatomic, strong, readwrite) id payload;
-@property(nonatomic, strong) DMNetworking *networkQueue;
-@property(nonatomic, strong) DMNetRequestOperation *request;
-@property(nonatomic, assign) BOOL executing;
-@property(nonatomic, assign) BOOL finished;
+@property (nonatomic, strong, readwrite) NSURL *URL;
+@property (nonatomic, copy, readwrite) NSString *method;
+@property (nonatomic, strong, readwrite) NSDictionary *headers;
+@property (nonatomic, strong, readwrite) id payload;
+@property (nonatomic, strong) DMNetworking *networkQueue;
+@property (nonatomic, strong) DMNetRequestOperation *request;
+@property (nonatomic, assign) BOOL executing;
+@property (nonatomic, assign) BOOL finished;
 
 @end
 

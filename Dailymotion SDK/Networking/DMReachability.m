@@ -32,12 +32,12 @@ NSString *const DMReachabilityChangedNotification = @"DMReachabilityChangedNotif
 
 @interface DMReachability ()
 
-@property(nonatomic, assign) SCNetworkReachabilityRef reachabilityRef;
-@property(nonatomic, strong) id reachabilityObject;
+@property (nonatomic, assign) SCNetworkReachabilityRef reachabilityRef;
+@property (nonatomic, strong) id reachabilityObject;
 #if OS_OBJECT_USE_OBJC
 @property (nonatomic, strong) dispatch_queue_t reachabilitySerialQueue;
 #else
-@property(nonatomic, assign) dispatch_queue_t reachabilitySerialQueue;
+@property (nonatomic, assign) dispatch_queue_t reachabilitySerialQueue;
 #endif
 
 - (void)reachabilityChanged:(SCNetworkReachabilityFlags)flags;
@@ -67,7 +67,7 @@ static NSString *reachabilityFlags(SCNetworkReachabilityFlags flags) {
 //Start listening for reachability notifications on the current run loop
 static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
 #pragma unused (target)
-    DMReachability *reachability = ((__bridge DMReachability *) info);
+    DMReachability *reachability = ((__bridge DMReachability *)info);
 
     // we probably dont need an autoreleasepool here as GCD docs state each queue has its own autorelease pool
     // but what the heck eh?
@@ -91,7 +91,7 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 }
 
 + (DMReachability *)reachabilityWithAddress:(const struct sockaddr_in *)hostAddress {
-    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *) hostAddress);
+    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *)hostAddress);
     if (ref) {
         return [[self alloc] initWithReachabilityRef:ref];
     }
@@ -168,7 +168,7 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     }
 
 
-    context.info = (__bridge void *) self;
+    context.info = (__bridge void *)self;
 
     if (!SCNetworkReachabilitySetCallback(self.reachabilityRef, DMReachabilityCallback, &context)) {
 #ifdef DEBUG

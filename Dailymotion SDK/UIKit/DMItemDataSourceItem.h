@@ -19,7 +19,7 @@
 
 - (void)setError:(NSError *)error;
 
-@property(strong, nonatomic) DMItem *item;
+@property (strong, nonatomic) DMItem *item;
 
 @required
 

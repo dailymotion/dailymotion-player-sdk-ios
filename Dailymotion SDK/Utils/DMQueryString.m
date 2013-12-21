@@ -12,10 +12,10 @@
 
 - (NSString *)stringByURLEncoding {
     // Encode all the reserved characters, per RFC 3986 (<http://www.ietf.org/rfc/rfc3986.txt>)
-    return (__bridge_transfer NSString *) (CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-            (__bridge CFStringRef) self,
+    return (__bridge_transfer NSString *)(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+            (__bridge CFStringRef)self,
             NULL,
-            (CFStringRef) @"!*'();:@&=+$,/?%#[]",
+            (CFStringRef)@"!*'();:@&=+$,/?%#[]",
             kCFStringEncodingUTF8));
 }
 

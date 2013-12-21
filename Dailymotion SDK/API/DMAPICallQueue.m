@@ -12,21 +12,21 @@
 
 @interface DMAPICall ()
 
-@property(nonatomic, copy, readwrite) NSString *callId;
-@property(nonatomic, copy, readwrite) NSString *method;
-@property(nonatomic, copy, readwrite) NSString *path;
-@property(nonatomic, copy, readwrite) NSDictionary *args;
-@property(nonatomic, strong, readwrite) DMAPICacheInfo *cacheInfo;
-@property(nonatomic, strong, readwrite) DMAPICallResultBlock callback;
-@property(nonatomic, assign, readwrite) BOOL isCancelled;
+@property (nonatomic, copy, readwrite) NSString *callId;
+@property (nonatomic, copy, readwrite) NSString *method;
+@property (nonatomic, copy, readwrite) NSString *path;
+@property (nonatomic, copy, readwrite) NSDictionary *args;
+@property (nonatomic, strong, readwrite) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, strong, readwrite) DMAPICallResultBlock callback;
+@property (nonatomic, assign, readwrite) BOOL isCancelled;
 
 @end
 
 @interface DMAPICallQueue ()
 
-@property(nonatomic, assign) NSUInteger callNextId;
-@property(nonatomic, strong) NSMutableDictionary *callQueue;
-@property(nonatomic, strong) NSMutableDictionary *callHandlers;
+@property (nonatomic, assign) NSUInteger callNextId;
+@property (nonatomic, strong) NSMutableDictionary *callQueue;
+@property (nonatomic, strong) NSMutableDictionary *callHandlers;
 
 @end
 
@@ -44,7 +44,7 @@
 }
 
 - (void)dealloc {
-    for (NSString *callId in [self.callQueue allKeys]) {
+    for (NSString *callId in[self.callQueue allKeys]) {
         [self removeCallWithId:callId];
     }
 }
@@ -64,7 +64,7 @@
             call.callback = callback;
         }
         else {
-            call.callback = ^(id result, DMAPICacheInfo *cache, NSError *error) {/* noop */};
+            call.callback = ^(id result, DMAPICacheInfo *cache, NSError *error) { /* noop */ };
         }
 
         self.callQueue[callId] = call;
@@ -76,7 +76,6 @@
         return call;
     }
 }
-
 
 - (DMAPICall *)callWithId:(NSString *)callId {
     return self.callQueue[callId];
@@ -107,7 +106,6 @@
         }
     }
 }
-
 
 #pragma mark - Call Handlers
 
@@ -158,11 +156,10 @@
     }];
 }
 
-
 #pragma mark - Events
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"isCancelled"] && [object isKindOfClass:[DMAPICall class]] && [(DMAPICall *) object isCancelled]) {
+    if ([keyPath isEqualToString:@"isCancelled"] && [object isKindOfClass:[DMAPICall class]] && [(DMAPICall *)object isCancelled]) {
         [self cancelCall:object];
     }
     else {
@@ -179,7 +176,7 @@
     else if ([handler respondsToSelector:@selector(cancel)]) {
         // The call has been handled and is cancellabled but it may be part of a batch request
         BOOL requestCancellable = YES;
-        for (DMAPICall *queuedCall in [self callsWithHandler:handler]) {
+        for (DMAPICall *queuedCall in[self callsWithHandler:handler]) {
             if (queuedCall != call && ![queuedCall isCancelled]) {
                 requestCancellable = NO;
                 break;
@@ -190,7 +187,7 @@
             // All sibbling calls of the cancelled call batch are cancelled
             // => we can cancel the whole handler
             [handler performSelector:@selector(cancel)];
-            for (DMAPICall *canceledCall in [self callsWithHandler:handler]) {
+            for (DMAPICall *canceledCall in[self callsWithHandler:handler]) {
                 [self removeCall:canceledCall];
             }
         }
@@ -201,6 +198,5 @@
         }
     }
 }
-
 
 @end

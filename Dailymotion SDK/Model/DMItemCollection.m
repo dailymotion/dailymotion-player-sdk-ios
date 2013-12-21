@@ -28,11 +28,11 @@
 
 @interface DMItemCollection ()
 
-@property(nonatomic, readwrite, copy) NSString *type;
-@property(nonatomic, readwrite, strong) DMAPI *api;
-@property(nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
-@property(nonatomic, readwrite, assign) NSInteger itemsCount;
-@property(nonatomic, readwrite, assign) BOOL isExplicit;
+@property (nonatomic, readwrite, copy) NSString *type;
+@property (nonatomic, readwrite, strong) DMAPI *api;
+@property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readwrite, assign) NSInteger itemsCount;
+@property (nonatomic, readwrite, assign) BOOL isExplicit;
 
 @end
 
@@ -45,7 +45,7 @@
 }
 
 + (id)itemLocalConnectionWithType:(NSString *)type countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api {
-    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:nil countLimit:(NSUInteger) countLimit fromAPI:api];
+    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:nil countLimit:(NSUInteger)countLimit fromAPI:api];
 }
 
 + (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit {
@@ -53,7 +53,7 @@
 }
 
 + (id)itemLocalConnectionWithType:(NSString *)type withIds:(NSOrderedSet *)ids countLimit:(NSUInteger)countLimit fromAPI:(DMAPI *)api {
-    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids countLimit:(NSUInteger) countLimit fromAPI:api];
+    return [[DMItemLocalCollection alloc] initWithType:type withItemIds:ids countLimit:(NSUInteger)countLimit fromAPI:api];
 }
 
 + (id)itemCollectionWithType:(NSString *)type forParams:(NSDictionary *)params {

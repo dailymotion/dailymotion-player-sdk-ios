@@ -10,7 +10,7 @@
 
 @interface DMRangeInputStream : NSInputStream <NSStreamDelegate>
 
-@property(nonatomic, weak) id <NSStreamDelegate> delegate;
+@property (nonatomic, weak) id <NSStreamDelegate> delegate;
 
 + (id)inputStreamWithFileAtPath:(NSString *)path withRange:(NSRange)range;
 

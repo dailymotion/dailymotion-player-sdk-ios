@@ -78,9 +78,7 @@
         DONE
     }];
 
-    WAIT
-
-    STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been aggregated into a single HTTP request");
+    WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been aggregated into a single HTTP request");
 }
 
 - (void)testMultiCallIntermix {
@@ -101,9 +99,7 @@
         DONE
     }];
 
-    WAIT
-
-    STAssertEquals(networkRequestCount, 2U, @"The 2 API calls in two diff event loop turns hasn't been aggregated");
+    WAIT STAssertEquals(networkRequestCount, 2U, @"The 2 API calls in two diff event loop turns hasn't been aggregated");
 }
 
 - (void)testMultiCallLimit {
@@ -127,9 +123,7 @@
     [api get:@"/echo" args:@{@"message" : @"call11"} callback:callback];
     [api get:@"/echo" args:@{@"message" : @"call12"} callback:callback];
 
-    WAIT
-
-    STAssertEquals(networkRequestCount, 2U, @"The API calls have been aggregated to 2 HTTP requests to respect the 10 call per request server limit");
+    WAIT STAssertEquals(networkRequestCount, 2U, @"The API calls have been aggregated to 2 HTTP requests to respect the 10 call per request server limit");
 }
 
 - (void)testCallInvalidMethod {
@@ -220,7 +214,6 @@
     WAIT
 }
 
-
 - (void)testGrantTypeWrongPassword {
     INIT(1)
 
@@ -260,9 +253,7 @@
         DONE
     }];
 
-    WAIT
-
-    STAssertTrue(privateCache.valid, @"Cache is valid");
+    WAIT STAssertTrue(privateCache.valid, @"Cache is valid");
 
     [api.oauth clearSession];
 
@@ -283,9 +274,7 @@
         DONE
     }];
 
-    WAIT
-
-    REINIT(1)
+    WAIT REINIT(1)
 
     [api get:@"/video/x12" args:nil cacheInfo:cacheInfo callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
         STAssertNotNil(cache.etag, @"Item has an entity tag");
@@ -317,10 +306,10 @@
         DONE
     }];
 
-    WAIT
-    REINIT(1)
+    WAIT REINIT(1)
 
     api = self.api;
+
     api.oauth.delegate = self;
     username = nil; // should not ask for credentials
     password = nil;
@@ -374,7 +363,6 @@
     STAssertTrue(![sessionStoreKey isEqual:[api.oauth sessionStoreKey]], @"Session store key is different when API secret changes");
     [api.oauth setGrantType:DailymotionGrantTypeClientCredentials withAPIKey:@"another key" secret:kDMAPISecret scope:@"read write delete"];
     STAssertTrue(![sessionStoreKey isEqual:[api.oauth sessionStoreKey]], @"Session store key is different when API key changes");
-
 }
 
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)request didRequestUserCredentialsWithHandler:(void (^)(NSString *username, NSString *password))setCredentials; {

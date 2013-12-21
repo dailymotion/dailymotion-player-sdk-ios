@@ -21,7 +21,7 @@
 #error Dailymotion doesn't support Deployement Target version < 5.0
 #endif
 
-#define isdict(dict) [dict isKindOfClass:[NSDictionary class]]
+#define isdict(dict) [dict isKindOfClass :[NSDictionary class]]
 
 #define kDMHardMaxCallsPerRequest 10
 
@@ -29,23 +29,23 @@ static NSString *const kDMVersion = @"2.0";
 
 @interface DMAPITransfer (Private)
 
-@property(nonatomic, copy) void (^completionHandler)(id result, NSError *error);
-@property(nonatomic, copy) void (^cancelBlock)();
-@property(nonatomic, readwrite) NSURL *localURL;
-@property(nonatomic, readwrite) NSURL *remoteURL;
+@property (nonatomic, copy) void (^completionHandler)(id result, NSError *error);
+@property (nonatomic, copy) void (^cancelBlock)();
+@property (nonatomic, readwrite) NSURL *localURL;
+@property (nonatomic, readwrite) NSURL *remoteURL;
 
 @end
 
 
 @interface DMAPI ()
 
-@property(nonatomic, readwrite, assign) DMNetworkStatus currentReachabilityStatus;
-@property(nonatomic, strong) DMReachability *reach;
-@property(nonatomic, strong) DMNetworking *uploadNetworkQueue;
-@property(nonatomic, strong) DMAPICallQueue *callQueue;
-@property(nonatomic, assign) BOOL autoConcurrency;
-@property(nonatomic, assign) BOOL autoChunkSize;
-@property(nonatomic, strong) NSMutableDictionary *globalParameters;
+@property (nonatomic, readwrite, assign) DMNetworkStatus currentReachabilityStatus;
+@property (nonatomic, strong) DMReachability *reach;
+@property (nonatomic, strong) DMNetworking *uploadNetworkQueue;
+@property (nonatomic, strong) DMAPICallQueue *callQueue;
+@property (nonatomic, assign) BOOL autoConcurrency;
+@property (nonatomic, assign) BOOL autoChunkSize;
+@property (nonatomic, strong) NSMutableDictionary *globalParameters;
 
 @end
 
@@ -149,7 +149,7 @@ static NSString *const kDMVersion = @"2.0";
             NSMutableArray *calls = [[NSMutableArray alloc] init];
             // Process calls in FIFO order
             uint_fast8_t total = 0;
-            for (DMAPICall *call in [self.callQueue callsWithNoHandler]) {
+            for (DMAPICall *call in[self.callQueue callsWithNoHandler]) {
                 NSAssert(call != nil, @"Call id from request pool is present in call queue");
                 if (![call isCancelled]) {
                     [calls addObject:call];
@@ -206,10 +206,9 @@ static NSString *const kDMVersion = @"2.0";
                                              response:response
                                                  data:responseData];
         [self raiseErrorToCalls:calls error:error];
-
     }
 
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     if (httpResponse.statusCode == 400 || httpResponse.statusCode == 401 || httpResponse.statusCode == 403) {
         NSString *type = nil;
         NSString *message = nil;
@@ -229,7 +228,7 @@ static NSString *const kDMVersion = @"2.0";
         }
 
         if ([type isEqualToString:@"invalid_token"]) {
-            @synchronized (self) // connection should not be seen nil by other threads before the access_token request
+            @synchronized (self)     // connection should not be seen nil by other threads before the access_token request
             {
                 // Try to refresh the access token
                 self.oauth.session.accessToken = nil;
@@ -317,7 +316,6 @@ static NSString *const kDMVersion = @"2.0";
                 call.callback(nil, nil, error);
             }
             else if (!isdict(resultData) && !isdict(resultCacheInfo)) {
-
                 NSString *msg;
                 if (resultData) {
                     msg = @"Invalid API server response: invalid `result' key.";
@@ -357,7 +355,7 @@ static NSString *const kDMVersion = @"2.0";
 
 - (id)parseResult:(id)result forKey:(NSString *)parentKey root:(BOOL)root {
     if ([result isKindOfClass:NSArray.class]) {
-        NSMutableArray *list = [NSMutableArray arrayWithCapacity:[(NSArray *) result count]];
+        NSMutableArray *list = [NSMutableArray arrayWithCapacity:[(NSArray *)result count]];
         for (id obj in result) {
             id parsedObj = [self parseResult:obj forKey:parentKey root:NO];
             if ([parsedObj isKindOfClass:NSError.class]) return parsedObj; // bubble errors up
@@ -366,8 +364,8 @@ static NSString *const kDMVersion = @"2.0";
         return [NSArray arrayWithArray:list];
     }
     else if ([result isKindOfClass:NSDictionary.class]) {
-        __block NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:[(NSDictionary *) result count]];
-        [(NSDictionary *) result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        __block NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:[(NSDictionary *)result count]];
+        [(NSDictionary *)result enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             id parsedObj = [self parseResult:obj forKey:key root:NO];
             if ([parsedObj isKindOfClass:NSError.class]) {
                 // bubble errors up
@@ -547,7 +545,7 @@ static NSString *const kDMVersion = @"2.0";
             }
             if (!error) {
                 uploadOperation.totalBytesExpectedToTransfer = fileSize;
-                uploadOperation.remoteURL = [NSURL URLWithString:[((NSURL *) result[@"upload_url"]).absoluteString stringByReplacingOccurrencesOfString:@"/upload?" withString:@"/rupload?"]];
+                uploadOperation.remoteURL = [NSURL URLWithString:[((NSURL *)result[@"upload_url"]).absoluteString stringByReplacingOccurrencesOfString:@"/upload?" withString:@"/rupload?"]];
                 uploadOperation.completionHandler = nil;
                 [self resumeFileUploadOperation:uploadOperation withCompletionHandler:completionHandler];
             }
@@ -574,7 +572,7 @@ static NSString *const kDMVersion = @"2.0";
     uploadOperation.cancelled = NO;
     uploadOperation.finished = NO;
 
-    NSRange range = NSMakeRange(uploadOperation.totalBytesTransfered, MIN((int) self.uploadChunkSize, uploadOperation.totalBytesExpectedToTransfer - uploadOperation.totalBytesTransfered));
+    NSRange range = NSMakeRange(uploadOperation.totalBytesTransfered, MIN((int)self.uploadChunkSize, uploadOperation.totalBytesExpectedToTransfer - uploadOperation.totalBytesTransfered));
     DMRangeInputStream *filePartStream = [DMRangeInputStream inputStreamWithFileAtPath:uploadOperation.localURL.path withRange:range];
 
     NSDictionary *headers = @
@@ -587,14 +585,14 @@ static NSString *const kDMVersion = @"2.0";
     };
     DMNetRequestOperation *networkOperation;
     networkOperation = [self.uploadNetworkQueue postURL:uploadOperation.remoteURL
-                                                payload:(NSInputStream *) filePartStream
+                                                payload:(NSInputStream *)filePartStream
                                                 headers:headers
                                       completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *connectionError) {
                                           if (uploadOperation.isCancelled) {
                                               return;
                                           }
 
-                                          NSUInteger statusCode = ((NSHTTPURLResponse *) response).statusCode;
+                                          NSUInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
                                           if (connectionError) {
                                               if (uploadOperation.completionHandler) {
                                                   NSError *error = [DMAPIError errorWithMessage:connectionError.localizedDescription
@@ -607,7 +605,7 @@ static NSString *const kDMVersion = @"2.0";
                                               }
                                           }
                                           else if (statusCode == 201) {
-                                              NSString *rangeHeader = ((NSHTTPURLResponse *) response).allHeaderFields[@"Range"];
+                                              NSString *rangeHeader = ((NSHTTPURLResponse *)response).allHeaderFields[@"Range"];
                                               NSScanner *rangeScanner = [NSScanner scannerWithString:rangeHeader];
                                               NSInteger start = -1, end = -1, total = -1;
                                               if (!([rangeScanner scanInt:&start] &&
@@ -628,7 +626,7 @@ static NSString *const kDMVersion = @"2.0";
                                                       if (uploadOperation.totalBytesExpectedToTransfer != total) {
                                                           NSLog(@"WARN: Upload server changed the expected bytes to transfer");
                                                       }
-                                                      if (uploadOperation.totalBytesTransfered + range.length != (NSUInteger) end + 1) {
+                                                      if (uploadOperation.totalBytesTransfered + range.length != (NSUInteger)end + 1) {
                                                           NSLog(@"WARN: Upload server returned an unexpected range %d + %d != %d + 1", uploadOperation.totalBytesTransfered, range.length, end);
                                                       }
                                                       uploadOperation.totalBytesTransfered = end + 1;
@@ -686,7 +684,7 @@ static NSString *const kDMVersion = @"2.0";
 }
 
 - (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params __attribute__((deprecated)) {
-    return [self playerWithVideo:(NSString *) video params:(NSDictionary *) params];
+    return [self playerWithVideo:(NSString *)video params:(NSDictionary *)params];
 }
 
 - (DMPlayerViewController *)playerWithVideo:(NSString *)video {
@@ -694,7 +692,7 @@ static NSString *const kDMVersion = @"2.0";
 }
 
 - (DMPlayerViewController *)player:(NSString *)video __attribute__((deprecated)) {
-    return [self playerWithVideo:(NSString *) video];
+    return [self playerWithVideo:(NSString *)video];
 }
 
 #endif

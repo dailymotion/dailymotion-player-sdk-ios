@@ -11,15 +11,15 @@
 
 @interface DMPlayerViewController ()
 
-@property(nonatomic, readwrite) BOOL autoplay;
-@property(nonatomic, readwrite) float bufferedTime;
-@property(nonatomic, readwrite) float duration;
-@property(nonatomic, readwrite) BOOL seeking;
-@property(nonatomic, readwrite) BOOL paused;
-@property(nonatomic, readwrite) BOOL ended;
-@property(nonatomic, readwrite) NSError *error;
-@property(nonatomic, assign) BOOL inited;
-@property(nonatomic, strong) NSDictionary *params;
+@property (nonatomic, readwrite) BOOL autoplay;
+@property (nonatomic, readwrite) float bufferedTime;
+@property (nonatomic, readwrite) float duration;
+@property (nonatomic, readwrite) BOOL seeking;
+@property (nonatomic, readwrite) BOOL paused;
+@property (nonatomic, readwrite) BOOL ended;
+@property (nonatomic, readwrite) NSError *error;
+@property (nonatomic, assign) BOOL inited;
+@property (nonatomic, strong) NSDictionary *params;
 
 @end
 
@@ -94,8 +94,8 @@
     // Hack: prevent vertical bouncing
     for (id subview in webview.subviews) {
         if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
-            ((UIScrollView *) subview).bounces = NO;
-            ((UIScrollView *) subview).scrollEnabled = NO;
+            ((UIScrollView *)subview).bounces = NO;
+            ((UIScrollView *)subview).scrollEnabled = NO;
         }
     }
 
@@ -257,7 +257,7 @@
 - (void)api:(NSString *)method arg:(NSString *)arg {
     if (!self.inited) return;
     if (!method) return;
-    UIWebView *webview = (UIWebView *) self.view;
+    UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];
     NSString *jsArg = arg ? [NSString stringWithFormat:@"\"%@\"", [arg stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]] : @"null";
     [webview stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"player.api(%@, %@)", jsMethod, jsArg]];

@@ -12,7 +12,7 @@ static UIImage *placeHolderImage;
 
 @interface DMItemTableViewDefaultCell ()
 
-@property(nonatomic, copy) NSURL *URL;
+@property (nonatomic, copy) NSURL *URL;
 
 @end
 

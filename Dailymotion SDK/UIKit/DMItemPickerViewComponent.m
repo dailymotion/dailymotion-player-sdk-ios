@@ -14,10 +14,10 @@ static char operationKey;
 
 @interface DMItemPickerViewComponent ()
 
-@property(nonatomic, strong) DMItemCollection *itemCollection;
-@property(nonatomic, strong) UIView <DMItemDataSourceItem> *(^createRowViewBlock)();
-@property(nonatomic, assign) BOOL loaded;
-@property(nonatomic, strong) NSMutableArray *operations;
+@property (nonatomic, strong) DMItemCollection *itemCollection;
+@property (nonatomic, strong) UIView <DMItemDataSourceItem> *(^createRowViewBlock)();
+@property (nonatomic, assign) BOOL loaded;
+@property (nonatomic, strong) NSMutableArray *operations;
 
 @end
 
@@ -163,7 +163,7 @@ static char operationKey;
     }
     else if ([keyPath isEqualToString:@"itemCollection.api.currentReachabilityStatus"] && object == self) {
         if (!self.loaded) return;
-        DMNetworkStatus previousReachabilityStatus = ((NSNumber *) change[NSKeyValueChangeOldKey]).intValue;
+        DMNetworkStatus previousReachabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
         if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousReachabilityStatus == DMNotReachable) {
             // Became recheable: notify table view controller that it should reload table data
             if ([self.delegate respondsToSelector:@selector(pickerViewComponentDidLeaveOfflineMode:)]) {
@@ -177,7 +177,7 @@ static char operationKey;
         }
     }
     else if ([keyPath isEqualToString:@"isFinished"]) {
-        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *) object).isFinished) {
+        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *)object).isFinished) {
             [self.operations removeObject:object];
             [object removeObserver:self forKeyPath:@"isFinished"];
         }

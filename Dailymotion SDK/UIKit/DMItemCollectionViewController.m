@@ -11,7 +11,7 @@
 
 @interface DMItemCollectionViewController ()
 
-@property(nonatomic, readwrite) DMItemCollectionViewDataSource *itemDataSource;
+@property (nonatomic, readwrite) DMItemCollectionViewDataSource *itemDataSource;
 
 @end
 
@@ -70,7 +70,7 @@
 @implementation UICollectionView (DMItemCollectionViewDataSource)
 
 - (DMItemCollectionViewDataSource *)itemDataSource {
-    return (DMItemCollectionViewDataSource *) self.dataSource;
+    return (DMItemCollectionViewDataSource *)self.dataSource;
 }
 
 @end

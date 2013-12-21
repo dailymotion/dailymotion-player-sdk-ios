@@ -39,10 +39,10 @@ else\
 
 @interface DMOAuthClient ()
 
-@property(nonatomic, strong) NSOperationQueue *requestQueue;
-@property(nonatomic, readwrite) DailymotionGrantType grantType;
-@property(nonatomic, assign) BOOL sessionLoaded;
-@property(nonatomic, strong) NSDictionary *grantInfo;
+@property (nonatomic, strong) NSOperationQueue *requestQueue;
+@property (nonatomic, readwrite) DailymotionGrantType grantType;
+@property (nonatomic, assign) BOOL sessionLoaded;
+@property (nonatomic, strong) NSDictionary *grantInfo;
 
 @end
 
@@ -340,7 +340,7 @@ static char callbackKey;
             // Compute a uniq hash key for the current grant type setup
             const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@&scope=%@", type, apiKey, apiSecret, scope] UTF8String];
             unsigned char r[CC_MD5_DIGEST_LENGTH];
-            CC_MD5(str, (CC_LONG) strlen(str), r);
+            CC_MD5(str, (CC_LONG)strlen(str), r);
 
             info =
                     @{

@@ -54,10 +54,10 @@ typedef void (^DMNetworkReachabilityChanged)(DMReachability *reachability);
 
 @interface DMReachability : NSObject
 
-@property(nonatomic, copy) DMNetworkReachable reachableBlock;
-@property(nonatomic, copy) DMNetworkUnreachable unreachableBlock;
+@property (nonatomic, copy) DMNetworkReachable reachableBlock;
+@property (nonatomic, copy) DMNetworkUnreachable unreachableBlock;
 
-@property(nonatomic, assign) BOOL reachableOnWWAN;
+@property (nonatomic, assign) BOOL reachableOnWWAN;
 
 + (DMReachability *)reachabilityWithHostname:(NSString *)hostname;
 

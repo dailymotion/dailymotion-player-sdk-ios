@@ -118,13 +118,13 @@
  */
 
 /** The DMItem type of DMItem objects contained in this collection (ie: video, comment, user) */
-@property(nonatomic, readonly, copy) NSString *type;
+@property (nonatomic, readonly, copy) NSString *type;
 
 /** The underlaying DMAPI instance */
-@property(nonatomic, readonly, strong) DMAPI *api;
+@property (nonatomic, readonly, strong) DMAPI *api;
 
 /** This property is NO by default and can turns YES if the list is expected to contain explicit content */
-@property(nonatomic, readonly, assign) BOOL isExplicit;
+@property (nonatomic, readonly, assign) BOOL isExplicit;
 
 /**
  * Return YES if the collection isn't comming from the remote API
@@ -138,7 +138,7 @@
  * You may use KVO on this property to know when the collection content has changed so you can refresh
  * the UI.
  */
-@property(nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readonly, assign) NSUInteger currentEstimatedTotalItemsCount;
 
 /**
  * Returns the total number of objects in the collection if known or -1 otherwise.
@@ -146,7 +146,7 @@
  * In certain circonstances, the backend can't compute the total number of items for the current
  * context. In such case this property returns -1.
  */
-@property(nonatomic, readonly, assign) NSInteger itemsCount;
+@property (nonatomic, readonly, assign) NSInteger itemsCount;
 
 /**
  * @name Writting Collection to Disk

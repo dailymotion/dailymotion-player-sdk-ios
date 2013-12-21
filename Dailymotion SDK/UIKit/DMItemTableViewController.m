@@ -11,7 +11,7 @@
 
 @interface DMItemTableViewController ()
 
-@property(nonatomic, readwrite) DMItemTableViewDataSource *itemDataSource;
+@property (nonatomic, readwrite) DMItemTableViewDataSource *itemDataSource;
 
 @end
 
@@ -92,7 +92,7 @@
 @implementation UITableView (DMItemTableViewDataSource)
 
 - (DMItemTableViewDataSource *)itemDataSource {
-    return (DMItemTableViewDataSource *) self.dataSource;
+    return (DMItemTableViewDataSource *)self.dataSource;
 }
 
 @end

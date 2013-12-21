@@ -24,9 +24,9 @@ static DMItemOperation *fakeOperation() {
 
 @interface DMItemLocalCollection ()
 
-@property(nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
-@property(nonatomic, readwrite, assign) NSInteger itemsCount;
-@property(nonatomic, strong) NSMutableOrderedSet *privateItems;
+@property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
+@property (nonatomic, readwrite, assign) NSInteger itemsCount;
+@property (nonatomic, strong) NSMutableOrderedSet *privateItems;
 
 @end
 
@@ -87,7 +87,7 @@ static DMItemOperation *fakeOperation() {
 
 - (DMItemOperation *)withItemFields:(NSArray *)fields atIndex:(NSUInteger)index do:(void (^)(NSDictionary *data, BOOL stalled, NSError *error))callback {
     if (index < [self.privateItems count]) {
-        return [(DMItem *) [self.privateItems objectAtIndex:index] withFields:fields do:callback];
+        return [(DMItem *)[self.privateItems objectAtIndex:index] withFields:fields do:callback];
     }
     else {
         dispatch_async(dispatch_get_current_queue(), ^{

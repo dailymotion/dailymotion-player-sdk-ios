@@ -15,8 +15,8 @@
     id <NSStreamDelegate> delegate;
 }
 
-@property(nonatomic, assign) NSRange range;
-@property(nonatomic, strong) NSInputStream *parentStream;
+@property (nonatomic, assign) NSRange range;
+@property (nonatomic, strong) NSInputStream *parentStream;
 
 @end
 
@@ -69,7 +69,7 @@
 
 - (BOOL)setProperty:(id)property forKey:(NSString *)key {
     if (key == NSStreamFileCurrentOffsetKey && self.range.location > 0) {
-        property = @(((NSNumber *) property).intValue + self.range.location);
+        property = @(((NSNumber *)property).intValue + self.range.location);
     }
 
     return [self.parentStream setProperty:property forKey:key];
@@ -79,7 +79,7 @@
     id property = [self.parentStream propertyForKey:key];
 
     if (key == NSStreamFileCurrentOffsetKey && self.range.location > 0) {
-        property = @(((NSNumber *) property).intValue - self.range.location);
+        property = @(((NSNumber *)property).intValue - self.range.location);
     }
 
     return property;
@@ -100,7 +100,7 @@
 }
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len {
-    NSInteger pos = ((NSNumber *) [self propertyForKey:NSStreamFileCurrentOffsetKey]).intValue;
+    NSInteger pos = ((NSNumber *)[self propertyForKey:NSStreamFileCurrentOffsetKey]).intValue;
     if (pos + len > self.range.length) {
         len = self.range.length - pos;
         if (len == 0) return 0;
@@ -117,14 +117,14 @@
         return NO;
     }
 
-    NSUInteger pos = ((NSNumber *) [self propertyForKey:NSStreamFileCurrentOffsetKey]).unsignedIntegerValue;
+    NSUInteger pos = ((NSNumber *)[self propertyForKey:NSStreamFileCurrentOffsetKey]).unsignedIntegerValue;
     return pos < self.range.length;
 }
 
 #pragma mark - Undocumented CFReadStream bridged methods
 
 - (void)_scheduleInCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)mode {
-    CFReadStreamScheduleWithRunLoop((__bridge CFReadStreamRef) self.parentStream, runLoop, mode);
+    CFReadStreamScheduleWithRunLoop((__bridge CFReadStreamRef)self.parentStream, runLoop, mode);
 }
 
 - (BOOL)_setCFClientFlags:(CFOptionFlags)flags callback:(CFReadStreamClientCallBack)callback context:(CFStreamClientContext *)context {
@@ -151,7 +151,7 @@
 }
 
 - (void)_unscheduleFromCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)mode {
-    CFReadStreamUnscheduleFromRunLoop((__bridge CFReadStreamRef) self.parentStream, runLoop, mode);
+    CFReadStreamUnscheduleFromRunLoop((__bridge CFReadStreamRef)self.parentStream, runLoop, mode);
 }
 
 #pragma mark NSStreamDelegate methods
@@ -162,25 +162,25 @@
     switch (eventCode) {
         case NSStreamEventOpenCompleted:
             if (requestedEvents & kCFStreamEventOpenCompleted) {
-                copiedCallback((__bridge CFReadStreamRef) self, kCFStreamEventOpenCompleted, copiedContext.info);
+                copiedCallback((__bridge CFReadStreamRef)self, kCFStreamEventOpenCompleted, copiedContext.info);
             }
             break;
 
         case NSStreamEventHasBytesAvailable:
             if (requestedEvents & kCFStreamEventHasBytesAvailable) {
-                copiedCallback((__bridge CFReadStreamRef) self, kCFStreamEventHasBytesAvailable, copiedContext.info);
+                copiedCallback((__bridge CFReadStreamRef)self, kCFStreamEventHasBytesAvailable, copiedContext.info);
             }
             break;
 
         case NSStreamEventErrorOccurred:
             if (requestedEvents & kCFStreamEventErrorOccurred) {
-                copiedCallback((__bridge CFReadStreamRef) self, kCFStreamEventErrorOccurred, copiedContext.info);
+                copiedCallback((__bridge CFReadStreamRef)self, kCFStreamEventErrorOccurred, copiedContext.info);
             }
             break;
 
         case NSStreamEventEndEncountered:
             if (requestedEvents & kCFStreamEventEndEncountered) {
-                copiedCallback((__bridge CFReadStreamRef) self, kCFStreamEventEndEncountered, copiedContext.info);
+                copiedCallback((__bridge CFReadStreamRef)self, kCFStreamEventEndEncountered, copiedContext.info);
             }
             break;
 

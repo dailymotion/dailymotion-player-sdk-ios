@@ -15,10 +15,10 @@ static char operationKey;
 
 @interface DMItemTableViewDataSource ()
 
-@property(nonatomic, assign) BOOL reloading;
-@property(nonatomic, assign) BOOL loaded;
-@property(nonatomic, strong) NSMutableArray *operations;
-@property(nonatomic, weak) UITableView *lastTableView;
+@property (nonatomic, assign) BOOL reloading;
+@property (nonatomic, assign) BOOL loaded;
+@property (nonatomic, strong) NSMutableArray *operations;
+@property (nonatomic, weak) UITableView *lastTableView;
 
 @end
 
@@ -85,7 +85,7 @@ static char operationKey;
     }
 
     self.reloading = YES;
-    ((DMItemRemoteCollection *) self.itemCollection).cacheInfo.valid = NO;
+    ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
     UITableViewCell <DMItemDataSourceItem> *cell = [self.lastTableView dequeueReusableCellWithIdentifier:self.cellIdentifier];
     __weak DMItemTableViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
@@ -104,7 +104,7 @@ static char operationKey;
 
 - (void)reloadIfNeeded {
     if ([self.itemCollection isKindOfClass:DMItemRemoteCollection.class]
-            && (self.itemCollection.currentEstimatedTotalItemsCount == 0 || ((DMItemRemoteCollection *) self.itemCollection).cacheInfo.stalled)) {
+            && (self.itemCollection.currentEstimatedTotalItemsCount == 0 || ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.stalled)) {
         [self reload];
     }
 }
@@ -299,11 +299,11 @@ static char operationKey;
         if (!self.itemCollection) return;
         if (change[NSKeyValueChangeOldKey] == NSNull.null) {
             if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)]) {
-                [(NSObject *) self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
+                [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
             }
         }
         else {
-            DMNetworkStatus previousReachabilityStatus = ((NSNumber *) change[NSKeyValueChangeOldKey]).intValue;
+            DMNetworkStatus previousReachabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
             if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousReachabilityStatus == DMNotReachable) {
                 [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) object:self];
                 // Became recheable: notify table view controller that it should reload table data
@@ -314,13 +314,13 @@ static char operationKey;
             }
             else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousReachabilityStatus != DMNotReachable) {
                 if ([self.delegate respondsToSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:)]) {
-                    [(NSObject *) self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
+                    [(NSObject *)self.delegate performSelector:@selector(itemTableViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
                 }
             }
         }
     }
     else if ([keyPath isEqualToString:@"isFinished"]) {
-        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *) object).isFinished) {
+        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *)object).isFinished) {
             [self.operations removeObject:object];
             [object removeObserver:self forKeyPath:@"isFinished"];
         }

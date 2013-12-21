@@ -42,14 +42,14 @@
 /**
  * Dailymotion SDK Version
  */
-@property(nonatomic) NSString *version;
+@property (nonatomic) NSString *version;
 
-@property(nonatomic, copy) NSURL *APIBaseURL;
+@property (nonatomic, copy) NSURL *APIBaseURL;
 
 /**
  * Report the current reachability of the API. You may use KVO to react to reachability changes.
  */
-@property(nonatomic, readonly, assign) DMNetworkStatus currentReachabilityStatus;
+@property (nonatomic, readonly, assign) DMNetworkStatus currentReachabilityStatus;
 
 
 /**
@@ -59,27 +59,27 @@
 /**
  * Global timeout interval for API requests
  */
-@property(nonatomic, assign) NSTimeInterval timeout;
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 /**
  * Maximum number of allowed concurrent API calls. By default, this property is automatically
  * managed regarding current network type (Wifi > 3G/Edge). Changing this value manually will
  * disable the automatic management.
  */
-@property(nonatomic, assign) NSUInteger maxConcurrency;
+@property (nonatomic, assign) NSUInteger maxConcurrency;
 
 /**
  * The size of upload chunk size for resumable uploads. By default, this property is automatically
  * managed regarding current network type (Wifi > 3G/Edge). Changing this value manually will
  * disable the automatic management.
  */
-@property(nonatomic, assign) NSUInteger uploadChunkSize;
+@property (nonatomic, assign) NSUInteger uploadChunkSize;
 
 /**
  * Maximum number of call allowed to be batched in a single request. The hard API limit is 10
  * and default value is 10 as well.
  */
-@property(nonatomic, assign) NSUInteger maxAggregatedCallCount;
+@property (nonatomic, assign) NSUInteger maxAggregatedCallCount;
 
 /**
  * @name Getting the Shared API Instance
@@ -202,7 +202,7 @@
  * @param fileURL The URL path to the file to upload
  * @param completionHandler The block to be called once upload is complete
  */
-- (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
+- (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^) (id result, NSError *error))completionHandler;
 
 /**
  * Resume an unfinished upload
@@ -210,7 +210,7 @@
  * @param uploadOperation An unfinished upload operation returned by uploadFileURL:withCompletionHandler:
  * @param completionHandler The block to be called once upload is complete
  */
-- (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
+- (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^) (id result, NSError *error))completionHandler;
 
 #if TARGET_OS_IPHONE
 /**
@@ -245,7 +245,7 @@
  *
  * @see DMOAuthClient
  */
-@property(nonatomic, strong) DMOAuthClient *oauth;
+@property (nonatomic, strong) DMOAuthClient *oauth;
 
 /**
  * Remove the right for the current API key to access the current user account.

@@ -15,10 +15,10 @@
  */
 @interface DMItemRemoteCollection : DMItemCollection <NSCoding>
 
-@property(nonatomic, readonly, assign) NSUInteger pageSize;
-@property(nonatomic, readonly, copy) NSString *path;
-@property(nonatomic, readonly, copy) NSDictionary *params;
-@property(nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, readonly, assign) NSUInteger pageSize;
+@property (nonatomic, readonly, copy) NSString *path;
+@property (nonatomic, readonly, copy) NSDictionary *params;
+@property (nonatomic, readonly, strong) DMAPICacheInfo *cacheInfo;
 
 - (id)initWithType:(NSString *)type params:(NSDictionary *)params path:(NSString *)path fromAPI:(DMAPI *)api;
 

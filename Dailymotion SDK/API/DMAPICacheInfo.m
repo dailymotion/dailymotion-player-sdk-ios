@@ -13,13 +13,13 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 
 @interface DMAPICacheInfo ()
 
-@property(nonatomic, readwrite) NSDate *date;
-@property(nonatomic, readwrite) NSString *namespace;
-@property(nonatomic, readwrite) NSArray *invalidates;
-@property(nonatomic, readwrite) NSString *etag;
-@property(nonatomic, readwrite, assign) BOOL public;
-@property(nonatomic, readwrite, assign) NSTimeInterval maxAge;
-@property(nonatomic, weak) DMAPI *api;
+@property (nonatomic, readwrite) NSDate *date;
+@property (nonatomic, readwrite) NSString *namespace;
+@property (nonatomic, readwrite) NSArray *invalidates;
+@property (nonatomic, readwrite) NSString *etag;
+@property (nonatomic, readwrite, assign) BOOL public;
+@property (nonatomic, readwrite, assign) NSTimeInterval maxAge;
+@property (nonatomic, weak) DMAPI *api;
 
 @end
 

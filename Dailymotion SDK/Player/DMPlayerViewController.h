@@ -69,52 +69,52 @@
 /**
  * Determines whether the media resource plays automatically when available (read-only).
  */
-@property(nonatomic, readonly) BOOL autoplay;
+@property (nonatomic, readonly) BOOL autoplay;
 /**
  * The current playback position in seconds. Set this value to seek in the video.
  */
-@property(nonatomic, assign) float currentTime;
+@property (nonatomic, assign) float currentTime;
 /**
  * The part of the media resource that have been downloaded in seconds (read-only).
  */
-@property(nonatomic, readonly) float bufferedTime;
+@property (nonatomic, readonly) float bufferedTime;
 /**
  * The length of the media resource in seconds (read-only).
  */
-@property(nonatomic, readonly) float duration;
+@property (nonatomic, readonly) float duration;
 /**
  * Indicates whether the element is seeking (read-only).
  */
-@property(nonatomic, readonly) BOOL seeking;
+@property (nonatomic, readonly) BOOL seeking;
 /**
  * Indicates whether the media is paused (read-only).
  */
-@property(nonatomic, readonly) BOOL paused;
+@property (nonatomic, readonly) BOOL paused;
 /**
  * Indicates whether the media played to the end (read-only).
  */
-@property(nonatomic, readonly) BOOL ended;
+@property (nonatomic, readonly) BOOL ended;
 /**
  * Determines whether the audio content should be muted. Set this value to mute/unmute the sound.
  */
-@property(nonatomic, assign) BOOL muted;
+@property (nonatomic, assign) BOOL muted;
 /**
  * The volume of the video between 0 and 1.
  */
-@property(nonatomic, assign) float volume;
+@property (nonatomic, assign) float volume;
 /**
  * Indicates whether the video is displayed fullscreen.
  */
-@property(nonatomic, assign) BOOL fullscreen;
+@property (nonatomic, assign) BOOL fullscreen;
 /**
  * The last error that occurend for this player.
  */
-@property(nonatomic, readonly) NSError *error;
+@property (nonatomic, readonly) NSError *error;
 
 /**
  * The base URL for the player. Default is http://www.dailymotion.com.
  */
-@property(nonatomic, copy) NSString *webBaseURLString;
+@property (nonatomic, copy) NSString *webBaseURLString;
 
 
 /**
@@ -170,6 +170,6 @@
 /**
  * The player delegate to send player events to.
  */
-@property(nonatomic, weak) id <DMPlayerDelegate> delegate;
+@property (nonatomic, weak) id <DMPlayerDelegate> delegate;
 
 @end

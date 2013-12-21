@@ -12,7 +12,7 @@ NSUInteger totalRequestCount;
 
 @interface DMNetworking ()
 
-@property(nonatomic, strong) NSOperationQueue *queue;
+@property (nonatomic, strong) NSOperationQueue *queue;
 
 @end
 
@@ -76,7 +76,6 @@ NSUInteger totalRequestCount;
     return [self performRequestWithURL:URL method:@"PUT" payload:payload headers:headers cachePolicy:0 completionHandler:handler];
 }
 
-
 - (DMNetRequestOperation *)deleteURL:(NSURL *)URL completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler {
     return [self performRequestWithURL:URL method:@"DELETE" payload:nil headers:nil cachePolicy:0 completionHandler:handler];
 }
@@ -106,16 +105,16 @@ NSUInteger totalRequestCount;
         NSEnumerator *enumerator = [payload keyEnumerator];
         NSString *key;
         int i = 0;
-        int count = (int) [payload count] - 1;
+        int count = (int)[payload count] - 1;
         while ((key = [enumerator nextObject])) {
             NSString *escapedValue = payload[key];
             if (![escapedValue isKindOfClass:NSString.class]) {
                 escapedValue = [NSString stringWithFormat:@"%@", escapedValue];
             }
-            escapedValue = (__bridge_transfer NSString *) CFURLCreateStringByAddingPercentEscapes
+            escapedValue = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes
                     (
                             NULL,
-                            (__bridge CFStringRef) escapedValue,
+                            (__bridge CFStringRef)escapedValue,
                             NULL,
                             CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`"),
                             kCFStringEncodingUTF8

@@ -10,7 +10,7 @@
 
 @interface DMItemPickerLabel ()
 
-@property(nonatomic, strong) NSString *fieldName;
+@property (nonatomic, strong) NSString *fieldName;
 
 @end
 

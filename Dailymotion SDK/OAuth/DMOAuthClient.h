@@ -58,14 +58,14 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
  */
 @interface DMOAuthClient : NSObject PLATFORM_DELEGATES
 
-@property(nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
-@property(nonatomic, copy) NSURL *oAuthTokenEndpointURL;
-@property(nonatomic, strong) DMNetworking *networkQueue;
+@property (nonatomic, copy) NSURL *oAuthAuthorizationEndpointURL;
+@property (nonatomic, copy) NSURL *oAuthTokenEndpointURL;
+@property (nonatomic, strong) DMNetworking *networkQueue;
 
 /**
  * Set the delegate that conforms to the `DailymotionDelegate` protocol.
  */
-@property(nonatomic, weak) id <DailymotionOAuthDelegate> delegate;
+@property (nonatomic, weak) id <DailymotionOAuthDelegate> delegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
@@ -78,14 +78,14 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
  * - `refresh_token`: a token used to request a new valid `access_token` without having to ask the end-user again and again
  * - `scope`: an indication on the permission scope granted by the end-user for this session
  */
-@property(nonatomic) DMOAuthSession *session;
+@property (nonatomic) DMOAuthSession *session;
 
 /**
  * If this property is set to `NO`, the session won't be stored automatically for latter use. When not stored, your
  * application will have to ask end-user to authorize your API key each time you restart your application.
  * By default this property is set to `YES`.
  */
-@property(nonatomic, assign) BOOL autoSaveSession;
+@property (nonatomic, assign) BOOL autoSaveSession;
 
 /**
  * Perform a request with oauth authentication
@@ -127,7 +127,7 @@ typedef NS_ENUM(NSInteger, DailymotionGrantType)
 /**
  * Get the grantType currently in use for API requests
  */
-@property(nonatomic, readonly) DailymotionGrantType grantType;
+@property (nonatomic, readonly) DailymotionGrantType grantType;
 
 /**
  * Clears the session for the current grant type.

@@ -14,10 +14,10 @@
  */
 @interface DMOAuthSession : NSObject
 
-@property(nonatomic, copy) NSString *accessToken;
-@property(nonatomic, strong) NSDate *expires;
-@property(nonatomic, copy) NSString *refreshToken;
-@property(nonatomic, readonly) NSString *scope;
+@property (nonatomic, copy) NSString *accessToken;
+@property (nonatomic, strong) NSDate *expires;
+@property (nonatomic, copy) NSString *refreshToken;
+@property (nonatomic, readonly) NSString *scope;
 
 /**
  * Instanciate a session object with session info dictionary coming from auth server.

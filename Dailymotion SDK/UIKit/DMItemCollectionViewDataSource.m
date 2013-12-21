@@ -15,10 +15,10 @@ static char operationKey;
 
 @interface DMItemCollectionViewDataSource ()
 
-@property(nonatomic, assign) BOOL reloading;
-@property(nonatomic, assign) BOOL loaded;
-@property(nonatomic, strong) NSMutableArray *operations;
-@property(nonatomic, weak) UICollectionView *lastCollectionView;
+@property (nonatomic, assign) BOOL reloading;
+@property (nonatomic, assign) BOOL loaded;
+@property (nonatomic, strong) NSMutableArray *operations;
+@property (nonatomic, weak) UICollectionView *lastCollectionView;
 
 @end
 
@@ -84,7 +84,7 @@ static char operationKey;
     }
 
     self.reloading = YES;
-    ((DMItemRemoteCollection *) self.itemCollection).cacheInfo.valid = NO;
+    ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.valid = NO;
     UICollectionViewCell <DMItemDataSourceItem> *cell = self.cellClass.new;
     __weak DMItemCollectionViewDataSource *wself = self;
     DMItemOperation *operation = [self.itemCollection withItemFields:cell.fieldsNeeded atIndex:0 do:^(NSDictionary *data, BOOL stalled, NSError *error) {
@@ -103,7 +103,7 @@ static char operationKey;
 
 - (void)reloadIfNeeded {
     if ([self.itemCollection isKindOfClass:DMItemRemoteCollection.class]
-            && (self.itemCollection.currentEstimatedTotalItemsCount == 0 || ((DMItemRemoteCollection *) self.itemCollection).cacheInfo.stalled)) {
+            && (self.itemCollection.currentEstimatedTotalItemsCount == 0 || ((DMItemRemoteCollection *)self.itemCollection).cacheInfo.stalled)) {
         [self reload];
     }
 }
@@ -240,11 +240,11 @@ static char operationKey;
         if (!self.itemCollection) return;
         if (change[NSKeyValueChangeOldKey] == NSNull.null) {
             if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && [self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:)]) {
-                [(NSObject *) self.delegate performSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
+                [(NSObject *)self.delegate performSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
             }
         }
         else {
-            DMNetworkStatus previousReachabilityStatus = ((NSNumber *) change[NSKeyValueChangeOldKey]).intValue;
+            DMNetworkStatus previousReachabilityStatus = ((NSNumber *)change[NSKeyValueChangeOldKey]).intValue;
             if (self.itemCollection.api.currentReachabilityStatus != DMNotReachable && previousReachabilityStatus == DMNotReachable) {
                 [NSObject cancelPreviousPerformRequestsWithTarget:self.delegate selector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) object:self];
                 // Became recheable: notify collection view controller that it should reload collection view data
@@ -255,13 +255,13 @@ static char operationKey;
             }
             else if (self.itemCollection.api.currentReachabilityStatus == DMNotReachable && previousReachabilityStatus != DMNotReachable) {
                 if ([self.delegate respondsToSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:)]) {
-                    [(NSObject *) self.delegate performSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
+                    [(NSObject *)self.delegate performSelector:@selector(itemCollectionViewDataSourceDidEnterOfflineMode:) withObject:self afterDelay:1];
                 }
             }
         }
     }
     else if ([keyPath isEqualToString:@"isFinished"]) {
-        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *) object).isFinished) {
+        if ([object isKindOfClass:DMItemOperation.class] && ((DMItemOperation *)object).isFinished) {
             [self.operations removeObject:object];
             [object removeObserver:self forKeyPath:@"isFinished"];
         }

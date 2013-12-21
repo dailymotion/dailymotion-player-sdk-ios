@@ -12,19 +12,19 @@
 
 @interface DMItemOperation (Private)
 
-@property(nonatomic, strong) void (^cancelBlock)();
+@property (nonatomic, strong) void (^cancelBlock)();
 
 @end
 
 
 @interface DMItem ()
 
-@property(nonatomic, readwrite, copy) NSString *type;
-@property(nonatomic, readwrite, copy) NSString *itemId;
-@property(nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
-@property(nonatomic, readwrite, strong) DMAPI *api;
-@property(nonatomic, strong) NSString *path;
-@property(nonatomic, strong) NSMutableDictionary *fieldsCache;
+@property (nonatomic, readwrite, copy) NSString *type;
+@property (nonatomic, readwrite, copy) NSString *itemId;
+@property (nonatomic, readwrite, strong) DMAPICacheInfo *cacheInfo;
+@property (nonatomic, readwrite, strong) DMAPI *api;
+@property (nonatomic, strong) NSString *path;
+@property (nonatomic, strong) NSMutableDictionary *fieldsCache;
 
 @end
 

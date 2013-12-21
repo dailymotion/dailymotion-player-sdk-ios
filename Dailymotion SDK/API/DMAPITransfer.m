@@ -10,10 +10,10 @@
 
 @interface DMAPITransfer ()
 
-@property(nonatomic, readwrite) NSURL *localURL;
-@property(nonatomic, readwrite) NSURL *remoteURL;
-@property(nonatomic, strong) void (^cancelBlock)();
-@property(nonatomic, strong) void (^completionHandler)(id result, NSError *error);
+@property (nonatomic, readwrite) NSURL *localURL;
+@property (nonatomic, readwrite) NSURL *remoteURL;
+@property (nonatomic, strong) void (^cancelBlock)();
+@property (nonatomic, strong) void (^completionHandler)(id result, NSError *error);
 
 @end
 
@@ -24,7 +24,7 @@
     if (self) {
         // Create universally unique identifier
         CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
-        _sessionId = (__bridge_transfer NSString *) CFUUIDCreateString(kCFAllocatorDefault, uuidObject);
+        _sessionId = (__bridge_transfer NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuidObject);
         CFRelease(uuidObject);
         _localURL = nil;
         _remoteURL = nil;

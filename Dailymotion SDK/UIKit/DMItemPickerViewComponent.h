@@ -35,8 +35,8 @@
  */
 @interface DMItemPickerViewComponent : NSObject
 
-@property(nonatomic, weak) id <DMItemPickerViewComponentDelegate> delegate;
-@property(nonatomic, strong) NSError *lastError;
+@property (nonatomic, weak) id <DMItemPickerViewComponentDelegate> delegate;
+@property (nonatomic, strong) NSError *lastError;
 
 - (id)initWithItemCollection:(DMItemCollection *)itemCollection createRowViewBlock:(UIView <DMItemDataSourceItem> *(^)())createRowViewBlock;
 
