@@ -34,6 +34,7 @@ static char operationKey;
         self.autoReloadData = YES;
         [self addObserver:self forKeyPath:@"itemCollection.currentEstimatedTotalItemsCount" options:0 context:NULL];
         [self addObserver:self forKeyPath:@"itemCollection.api.currentReachabilityStatus" options:NSKeyValueObservingOptionOld context:NULL];
+        _maximumNumberOfItems = 0;
     }
     return self;
 }
@@ -186,6 +187,10 @@ static char operationKey;
         }
 
         self._loaded = YES;
+    }
+    if (self.maximumNumberOfItems != 0)
+    {
+        return MIN(self.maximumNumberOfItems, self.itemCollection.currentEstimatedTotalItemsCount);
     }
     return self.itemCollection.currentEstimatedTotalItemsCount;
 }
