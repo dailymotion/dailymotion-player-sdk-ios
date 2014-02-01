@@ -173,6 +173,11 @@
  */
 - (void)reload:(void (^)())completionBlock;
 
+/**
+ * Maximum items returned by the API, default is 0 unlimited
+ */
+@property (nonatomic, assign) NSUInteger maximumNumberOfItems;
+
 @property (nonatomic, strong) NSError *lastError;
 
 
