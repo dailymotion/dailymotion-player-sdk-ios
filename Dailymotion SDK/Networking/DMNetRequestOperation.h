@@ -18,6 +18,8 @@ typedef void(^FailureBlock)(NSError *error);
 @property (nonatomic, strong) void (^progressHandler)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
 @property (nonatomic, strong) void (^completionHandler)(NSURLResponse *response, NSData *responseData, NSError *connectionError);
 
+@property (nonatomic, strong) NSURLCredential *credential;
+
 - (id)initWithRequest:(NSURLRequest *)request;
 
 @end
