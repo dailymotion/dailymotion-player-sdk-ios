@@ -178,15 +178,13 @@ NSUInteger totalRequestCount;
 
     if (!deviceIdentifierInited)
     {
-        if (![UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)])
-        {
-            deviceIdentifierInited = YES;
-        }
-        if (UIDevice.currentDevice.identifierForVendor)
+	//iOS 6 and up
+        if ([UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)])
         {
             deviceIdentifier = UIDevice.currentDevice.identifierForVendor.UUIDString;
-            deviceIdentifierInited = YES;
         }
+
+	deviceIdentifierInited = YES;
     }
 
     return deviceIdentifier;
