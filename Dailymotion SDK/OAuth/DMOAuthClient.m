@@ -43,6 +43,9 @@ else\
 @property (nonatomic, readwrite) DailymotionGrantType grantType;
 @property (nonatomic, assign) BOOL sessionLoaded;
 @property (nonatomic, strong) NSDictionary *grantInfo;
+// this credential is used when the server return a 401 asking for an
+/// HTTP Digest, so it refers to the API CLIENT id & secret
+@property (nonatomic, strong) NSURLCredential *defaultCredential;
 
 @end
 
@@ -148,13 +151,18 @@ static char callbackKey;
                 @{
                         @"grant_type" : @"refresh_token",
                         @"client_id" : self.grantInfo[@"key"],
-                        @"client_secret" : self.grantInfo[@"secret"],
                         @"scope" : self.grantInfo[@"scope"],
                         @"refresh_token" : self.session.refreshToken
                 };
-        [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
+        DMNetRequestOperation *op = [self.networkQueue postURL:self.oAuthTokenEndpointURL
+                payload:payload
+                headers:@{@"Authorization":@"Digest"}
+                completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
+
             [self handleOAuthResponse:response data:responseData completionHandler:handler];
         }];
+        op.credential = self.defaultCredential;
+        
         return;
     }
 
@@ -188,17 +196,17 @@ static char callbackKey;
                     @{
                             @"grant_type" : @"password",
                             @"client_id" : self.grantInfo[@"key"],
-                            @"client_secret" : self.grantInfo[@"secret"],
                             @"scope" : self.grantInfo[@"scope"],
                             @"username" : username ? username : @"",
                             @"password" : password ? password : @""
                     };
-            [self.networkQueue postURL:self.oAuthTokenEndpointURL
+            DMNetRequestOperation *op = [self.networkQueue postURL:self.oAuthTokenEndpointURL
                                payload:payload
-                               headers:nil
+                               headers:@{@"Authorization" : @"Digest"}
                      completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
                          [self handleOAuthResponse:response data:responseData completionHandler:handler];
                      }];
+            op.credential = self.defaultCredential;
         };
         DMOAuthPerformMandatoryDelegate(@selector(dailymotionOAuthRequest:didRequestUserCredentialsWithHandler:), callback);
     }
@@ -208,12 +216,15 @@ static char callbackKey;
                 @{
                         @"grant_type" : @"client_credentials",
                         @"client_id" : self.grantInfo[@"key"],
-                        @"client_secret" : self.grantInfo[@"secret"],
-                        @"scope" : self.grantInfo[@"scope"]
                 };
-        [self.networkQueue postURL:self.oAuthTokenEndpointURL payload:payload headers:nil completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
-            [self handleOAuthResponse:response data:responseData completionHandler:handler];
-        }];
+        DMNetRequestOperation *op = [self.networkQueue postURL:self.oAuthTokenEndpointURL
+                                                       payload:payload
+                                                       headers:@{@"Authorization" : @"Digest"}
+                                             completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
+                                                 [self handleOAuthResponse:response data:responseData completionHandler:handler];
+                                             }];
+
+        op.credential = self.defaultCredential;
     }
 }
 
@@ -304,16 +315,17 @@ static char callbackKey;
                 @{
                         @"grant_type" : @"authorization_code",
                         @"client_id" : self.grantInfo[@"key"],
-                        @"client_secret" : self.grantInfo[@"secret"],
                         @"code" : result[@"code"],
                         @"redirect_uri" : kDMOAuthRedirectURI
                 };
-        [self.networkQueue postURL:self.oAuthTokenEndpointURL
+        DMNetRequestOperation *op = [self.networkQueue postURL:self.oAuthTokenEndpointURL
                            payload:payload
-                           headers:nil
+                           headers:@{@"Authorization":@"Digest"}
                  completionHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
                      [self handleOAuthResponse:response data:responseData completionHandler:handler];
                  }];
+        op.credential = self.defaultCredential;
+        
     }
     else {
         handler(nil, [NSError errorWithDomain:DailymotionAuthErrorDomain code:0
@@ -354,6 +366,9 @@ static char callbackKey;
 
         self.grantType = type;
         self.grantInfo = info;
+        self.defaultCredential = [NSURLCredential credentialWithUser:info[@"key"]
+                                                     password:info[@"secret"]
+                                                  persistence:NSURLCredentialPersistenceNone];
         self.session = nil;
         self.requestQueue.suspended = NO;
     }

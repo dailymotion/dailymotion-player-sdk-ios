@@ -155,4 +155,19 @@
     [self done];
 }
 
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    NSLog(@"connection auth %@", challenge);
+    
+    if ([challenge previousFailureCount] == 0 && self.credential) {
+        
+        [[challenge sender] useCredential:_credential
+               forAuthenticationChallenge:challenge];
+    } else {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+        // inform the user that the client id & secret are incorrect ?
+        NSLog(@"INVALID API AUTH");
+        [self done];
+    }
+}
+
 @end
