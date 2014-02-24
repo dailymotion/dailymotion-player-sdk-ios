@@ -1,4 +1,3 @@
-
 //
 //  DMItemCollectionViewController.m
 //  Dailymotion SDK iOS
@@ -18,10 +17,8 @@
 
 @implementation DMItemCollectionViewController
 
-- (DMItemCollectionViewDataSource *)itemDataSource
-{
-    if (!_itemDataSource)
-    {
+- (DMItemCollectionViewDataSource *)itemDataSource {
+    if (!_itemDataSource) {
         _itemDataSource = [[DMItemCollectionViewDataSource alloc] init];
         _itemDataSource.delegate = self;
     }
@@ -31,44 +28,35 @@
 
 #pragma Table Data Source
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.itemDataSource collectionView:collectionView numberOfItemsInSection:section];
 }
 
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     return [self.itemDataSource collectionView:collectionView cellForItemAtIndexPath:indexPath];
 }
 
 #pragma mark - DMItemTableViewDataSourceDelegate
 
-- (void)itemCollectionViewDataSourceDidChange:(DMItemCollectionViewDataSource *)dataSource;
-{
+- (void)itemCollectionViewDataSourceDidChange:(DMItemCollectionViewDataSource *)dataSource; {
 }
 
-- (void)itemCollectionViewDataSource:(DMItemCollectionViewDataSource *)dataSource didUpdateWithEstimatedTotalItemsCount:(NSUInteger)estimatedTotalItems
-{
+- (void)itemCollectionViewDataSource:(DMItemCollectionViewDataSource *)dataSource didUpdateWithEstimatedTotalItemsCount:(NSUInteger)estimatedTotalItems {
 }
 
-- (void)itemCollectionViewDataSourceDidStartLoadingData:(DMItemCollectionViewDataSource *)dataSource
-{
+- (void)itemCollectionViewDataSourceDidStartLoadingData:(DMItemCollectionViewDataSource *)dataSource {
 }
 
-- (void)itemCollectionViewDataSourceDidFinishLoadingData:(DMItemCollectionViewController *)dataSource
-{
+- (void)itemCollectionViewDataSourceDidFinishLoadingData:(DMItemCollectionViewController *)dataSource {
 }
 
-- (void)itemCollectionViewDataSourceDidEnterOfflineMode:(DMItemCollectionViewController *)dataSource
-{
+- (void)itemCollectionViewDataSourceDidEnterOfflineMode:(DMItemCollectionViewController *)dataSource {
 }
 
-- (void)itemCollectionViewDataSourceDidLeaveOfflineMode:(DMItemCollectionViewController *)dataSource
-{
+- (void)itemCollectionViewDataSourceDidLeaveOfflineMode:(DMItemCollectionViewController *)dataSource {
 }
 
-- (void)itemCollectionViewDataSource:(DMItemCollectionViewController *)dataSource didFailWithError:(NSError *)error
-{
+- (void)itemCollectionViewDataSource:(DMItemCollectionViewController *)dataSource didFailWithError:(NSError *)error {
     [DMAlertView showAlertViewWithTitle:@"Error"
                                 message:error.localizedDescription
                       cancelButtonTitle:@"Dismiss"
@@ -81,8 +69,7 @@
 
 @implementation UICollectionView (DMItemCollectionViewDataSource)
 
-- (DMItemCollectionViewDataSource *)itemDataSource
-{
+- (DMItemCollectionViewDataSource *)itemDataSource {
     return (DMItemCollectionViewDataSource *)self.dataSource;
 }
 

@@ -23,33 +23,33 @@
 /**
  * Test
  */
-typedef enum
+typedef NS_ENUM(NSInteger, DailymotionGrantType)
 {
     /**
      * Use this grant type to access the API anonymously.
      */
-    DailymotionNoGrant,
+            DailymotionNoGrant,
 
     /**
      * Use this grant type if must want to access the API on the behalf of a user. A UIWebView under iOS or
      * a WebView on Mac OS X will be opened with an authorization request page presented to the end-user.
      * You need to implement the DailymotionOAuthDelegate protocol to use this grant type.
      */
-    DailymotionGrantTypeAuthorization,
+            DailymotionGrantTypeAuthorization,
 
     /**
      * Use this grant type if you don't need to access the API on behalf of a user but still need to
      * authenticate with your API key (i.e.: you API key has special rights).
      */
-    DailymotionGrantTypeClientCredentials,
+            DailymotionGrantTypeClientCredentials,
 
     /**
      * If the token grant type doesn’t suits your application workflow, you can request end-user
      * credentials and use the password grant type to authenticate requests. Note that you MUST NOT
      * store end-user credentials.
      */
-    DailymotionGrantTypePassword
-} DailymotionGrantType;
+            DailymotionGrantTypePassword
+};
 
 @protocol DailymotionOAuthDelegate;
 
@@ -65,7 +65,7 @@ typedef enum
 /**
  * Set the delegate that conforms to the `DailymotionDelegate` protocol.
  */
-@property (nonatomic, weak) id<DailymotionOAuthDelegate> delegate;
+@property (nonatomic, weak) id <DailymotionOAuthDelegate> delegate;
 
 /**
  * This propoerty contains an OAuth 2.0 valid session to be used to access the API or request an access token. This session
@@ -97,7 +97,7 @@ typedef enum
  * @param cachePolicy The cache policy for the request.
  * @param handler The block to be called with the response.
  */
-- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse*, NSData*, NSError*))handler;
+- (DMOAuthRequestOperation *)performRequestWithURL:(NSURL *)URL method:(NSString *)method payload:(id)payload headers:(NSDictionary *)headers cachePolicy:(NSURLRequestCachePolicy)cachePolicy completionHandler:(void (^)(NSURLResponse *, NSData *, NSError *))handler;
 
 /**
  * Set the grant type to be used for API requests.
@@ -177,6 +177,7 @@ typedef enum
  */
 #if TARGET_OS_IPHONE
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(UIView *)view;
+
 #else
 - (void)dailymotionOAuthRequest:(DMOAuthClient *)client createModalDialogWithView:(NSView *)view;
 #endif

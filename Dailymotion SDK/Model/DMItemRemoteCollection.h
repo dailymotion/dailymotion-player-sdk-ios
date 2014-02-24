@@ -13,7 +13,7 @@
 /**
  * Concreat implementation of DMItemCollection handling remote list of DMItem to be retrived thru the Dailymotion API.
  */
-@interface DMItemRemoteCollection : DMItemCollection  <NSCoding>
+@interface DMItemRemoteCollection : DMItemCollection <NSCoding>
 
 @property (nonatomic, readonly, assign) NSUInteger pageSize;
 @property (nonatomic, readonly, copy) NSString *path;

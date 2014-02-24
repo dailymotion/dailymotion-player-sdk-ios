@@ -140,7 +140,7 @@
  *
  * This object must implement the DMItemCollectionViewDataSourceDelegate protocol.
  */
-@property (nonatomic, weak) id<DMItemCollectionViewDataSourceDelegate> delegate;
+@property (nonatomic, weak) id <DMItemCollectionViewDataSourceDelegate> delegate;
 
 /**
  * @name Cancelling

@@ -140,7 +140,7 @@
  *
  * This object must implement the DMItemTableViewDataSourceDelegate protocol.
  */
-@property (nonatomic, weak) id<DMItemTableViewDataSourceDelegate> delegate;
+@property (nonatomic, weak) id <DMItemTableViewDataSourceDelegate> delegate;
 
 /**
  * @name Cancelling

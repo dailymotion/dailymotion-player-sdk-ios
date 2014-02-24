@@ -13,32 +13,28 @@
 
 #pragma mark - NSDictionary additions
 
-- (void)testDictionaryForKeys
-{
-    NSDictionary *subdict = [@{@"a":@"b", @"c": @"d", @"e": @"f"} dictionaryForKeys:@[@"a", @"e"]];
-    NSDictionary *expectedDict = @{@"a": @"b", @"e": @"f"};
+- (void)testDictionaryForKeys {
+    NSDictionary *subdict = [@{@"a" : @"b", @"c" : @"d", @"e" : @"f"} dictionaryForKeys:@[@"a", @"e"]];
+    NSDictionary *expectedDict = @{@"a" : @"b", @"e" : @"f"};
     STAssertEqualObjects(subdict, expectedDict, @"Extracted expected keys");
 }
 
-- (void)testAllMissingKeysForKeys
-{
-    NSArray *missingKeys = [@{@"a":@"b", @"c": @"d", @"e": @"f"} allMissingKeysForKeys:@[@"-", @"a", @"e", @"b", @"g"]];
+- (void)testAllMissingKeysForKeys {
+    NSArray *missingKeys = [@{@"a" : @"b", @"c" : @"d", @"e" : @"f"} allMissingKeysForKeys:@[@"-", @"a", @"e", @"b", @"g"]];
     NSArray *expectedMissingKeys = @[@"b", @"g", @"-"];
     STAssertEqualObjects(missingKeys, expectedMissingKeys, @"Returned expected keys");
 
 }
 
-- (void)testObjectsForExistingKeys
-{
-    NSArray *existingObjects = [@{@"a":@"b", @"c": @"d", @"e": @"f"} objectsForExistingKeys:@[@"-", @"a", @"e", @"b", @"g"]];
+- (void)testObjectsForExistingKeys {
+    NSArray *existingObjects = [@{@"a" : @"b", @"c" : @"d", @"e" : @"f"} objectsForExistingKeys:@[@"-", @"a", @"e", @"b", @"g"]];
     NSArray *expectedObjects = @[@"b", @"f"];
     STAssertEqualObjects(existingObjects, expectedObjects, @"Returned only existing objects");
 }
 
 #pragma mark - NSArray additions
 
-- (void)testObjectsInRange
-{
+- (void)testObjectsInRange {
     NSArray *objects = [@[@"a", @"b", @"c"] objectsInRange:NSMakeRange(0, 3) notFoundMarker:[NSNull null]];
     NSArray *excpetedObjects = @[@"a", @"b", @"c"];
     STAssertEqualObjects(objects, excpetedObjects, @"Returned objects in range");
@@ -58,8 +54,7 @@
 
 #pragma mark - NSMutableArray additions
 
-- (void)testReplaceObjectsInRange
-{
+- (void)testReplaceObjectsInRange {
     NSMutableArray *mutableArray = [NSMutableArray arrayWithObjects:@"a", @"b", @"c", nil];
     [mutableArray replaceObjectsInRange:NSMakeRange(1, 2) withObjectsFromArray:@[@"1", @"2"] fillWithObject:[NSNull null]];
     NSArray *expectedArray = @[@"a", @"1", @"2"];
@@ -81,8 +76,7 @@
     STAssertEqualObjects(mutableArray, expectedArray, @"Replaced objects in range with less objects, shrinking array");
 }
 
-- (void)testRaiseWithObject
-{
+- (void)testRaiseWithObject {
     NSMutableArray *mutableArray = [NSMutableArray arrayWithObjects:@"a", @"b", @"c", nil];
     [mutableArray raise:5 withObject:@"-"];
     NSArray *expectedArray = @[@"a", @"b", @"c", @"-", @"-"];
@@ -99,18 +93,17 @@
     STAssertEqualObjects(mutableArray, expectedArray, @"Array untouched if raise size lower than current array size");
 }
 
-- (void)testShrink
-{
+- (void)testShrink {
     NSMutableArray *mutableArray = [NSMutableArray arrayWithObjects:@"a", @"b", @"c", nil];
     [mutableArray shrink:2];
     NSArray *expectedArray = @[@"a", @"b"];
     STAssertEqualObjects(mutableArray, expectedArray, @"Shrinked array to given size");
-    
+
     mutableArray = [NSMutableArray arrayWithObjects:@"a", @"b", @"c", nil];
     [mutableArray shrink:3];
     expectedArray = @[@"a", @"b", @"c"];
     STAssertEqualObjects(mutableArray, expectedArray, @"Array untouched if already sized");
-    
+
     mutableArray = [NSMutableArray arrayWithObjects:@"a", @"b", @"c", nil];
     [mutableArray shrink:5];
     expectedArray = @[@"a", @"b", @"c"];

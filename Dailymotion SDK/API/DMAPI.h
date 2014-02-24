@@ -15,6 +15,11 @@
 
 #if TARGET_OS_IPHONE
 #import "DMPlayerViewController.h"
+
+#endif
+
+#ifndef NS_ENUM
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
 #endif
 
 /**
@@ -201,7 +206,7 @@
  * @param fileURL The URL path to the file to upload
  * @param completionHandler The block to be called once upload is complete
  */
-- (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
+- (DMAPITransfer *)uploadFileURL:(NSURL *)fileURL withCompletionHandler:(void (^) (id result, NSError *error))completionHandler;
 
 /**
  * Resume an unfinished upload
@@ -209,7 +214,7 @@
  * @param uploadOperation An unfinished upload operation returned by uploadFileURL:withCompletionHandler:
  * @param completionHandler The block to be called once upload is complete
  */
-- (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^)(id result, NSError *error))completionHandler;
+- (void)resumeFileUploadOperation:(DMAPITransfer *)uploadOperation withCompletionHandler:(void (^) (id result, NSError *error))completionHandler;
 
 #if TARGET_OS_IPHONE
 /**
@@ -223,8 +228,14 @@
  * @param params A dictionary containing `player parameters <http://www.dailymotion.com/doc/api/player.html#player-params>`_
  *               that can be used to customize the player.
  */
-- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params;
-- (DMPlayerViewController *)player:(NSString *)video;
+- (DMPlayerViewController *)playerWithVideo:(NSString *)video params:(NSDictionary *)params;
+
+- (DMPlayerViewController *)playerWithVideo:(NSString *)video;
+
+- (DMPlayerViewController *)player:(NSString *)video params:(NSDictionary *)params __attribute__((deprecated));
+
+- (DMPlayerViewController *)player:(NSString *)video __attribute__((deprecated));
+
 #endif
 
 /**

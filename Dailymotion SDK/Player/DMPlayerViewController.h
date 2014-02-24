@@ -170,6 +170,6 @@
 /**
  * The player delegate to send player events to.
  */
-@property (nonatomic, weak) id<DMPlayerDelegate>delegate;
+@property (nonatomic, weak) id <DMPlayerDelegate> delegate;
 
 @end

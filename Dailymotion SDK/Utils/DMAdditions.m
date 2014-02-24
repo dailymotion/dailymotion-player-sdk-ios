@@ -7,42 +7,36 @@
 //
 
 #import "DMAdditions.h"
-#import "DMSubscriptingSupport.h"
 
 static NSString *const DMNotFound = @"DMKeyNotFound";
-static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BOOL *stop)
-{
+
+static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BOOL *stop) {
     return ![obj isKindOfClass:[NSNull class]];
 };
 
-@implementation NSDictionary(DMAdditions)
+@implementation NSDictionary (DMAdditions)
 
-- (NSDictionary *)dictionaryForKeys:(NSArray *)keys
-{
+- (NSDictionary *)dictionaryForKeys:(NSArray *)keys {
     return [self dictionaryForKeys:keys options:0];
 }
 
-- (NSDictionary *)dictionaryForKeys:(NSArray *)keys options:(DMDictionnaryOption)options;
-{
+- (NSDictionary *)dictionaryForKeys:(NSArray *)keys options:(DMDictionnaryOption)options; {
     NSArray *values = [self objectsForKeys:keys notFoundMarker:DMNotFound];
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjects:values forKeys:keys];
     [dict removeObjectsForKeys:[dict allKeysForObject:DMNotFound]];
-    if (options & DMDictionaryOptionFilterNullValues)
-    {
+    if (options & DMDictionaryOptionFilterNullValues) {
         [dict removeObjectsForKeys:[dict allKeysForObject:NSNull.null]];
     }
     return dict;
 }
 
-- (NSArray *)allMissingKeysForKeys:(NSArray *)keys
-{
+- (NSArray *)allMissingKeysForKeys:(NSArray *)keys {
     NSArray *values = [self objectsForKeys:keys notFoundMarker:DMNotFound];
     NSDictionary *dict = [NSDictionary dictionaryWithObjects:values forKeys:keys];
     return [dict allKeysForObject:DMNotFound];
 }
 
-- (NSArray *)objectsForExistingKeys:(NSArray *)keys
-{
+- (NSArray *)objectsForExistingKeys:(NSArray *)keys {
     NSMutableArray *objects = [[self objectsForKeys:keys notFoundMarker:DMNotFound] mutableCopy];
     [objects removeObject:DMNotFound];
     return objects;
@@ -51,28 +45,24 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
 @end
 
 
-@implementation NSArray(DMAdditions)
+@implementation NSArray (DMAdditions)
 
-- (NSArray *)objectsInRange:(NSRange)range notFoundMarker:(id)marker
-{
+- (NSArray *)objectsInRange:(NSRange)range notFoundMarker:(id)marker {
     NSUInteger i;
     NSMutableArray *objects = [NSMutableArray arrayWithCapacity:range.length];
     NSUInteger count = [self count];
     NSUInteger maxIndex = count - 1;
     NSUInteger endIndex = MIN(range.location + range.length - 1, maxIndex);
 
-    for (i = 0; i < range.length; i++)
-    {
+    for (i = 0; i < range.length; i++) {
         [objects addObject:marker];
     }
 
-    if (range.length == 0 || count == 0 || range.location > maxIndex)
-    {
+    if (range.length == 0 || count == 0 || range.location > maxIndex) {
         return objects;
     }
 
-    for (i = range.location; i <= endIndex; i++)
-    {
+    for (i = range.location; i <= endIndex; i++) {
         objects[i - range.location] = self[i];
     }
 
@@ -83,25 +73,20 @@ static BOOL (^filterNull)(id key, id obj, BOOL *stop) = ^BOOL(id key, id obj, BO
 
 @implementation NSMutableArray (DMAdditions)
 
-- (void)raise:(NSUInteger)newSize withObject:(id)filler
-{
-    if ([self count] < newSize)
-    {
-        for (NSUInteger i = [self count]; i < newSize; i++)
-        {
+- (void)raise:(NSUInteger)newSize withObject:(id)filler {
+    if ([self count] < newSize) {
+        for (NSUInteger i = [self count]; i < newSize; i++) {
             [self addObject:filler];
         }
     }
 }
 
-- (void)shrink:(NSUInteger)newSize
-{
+- (void)shrink:(NSUInteger)newSize {
     if (newSize >= [self count]) return;
     [self removeObjectsInRange:NSMakeRange(newSize, [self count] - newSize)];
 }
 
-- (void)replaceObjectsInRange:(NSRange)range withObjectsFromArray:(NSArray *)objects fillWithObject:(id)filler
-{
+- (void)replaceObjectsInRange:(NSRange)range withObjectsFromArray:(NSArray *)objects fillWithObject:(id)filler {
     [self raise:range.location + range.length withObject:filler];
     [self replaceObjectsInRange:range withObjectsFromArray:objects];
 }

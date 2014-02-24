@@ -14,13 +14,11 @@
 
 @implementation DMAPIProxy
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
+- (void)encodeWithCoder:(NSCoder *)coder {
     // do nothing
 }
 
-- (id)initWithCoder:(NSCoder *)coder
-{
+- (id)initWithCoder:(NSCoder *)coder {
     return [super init];
 }
 
@@ -35,28 +33,23 @@
 
 @implementation DMAPIArchiverDelegate
 
-- (id)initWithAPI:(DMAPI *)api
-{
-    if ((self = [super init]))
-    {
+- (id)initWithAPI:(DMAPI *)api {
+    self = [super init];
+    if (self) {
         _api = api;
     }
     return self;
 }
 
-- (id)archiver:(NSKeyedArchiver *)archiver willEncodeObject:(id)object
-{
-    if ([object isKindOfClass:DMAPI.class])
-    {
+- (id)archiver:(NSKeyedArchiver *)archiver willEncodeObject:(id)object {
+    if ([object isKindOfClass:DMAPI.class]) {
         return [[DMAPIProxy alloc] init];
     }
     return object;
 }
 
-- (id)unarchiver:(NSKeyedUnarchiver *)unarchiver didDecodeObject:(id)object
-{
-    if ([object isKindOfClass:DMAPIProxy.class])
-    {
+- (id)unarchiver:(NSKeyedUnarchiver *)unarchiver didDecodeObject:(id)object {
+    if ([object isKindOfClass:DMAPIProxy.class]) {
         return self.api;
     }
     return object;

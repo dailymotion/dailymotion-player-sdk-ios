@@ -32,48 +32,46 @@ NSString *const DMReachabilityChangedNotification = @"DMReachabilityChangedNotif
 
 @interface DMReachability ()
 
-@property (nonatomic, assign) SCNetworkReachabilityRef _reachabilityRef;
-@property (nonatomic, strong) id _reachabilityObject;
+@property (nonatomic, assign) SCNetworkReachabilityRef reachabilityRef;
+@property (nonatomic, strong) id reachabilityObject;
 #if OS_OBJECT_USE_OBJC
-@property (nonatomic, strong) dispatch_queue_t _reachabilitySerialQueue;
+@property (nonatomic, strong) dispatch_queue_t reachabilitySerialQueue;
 #else
-@property (nonatomic, assign) dispatch_queue_t _reachabilitySerialQueue;
+@property (nonatomic, assign) dispatch_queue_t reachabilitySerialQueue;
 #endif
 
 - (void)reachabilityChanged:(SCNetworkReachabilityFlags)flags;
+
 - (BOOL)isReachableWithFlags:(SCNetworkReachabilityFlags)flags;
 
 @end
 
 
-static NSString *reachabilityFlags(SCNetworkReachabilityFlags flags)
-{
+static NSString *reachabilityFlags(SCNetworkReachabilityFlags flags) {
     return [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
-#if	TARGET_OS_IPHONE
-            (flags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
-#else
+                                      #if    TARGET_OS_IPHONE
+                                              (flags & kSCNetworkReachabilityFlagsIsWWAN) ? 'W' : '-',
+                                      #else
             'X',
 #endif
-            (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
-            (flags & kSCNetworkReachabilityFlagsConnectionRequired)   ? 'c' : '-',
-            (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',
-            (flags & kSCNetworkReachabilityFlagsInterventionRequired) ? 'i' : '-',
-            (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)  ? 'C' : '-',
-            (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)   ? 'D' : '-',
-            (flags & kSCNetworkReachabilityFlagsIsLocalAddress)       ? 'l' : '-',
-            (flags & kSCNetworkReachabilityFlagsIsDirect)             ? 'd' : '-'];
+                                              (flags & kSCNetworkReachabilityFlagsReachable) ? 'R' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsConnectionRequired) ? 'c' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsTransientConnection) ? 't' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsInterventionRequired) ? 'i' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic) ? 'C' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsConnectionOnDemand) ? 'D' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsIsLocalAddress) ? 'l' : '-',
+                                      (flags & kSCNetworkReachabilityFlagsIsDirect) ? 'd' : '-'];
 }
 
 //Start listening for reachability notifications on the current run loop
-static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
-{
+static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
 #pragma unused (target)
     DMReachability *reachability = ((__bridge DMReachability *)info);
 
     // we probably dont need an autoreleasepool here as GCD docs state each queue has its own autorelease pool
     // but what the heck eh?
-    @autoreleasepool
-    {
+    @autoreleasepool {
         [reachability reachabilityChanged:flags];
     }
 }
@@ -83,30 +81,25 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 #pragma mark - class constructor methods
 
-+ (DMReachability *)reachabilityWithHostname:(NSString *)hostname
-{
++ (DMReachability *)reachabilityWithHostname:(NSString *)hostname {
     SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);
-    if (ref)
-    {
+    if (ref) {
         return [[self alloc] initWithReachabilityRef:ref];
     }
 
     return nil;
 }
 
-+ (DMReachability *)reachabilityWithAddress:(const struct sockaddr_in *)hostAddress
-{
++ (DMReachability *)reachabilityWithAddress:(const struct sockaddr_in *)hostAddress {
     SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *)hostAddress);
-    if (ref)
-    {
+    if (ref) {
         return [[self alloc] initWithReachabilityRef:ref];
     }
 
     return nil;
 }
 
-+ (DMReachability *)reachabilityForInternetConnection
-{
++ (DMReachability *)reachabilityForInternetConnection {
     struct sockaddr_in zeroAddress;
     bzero(&zeroAddress, sizeof(zeroAddress));
     zeroAddress.sin_len = sizeof(zeroAddress);
@@ -115,8 +108,7 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return [self reachabilityWithAddress:&zeroAddress];
 }
 
-+ (DMReachability *)reachabilityForLocalWiFi
-{
++ (DMReachability *)reachabilityForLocalWiFi {
     struct sockaddr_in localWifiAddress;
     bzero(&localWifiAddress, sizeof(localWifiAddress));
     localWifiAddress.sin_len = sizeof(localWifiAddress);
@@ -130,26 +122,22 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 // initialization methods
 
-- (DMReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref
-{
+- (DMReachability *)initWithReachabilityRef:(SCNetworkReachabilityRef)ref {
     self = [super init];
-    if (self != nil)
-    {
+    if (self = [super init]) {
         self.reachableOnWWAN = YES;
-        self._reachabilityRef = ref;
+        self.reachabilityRef = ref;
     }
 
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self stopNotifier];
 
-    if(self._reachabilityRef)
-    {
-        CFRelease(self._reachabilityRef);
-        self._reachabilityRef = nil;
+    if (self.reachabilityRef) {
+        CFRelease(self.reachabilityRef);
+        self.reachabilityRef = nil;
     }
 #ifdef DEBUG
     NSLog(@"Reachability: dealloc");
@@ -163,48 +151,43 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 // - In other words DO NOT DO ANY UI UPDATES IN THE BLOCKS.
 //   INSTEAD USE dispatch_async(dispatch_get_main_queue(), ^{UISTUFF}) (or dispatch_sync if you want)
 
-- (BOOL)startNotifier
-{
+- (BOOL)startNotifier {
     SCNetworkReachabilityContext context = {0, NULL, NULL, NULL, NULL};
 
     // this should do a retain on ourself, so as long as we're in notifier mode we shouldn't disappear out from under ourselves
     // woah
-    self._reachabilityObject = self;
+    self.reachabilityObject = self;
 
 
 
     // first we need to create a serial queue
     // we allocate this once for the lifetime of the notifier
-    self._reachabilitySerialQueue = dispatch_queue_create("com.dailymotion.reachability", NULL);
-    if(!self._reachabilitySerialQueue)
-    {
+    self.reachabilitySerialQueue = dispatch_queue_create("com.dailymotion.reachability", NULL);
+    if (!self.reachabilitySerialQueue) {
         return NO;
     }
 
 
     context.info = (__bridge void *)self;
 
-    if (!SCNetworkReachabilitySetCallback(self._reachabilityRef, DMReachabilityCallback, &context))
-    {
+    if (!SCNetworkReachabilitySetCallback(self.reachabilityRef, DMReachabilityCallback, &context)) {
 #ifdef DEBUG
         NSLog(@"SCNetworkReachabilitySetCallback() failed: %s", SCErrorString(SCError()));
 #endif
 
         //clear out the dispatch queue
-        if(self._reachabilitySerialQueue)
-        {
-            dispatch_release(self._reachabilitySerialQueue);
-            self._reachabilitySerialQueue = nil;
+        if (self.reachabilitySerialQueue) {
+            dispatch_release(self.reachabilitySerialQueue);
+            self.reachabilitySerialQueue = nil;
         }
 
-        self._reachabilityObject = nil;
+        self.reachabilityObject = nil;
 
         return NO;
     }
 
     // set it as our reachability queue which will retain the queue
-    if(!SCNetworkReachabilitySetDispatchQueue(self._reachabilityRef, self._reachabilitySerialQueue))
-    {
+    if (!SCNetworkReachabilitySetDispatchQueue(self.reachabilityRef, self.reachabilitySerialQueue)) {
 #ifdef DEBUG
         NSLog(@"SCNetworkReachabilitySetDispatchQueue() failed: %s", SCErrorString(SCError()));
 #endif
@@ -212,16 +195,15 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
         //UH OH - FAILURE!
 
         // first stop any callbacks!
-        SCNetworkReachabilitySetCallback(self._reachabilityRef, NULL, NULL);
+        SCNetworkReachabilitySetCallback(self.reachabilityRef, NULL, NULL);
 
         // then clear out the dispatch queue
-        if(self._reachabilitySerialQueue)
-        {
-            dispatch_release(self._reachabilitySerialQueue);
-            self._reachabilitySerialQueue = nil;
+        if (self.reachabilitySerialQueue) {
+            dispatch_release(self.reachabilitySerialQueue);
+            self.reachabilitySerialQueue = nil;
         }
 
-        self._reachabilityObject = nil;
+        self.reachabilityObject = nil;
 
         return NO;
     }
@@ -229,21 +211,19 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return YES;
 }
 
-- (void)stopNotifier
-{
+- (void)stopNotifier {
     // first stop any callbacks!
-    SCNetworkReachabilitySetCallback(self._reachabilityRef, NULL, NULL);
+    SCNetworkReachabilitySetCallback(self.reachabilityRef, NULL, NULL);
 
     // unregister target from the GCD serial dispatch queue
-    SCNetworkReachabilitySetDispatchQueue(self._reachabilityRef, NULL);
+    SCNetworkReachabilitySetDispatchQueue(self.reachabilityRef, NULL);
 
-    if(self._reachabilitySerialQueue)
-    {
-        dispatch_release(self._reachabilitySerialQueue);
-        self._reachabilitySerialQueue = nil;
+    if (self.reachabilitySerialQueue) {
+        dispatch_release(self.reachabilitySerialQueue);
+        self.reachabilitySerialQueue = nil;
     }
 
-    self._reachabilityObject = nil;
+    self.reachabilityObject = nil;
 }
 
 #pragma mark - reachability tests
@@ -258,26 +238,21 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 #define testcase (kSCNetworkReachabilityFlagsConnectionRequired | kSCNetworkReachabilityFlagsTransientConnection)
 
-- (BOOL)isReachableWithFlags:(SCNetworkReachabilityFlags)flags
-{
+- (BOOL)isReachableWithFlags:(SCNetworkReachabilityFlags)flags {
     BOOL connectionUP = YES;
 
-    if(!(flags & kSCNetworkReachabilityFlagsReachable))
-    {
+    if (!(flags & kSCNetworkReachabilityFlagsReachable)) {
         connectionUP = NO;
     }
 
-    if((flags & testcase) == testcase)
-    {
+    if ((flags & testcase) == testcase) {
         connectionUP = NO;
     }
 
-#if	TARGET_OS_IPHONE
-    if(flags & kSCNetworkReachabilityFlagsIsWWAN)
-    {
+#if    TARGET_OS_IPHONE
+    if (flags & kSCNetworkReachabilityFlagsIsWWAN) {
         // we're on 3G
-        if(!self.reachableOnWWAN)
-        {
+        if (!self.reachableOnWWAN) {
             // we dont want to connect when on 3G
             connectionUP = NO;
         }
@@ -287,30 +262,25 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return connectionUP;
 }
 
-- (BOOL)isReachable
-{
+- (BOOL)isReachable {
     SCNetworkReachabilityFlags flags;
 
-    if(!SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
+    if (!SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
         return NO;
 
     return [self isReachableWithFlags:flags];
 }
 
-- (BOOL)isReachableViaWWAN
-{
-#if	TARGET_OS_IPHONE
+- (BOOL)isReachableViaWWAN {
+#if    TARGET_OS_IPHONE
 
     SCNetworkReachabilityFlags flags = 0;
 
-    if(SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
-    {
+    if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) {
         // check we're REACHABLE
-        if(flags & kSCNetworkReachabilityFlagsReachable)
-        {
+        if (flags & kSCNetworkReachabilityFlagsReachable) {
             // now, check we're on WWAN
-            if(flags & kSCNetworkReachabilityFlagsIsWWAN)
-            {
+            if (flags & kSCNetworkReachabilityFlagsIsWWAN) {
                 return YES;
             }
         }
@@ -320,19 +290,15 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return NO;
 }
 
-- (BOOL)isReachableViaWiFi
-{
+- (BOOL)isReachableViaWiFi {
     SCNetworkReachabilityFlags flags = 0;
 
-    if(SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
-    {
+    if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) {
         // check we're reachable
-        if((flags & kSCNetworkReachabilityFlagsReachable))
-        {
-#if	TARGET_OS_IPHONE
+        if ((flags & kSCNetworkReachabilityFlagsReachable)) {
+#if    TARGET_OS_IPHONE
             // check we're NOT on WWAN
-            if((flags & kSCNetworkReachabilityFlagsIsWWAN))
-            {
+            if ((flags & kSCNetworkReachabilityFlagsIsWWAN)) {
                 return NO;
             }
 #endif
@@ -346,59 +312,50 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 // WWAN may be available, but not active until a connection has been established.
 // WiFi may require a connection for VPN on Demand.
-- (BOOL)isConnectionRequired
-{
+- (BOOL)isConnectionRequired {
     SCNetworkReachabilityFlags flags;
 
-	if(SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
-    {
-		return (flags & kSCNetworkReachabilityFlagsConnectionRequired);
-	}
+    if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) {
+        return (flags & kSCNetworkReachabilityFlagsConnectionRequired);
+    }
 
     return NO;
 }
 
 // Dynamic, on demand connection?
-- (BOOL)isConnectionOnDemand
-{
-	SCNetworkReachabilityFlags flags;
+- (BOOL)isConnectionOnDemand {
+    SCNetworkReachabilityFlags flags;
 
-	if (SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
-    {
-		return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
-				(flags & (kSCNetworkReachabilityFlagsConnectionOnTraffic | kSCNetworkReachabilityFlagsConnectionOnDemand)));
-	}
+    if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) {
+        return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
+                (flags & (kSCNetworkReachabilityFlagsConnectionOnTraffic | kSCNetworkReachabilityFlagsConnectionOnDemand)));
+    }
 
-	return NO;
+    return NO;
 }
 
 // Is user intervention required?
-- (BOOL)isInterventionRequired
-{
+- (BOOL)isInterventionRequired {
     SCNetworkReachabilityFlags flags;
 
-	if (SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
-    {
-		return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
-				(flags & kSCNetworkReachabilityFlagsInterventionRequired));
-	}
+    if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) {
+        return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
+                (flags & kSCNetworkReachabilityFlagsInterventionRequired));
+    }
 
-	return NO;
+    return NO;
 }
 
 
 #pragma mark - reachability status stuff
 
-- (DMNetworkStatus)currentReachabilityStatus
-{
-    if([self isReachable])
-    {
-        if([self isReachableViaWiFi])
-        {
+- (DMNetworkStatus)currentReachabilityStatus {
+    if ([self isReachable]) {
+        if ([self isReachableViaWiFi]) {
             return DMReachableViaWiFi;
         }
 
-#if	TARGET_OS_IPHONE
+#if    TARGET_OS_IPHONE
         return DMReachableViaWWAN;
 #endif
     }
@@ -406,62 +363,51 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     return DMNotReachable;
 }
 
-- (SCNetworkReachabilityFlags)reachabilityFlags
-{
+- (SCNetworkReachabilityFlags)reachabilityFlags {
     SCNetworkReachabilityFlags flags = 0;
 
-    if(SCNetworkReachabilityGetFlags(self._reachabilityRef, &flags))
-    {
+    if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) {
         return flags;
     }
 
     return 0;
 }
 
-- (NSString *)currentReachabilityString
-{
-	DMNetworkStatus temp = [self currentReachabilityStatus];
+- (NSString *)currentReachabilityString {
+    DMNetworkStatus temp = [self currentReachabilityStatus];
 
-	if(temp == _reachableOnWWAN)
-	{
+    if (temp == _reachableOnWWAN) {
         // updated for the fact we have CDMA phones now!
-		return NSLocalizedString(@"Cellular", @"");
-	}
-	if (temp == DMReachableViaWiFi)
-	{
-		return NSLocalizedString(@"WiFi", @"");
-	}
+        return NSLocalizedString(@"Cellular", @"");
+    }
+    if (temp == DMReachableViaWiFi) {
+        return NSLocalizedString(@"WiFi", @"");
+    }
 
-	return NSLocalizedString(@"No Connection", @"");
+    return NSLocalizedString(@"No Connection", @"");
 }
 
-- (NSString *)currentReachabilityFlags
-{
+- (NSString *)currentReachabilityFlags {
     return reachabilityFlags([self reachabilityFlags]);
 }
 
 #pragma mark - callback function calls this method
 
-- (void)reachabilityChanged:(SCNetworkReachabilityFlags)flags
-{
+- (void)reachabilityChanged:(SCNetworkReachabilityFlags)flags {
 #ifdef DEBUG
     NSLog(@"Reachability: %@", reachabilityFlags(flags));
 #endif
 
-    if([self isReachableWithFlags:flags])
-    {
-        if(self.reachableBlock)
-        {
+    if ([self isReachableWithFlags:flags]) {
+        if (self.reachableBlock) {
 #ifdef DEBUG
             NSLog(@"Reachability: blocks are not called on the main thread.\n Use dispatch_async(dispatch_get_main_queue(), ^{}); to update your UI!");
 #endif
             self.reachableBlock(self);
         }
     }
-    else
-    {
-        if(self.unreachableBlock)
-        {
+    else {
+        if (self.unreachableBlock) {
 #ifdef DEBUG
             NSLog(@"Reachability: blocks are not called on the main thread.\n Use dispatch_async(dispatch_get_main_queue(), ^{}); to update your UI!");
 #endif
@@ -471,10 +417,10 @@ static void DMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
     // this makes sure the change notification happens on the MAIN THREAD
     dispatch_async(dispatch_get_main_queue(),
-    ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:DMReachabilityChangedNotification
-                                                            object:self];
-    });
+            ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:DMReachabilityChangedNotification
+                                                                    object:self];
+            });
 }
 
 @end

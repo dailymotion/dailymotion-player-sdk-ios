@@ -24,22 +24,19 @@
 
 @implementation DMAPICall
 
-- (id)init
-{
-    if ((self = [super init]))
-    {
+- (id)init {
+    self = [super init];
+    if (self) {
         _isCancelled = NO;
     }
     return self;
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
     return [NSString stringWithFormat:@"DMAPICall(%@): %@ %@?%@", self.callId, self.method, self.path, [self.args stringAsQueryString]];
 }
 
-- (void)cancel
-{
+- (void)cancel {
     self.isCancelled = YES;
 }
 

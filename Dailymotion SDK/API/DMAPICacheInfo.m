@@ -8,7 +8,6 @@
 
 #import "DMAPICacheInfo.h"
 #import "DMAPI.h"
-#import "DMSubscriptingSupport.h"
 
 NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalidatedNotification";
 
@@ -20,20 +19,18 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
 @property (nonatomic, readwrite) NSString *etag;
 @property (nonatomic, readwrite, assign) BOOL public;
 @property (nonatomic, readwrite, assign) NSTimeInterval maxAge;
-@property (nonatomic, weak) DMAPI *_api;
+@property (nonatomic, weak) DMAPI *api;
 
 @end
 
 
-@implementation DMAPICacheInfo
-{
+@implementation DMAPICacheInfo {
     BOOL _stalled;
 }
 
-- (id)initWithCacheInfo:(NSDictionary *)cacheInfo fromAPI:(DMAPI *)api
-{
-    if ((self = [super init]))
-    {
+- (id)initWithCacheInfo:(NSDictionary *)cacheInfo fromAPI:(DMAPI *)api {
+    self = [super init];
+    if (self) {
         _date = [NSDate date];
         _namespace = cacheInfo[@"namespace"];
         _invalidates = cacheInfo[@"invalidates"];
@@ -42,8 +39,7 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
         _maxAge = MAX([cacheInfo[@"maxAge"] floatValue], 900);
         _valid = YES;
 
-        if (_invalidates)
-        {
+        if (_invalidates) {
             [[NSNotificationCenter defaultCenter] postNotificationName:DMAPICacheInfoInvalidatedNotification
                                                                 object:self.invalidates];
         }
@@ -53,18 +49,14 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
                                                      name:DMAPICacheInfoInvalidatedNotification
                                                    object:nil];
 
-        if (!_public)
-        {
-            __api = api;
-            [__api addObserver:self forKeyPath:@"oauth.session" options:0 context:NULL];
+        if (!_public) {
         }
     }
 
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
+- (void)encodeWithCoder:(NSCoder *)coder {
     NSMutableDictionary *cacheInfo = [NSMutableDictionary dictionary];
     if (_namespace) cacheInfo[@"namespace"] = _namespace;
     // Do not archive invalidates as we don't want to invalidate current cached data on unarchiving
@@ -76,16 +68,15 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
     [coder encodeObject:_date forKey:@"date"];
     [coder encodeBool:_valid forKey:@"valid"];
     [coder encodeBool:_stalled forKey:@"stalled"];
-    [coder encodeObject:__api forKey:@"_api"];
+    [coder encodeObject:_api forKey:@"_api"];
 }
 
-- (id)initWithCoder:(NSCoder *)coder
-{
+- (id)initWithCoder:(NSCoder *)coder {
     NSDictionary *cacheInfo = [coder decodeObjectForKey:@"cacheInfo"];
     DMAPI *api = [coder decodeObjectForKey:@"_api"];
 
-    if ((self = [self initWithCacheInfo:cacheInfo fromAPI:api]))
-    {
+    self = [self initWithCacheInfo:cacheInfo fromAPI:api];
+    if (self) {
         _date = [coder decodeObjectForKey:@"date"];
         _valid = [coder decodeBoolForKey:@"valid"];
         _stalled = [coder decodeBoolForKey:@"stalled"];
@@ -93,44 +84,37 @@ NSString *const DMAPICacheInfoInvalidatedNotification = @"DMAPICacheInfoInvalida
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    if (!self.public)
-    {
-        [self._api removeObserver:self forKeyPath:@"oauth.session"];
+    if (!self.
+    public) {
+        [self.api removeObserver:self forKeyPath:@"oauth.session"];
     }
 }
 
-- (BOOL)stalled
-{
+- (BOOL)stalled {
     return _stalled || [NSDate.date timeIntervalSinceDate:self.date] > self.maxAge;
 }
 
-- (void)setStalled:(BOOL)stalled
-{
+- (void)setStalled:(BOOL)stalled {
     _stalled = stalled;
 }
 
-- (void)invalidateNamespaces:(NSNotification *)notification
-{
+- (void)invalidateNamespaces:(NSNotification *)notification {
     NSArray *invalidatedNamespaces = notification.object;
-    if ([invalidatedNamespaces containsObject:self.namespace] || [invalidatedNamespaces containsObject:@"*"])
-    {
+    if ([invalidatedNamespaces containsObject:self.namespace] || [invalidatedNamespaces containsObject:@"*"]) {
         self.stalled = YES;
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     // Flush cache of private objects when session change
-    if (self._api == object && !self.public && [keyPath isEqualToString:@"oauth.session"])
-    {
+    if (self.api == object && !self.
+    public && [keyPath isEqualToString:@"oauth.session"]) {
         self.valid = NO;
     }
-    else
-    {
+    else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }

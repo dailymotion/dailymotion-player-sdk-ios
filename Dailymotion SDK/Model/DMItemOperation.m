@@ -16,31 +16,30 @@
 
 @implementation DMItemOperation
 
-- (id)init
-{
-    if ((self = [super init]))
-    {
-        _cancelBlock = ^{}; // no-op by default
+- (id)init {
+    self = [super init];
+    if (self) {
+        _cancelBlock = ^{
+        }; // no-op by default
         _isCancelled = NO;
         _isFinished = NO;
     }
     return self;
 }
 
-- (void)setIsFinished:(BOOL)isFinished
-{
-    if (isFinished)
-    {
-        self.cancelBlock = ^{};
+- (void)setIsFinished:(BOOL)isFinished {
+    if (isFinished) {
+        self.cancelBlock = ^{
+        };
     }
     _isFinished = isFinished;
 }
 
-- (void)cancel
-{
+- (void)cancel {
     if (self.isFinished) return;
     self.cancelBlock();
-    _cancelBlock = ^{};
+    _cancelBlock = ^{
+    };
     self.isCancelled = YES;
     self.isFinished = YES;
 }

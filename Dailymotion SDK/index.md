@@ -14,7 +14,7 @@ The Dailymotion SDK let you control the Dailymotion HTML 5 player from you app.
 
 Here is an example of player instanciation:
 
-    self.playerController = playerViewController = [DMAPI.sharedAPI player:@"xkdk2" params:nil];
+    self.playerController = playerViewController = [DMAPI.sharedAPI playerWithVideo:@"xkdk2" params:nil];
     self.playerController.delegate = self;
     [self.view addSubview:self.playerController.view];
     [self.playerViewController play];
