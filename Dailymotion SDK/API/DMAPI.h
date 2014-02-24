@@ -18,6 +18,10 @@
 
 #endif
 
+#ifndef NS_ENUM
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
+#endif
+
 /**
  * Low level access to the API. This object can be used to perform direct API request. It is thus recommanded
  * to use higher level objects like DMItem and DMItemCollection or UIKit data sources like DMTableViewDataSource
