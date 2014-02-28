@@ -93,7 +93,6 @@
     }];
     DMAPICall *call2 = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
-        NSLog(@"result %@", result);
     }];
     
     STAssertTrue([call2.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
@@ -113,14 +112,16 @@
     [api get:@"/videos" args:@{@"fields" : @"title"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
         DONE
     }];
-    [api get:@"/echo" args:@{@"message" : @"test"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    DMAPICall *call = [api get:@"/echo" args:@{@"message" : @"test"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
-    DMAPICall *call = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    DMAPICall *callm = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
-    STAssertTrue([call.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
-    DMAPIMergedCall *parent = (DMAPIMergedCall *)call.parent;
+    STAssertNil(call.parent, @"This call should be unmodified and should have no parent");
+    
+    STAssertTrue([callm.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
+    DMAPIMergedCall *parent = (DMAPIMergedCall *)callm.parent;
     STAssertEquals([parent.calls count], 2U, @"The merged call cointains 3 real calls");
     
     WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");

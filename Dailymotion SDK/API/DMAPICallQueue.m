@@ -52,7 +52,7 @@
 #pragma mark - Queue
 
 
-// return a call mergeable with call it could return an already merged call
+// return a call from the queue that can be mergeable with the arg call it could return an already merged call or nil
 - (DMAPICall *) callMergeableWith:(DMAPICall *) call {
     for (NSString *key in self.callQueue) {
         DMAPICall *queuedCall = self.callQueue[key];
@@ -82,7 +82,6 @@
         // Do we have a call that can be merged with this new call ?
         DMAPICall *mergeableCall = [self callMergeableWith:call];
         if (mergeableCall) {
-            NSLog(@"DMAPICall-----------------MERGEABLE %@ %@", call.callId, mergeableCall.callId);
             
             // if the mergeable call is not already a DMAPIMergedCall create it with the past call
             if (![mergeableCall isKindOfClass:[DMAPIMergedCall class]]) {
