@@ -85,13 +85,16 @@
     INIT(3)
     
     DMAPI *api = self.api;
-    DMAPICall *call0 = [api get:@"/videos" args:@{@"fields" : @"title"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+    DMAPICall *call0 = [api get:@"/videos" args:@{@"fields" : @[@"owner_screenname"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
         DONE
     }];
-    DMAPICall *call1 = [api get:@"/videos" args:@{@"fields" : @"owner_screenname"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    DMAPICall *call1 = [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
-    DMAPICall *call2 = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    DMAPICall *call2 = [api get:@"/videos" args:@{@"fields" : @[@"owner_id"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        STAssertTrue([result objectForKey:@"owner_screenname"], @"Contains response with owner_screenname");
+        STAssertTrue([result objectForKey:@"title"], @"Contains response with title");
+        STAssertTrue([result objectForKey:@"owner_id"], @"Contains response with owner_id");
         DONE
     }];
     
@@ -100,7 +103,7 @@
     STAssertTrue([parent.calls containsObject:call0], @"Call0 is merged into the parent");
     STAssertTrue([parent.calls containsObject:call1], @"Call1 is merged into the parent");
     STAssertTrue([parent.calls containsObject:call2], @"Call2 is merged into the parent");
-
+    
     STAssertEquals([parent.calls count], 3U, @"The merged call cointains 3 real calls");
     WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
 }
@@ -109,13 +112,13 @@
     INIT(3)
     
     DMAPI *api = self.api;
-    [api get:@"/videos" args:@{@"fields" : @"title"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+    [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
         DONE
     }];
     DMAPICall *call = [api get:@"/echo" args:@{@"message" : @"test"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
-    DMAPICall *callm = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    DMAPICall *callm = [api get:@"/videos" args:@{@"fields" : @[@"owner_id"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
     STAssertNil(call.parent, @"This call should be unmodified and should have no parent");

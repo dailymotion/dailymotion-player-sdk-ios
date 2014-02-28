@@ -38,16 +38,11 @@
         if (![self isMergeableWith:call] ) return;
         
         //merge args[@"fields"]
-        NSMutableDictionary *newFields = [self.args[@"fields"] mutableCopy];
-        NSEnumerator* e = [call.args[@"field"] keyEnumerator];
-        id k = nil;
-        while((k = [e nextObject]) != nil) {
-            id v = call.args[@"field"][k];
-            [newFields setObject:v forKey:k];
-        }
-        
         NSMutableDictionary *mArgs = [self.args mutableCopy];
-        [mArgs setObject:newFields forKey:@"fields"];
+
+        NSMutableArray *currentFields = [self.args[@"fields"] mutableCopy];
+        [currentFields addObjectsFromArray:call.args[@"fields"]];
+        mArgs[@"fields"] = currentFields;
         self.args = [NSDictionary dictionaryWithDictionary:mArgs];
         
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
