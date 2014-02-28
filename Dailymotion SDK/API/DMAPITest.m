@@ -91,10 +91,10 @@
     DMAPICall *call1 = [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
-    DMAPICall *call2 = [api get:@"/videos" args:@{@"fields" : @[@"owner_id"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
-        STAssertTrue([result objectForKey:@"owner_screenname"], @"Contains response with owner_screenname");
-        STAssertTrue([result objectForKey:@"title"], @"Contains response with title");
-        STAssertTrue([result objectForKey:@"owner_id"], @"Contains response with owner_id");
+    DMAPICall *call2 = [api get:@"/videos" args:@{@"fields" : @[@"country"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        STAssertTrue([result[@"list"][0] objectForKey:@"owner_screenname"], @"Contains response with owner_screenname");
+        STAssertTrue([result[@"list"][0] objectForKey:@"title"], @"Contains response with title");
+        STAssertTrue([result[@"list"][0] objectForKey:@"country"], @"Contains response with country");
         DONE
     }];
     
@@ -118,7 +118,7 @@
     DMAPICall *call = [api get:@"/echo" args:@{@"message" : @"test"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
-    DMAPICall *callm = [api get:@"/videos" args:@{@"fields" : @[@"owner_id"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    DMAPICall *callm = [api get:@"/videos" args:@{@"fields" : @[@"owner_screenname"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         DONE
     }];
     STAssertNil(call.parent, @"This call should be unmodified and should have no parent");
