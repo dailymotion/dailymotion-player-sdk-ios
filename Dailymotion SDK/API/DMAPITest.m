@@ -83,7 +83,7 @@
 
 - (void)testMergedCall {
     INIT(3)
-    
+
     DMAPI *api = self.api;
     DMAPICall *call0 = [api get:@"/videos" args:@{@"fields" : @[@"owner_screenname"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
         DONE
@@ -97,20 +97,36 @@
         STAssertTrue([result[@"list"][0] objectForKey:@"country"], @"Contains response with country");
         DONE
     }];
-    
+
     STAssertTrue([call2.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
     DMAPIMergedCall *parent = (DMAPIMergedCall *)call2.parent;
     STAssertTrue([parent.calls containsObject:call0], @"Call0 is merged into the parent");
     STAssertTrue([parent.calls containsObject:call1], @"Call1 is merged into the parent");
     STAssertTrue([parent.calls containsObject:call2], @"Call2 is merged into the parent");
-    
+
     STAssertEquals([parent.calls count], 3U, @"The merged call cointains 3 real calls");
     WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
 }
 
+- (void)testMergedCancelCall {
+    DMAPI *api = self.api;
+    DMAPICall *call0 = [api get:@"/videos" args:@{@"fields" : @[@"owner_screenname"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+    }];
+    DMAPICall *call1 = [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+    }];
+
+    STAssertFalse(call0.parent.isCancelled, @"The merged call is not yet cancel cause childs are not finished");
+    [call0 cancel];
+    STAssertFalse(call0.parent.isCancelled, @"The merged call is not yet cancel cause childs are not finished");
+    STAssertTrue(call0.isCancelled, @"call0 is cancelled");
+    [call1 cancel];
+    STAssertTrue(call1.isCancelled, @"call1 is cancelled");
+    STAssertTrue(call0.parent.isCancelled, @"Both subcalls are cancelled");
+}
+
 - (void)testMergedCallPlusMulticall {
     INIT(3)
-    
+
     DMAPI *api = self.api;
     [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
         DONE
@@ -122,11 +138,11 @@
         DONE
     }];
     STAssertNil(call.parent, @"This call should be unmodified and should have no parent");
-    
+
     STAssertTrue([callm.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
     DMAPIMergedCall *parent = (DMAPIMergedCall *)callm.parent;
     STAssertEquals([parent.calls count], 2U, @"The merged call cointains 3 real calls");
-    
+
     WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
 }
 

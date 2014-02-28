@@ -167,23 +167,9 @@ static NSString *const kDMVersion = @"2.0";
     }
 }
 
-// unoptimized permute pair elements avoiding repetitions
-- (NSArray *) permuteArrayOfSets:(NSArray *)elements {
-    NSMutableSet *resultSet = [NSMutableSet set];
-    for (NSUInteger i=0;i<[elements count]; i++) {
-        for (NSUInteger j=0;j<[elements count]; j++) {
-            if (i == j) continue;
-            NSSet *newSet = [NSSet setWithObjects:elements[i], elements[j], nil];
-            if ([resultSet containsObject:newSet]) continue;
-            [resultSet addObject:newSet];
-        }
-    }
-    return [NSArray arrayWithArray:[resultSet allObjects]];
-}
-
 - (void)performCalls:(NSArray *)calls {
     NSMutableArray *callRequestBodies = [[NSMutableArray alloc] init];
-    
+
     for (DMAPICall *call in calls) {
         NSMutableDictionary *callRequestBody = [NSMutableDictionary dictionary];
         callRequestBody[@"id"] = call.callId;
@@ -196,7 +182,7 @@ static NSString *const kDMVersion = @"2.0";
         }
         [callRequestBodies addObject:callRequestBody];
     }
-    
+
     DMOAuthRequestOperation *request;
     request = [self.oauth performRequestWithURL:self.APIBaseURL
                                          method:@"POST"

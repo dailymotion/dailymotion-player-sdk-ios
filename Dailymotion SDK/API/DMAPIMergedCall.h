@@ -14,8 +14,10 @@
  */
 @interface DMAPIMergedCall : DMAPICall
 
-@property(nonatomic, strong) NSMutableArray *calls;
+@property (nonatomic, strong) NSMutableArray *calls;
+
 - (id)initWithCall:(DMAPICall *)call;
-- (void) addCall:(DMAPICall *)call;
+
+- (void)addCall:(DMAPICall *)call;
 
 @end

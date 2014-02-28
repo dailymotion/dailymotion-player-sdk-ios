@@ -19,24 +19,25 @@
 
 @implementation DMAPIMergedCall
 
-- (id)initWithCall:(DMAPICall *)call
-{
+- (id)initWithCall:(DMAPICall *)call {
     self = [super init];
     if (self) {
         _calls = [NSMutableArray arrayWithCapacity:2];
+        [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
         [_calls addObject:call];
         self.path = call.path;
         self.method = call.method;
         self.args = call.args;
+        call.parent = self;
         self.callId = [NSString stringWithFormat:@"M%@", call.callId];
     }
     return self;
 }
 
-- (void) addCall:(DMAPICall *)call {
+- (void)addCall:(DMAPICall *)call {
     @synchronized (self) {
-        if (![self isMergeableWith:call] ) return;
-        
+        if (![self isMergeableWith:call]) return;
+
         //merge args[@"fields"]
         NSMutableDictionary *mArgs = [self.args mutableCopy];
 
@@ -44,7 +45,6 @@
         [currentFields addObjectsFromArray:call.args[@"fields"]];
         mArgs[@"fields"] = currentFields;
         self.args = [NSDictionary dictionaryWithDictionary:mArgs];
-        
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
         [self.calls addObject:call];
         call.parent = self;
@@ -55,7 +55,7 @@
     return [NSString stringWithFormat:@"DMAPICallS MERGED(%@): %@ %@?%@", self.callId, self.method, self.path, [self.args stringAsQueryString]];
 }
 
--(DMAPICallResultBlock) callback {
+- (DMAPICallResultBlock)callback {
     DMAPICallResultBlock block = ^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
         for (DMAPICall *call in self.calls) {
             if (![call isCancelled]) {
@@ -69,10 +69,22 @@
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"isCancelled"]){
+    if ([keyPath isEqualToString:@"isCancelled"]) {
+        if (object == self) return;
+
         BOOL isTotallyCanceled = YES;
-        [self removeObserver:object forKeyPath:@"isCancelled"];
-        [self.calls removeObject:object];
+        [object removeObserver:self forKeyPath:@"isCancelled"];
+
+        @synchronized (self) {
+            [self.calls removeObject:object];
+        }
+
+        NSLog(@"DMAPIMergeCall calls: %@", self.calls);
+        if ([self.calls count] == 0) {
+            self.isCancelled = YES;
+            return;
+        }
+
         for (DMAPICall *call in self.calls) {
             if (!call.isCancelled) {
                 isTotallyCanceled = NO;
@@ -81,6 +93,8 @@
                 self.isCancelled = YES;
             }
         }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 

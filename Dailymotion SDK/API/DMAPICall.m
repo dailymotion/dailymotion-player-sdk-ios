@@ -43,7 +43,7 @@
 - (BOOL)isMergeableWith:(DMAPICall *)oCall {
     NSMutableDictionary *cleanedArgs = [NSMutableDictionary dictionaryWithDictionary:self.args];
     [cleanedArgs removeObjectForKey:@"fields"];
-    
+
     NSMutableDictionary *cleanedOArgs = [NSMutableDictionary dictionaryWithDictionary:oCall.args];
     [cleanedOArgs removeObjectForKey:@"fields"];
     return (!self.isCancelled && !oCall.isCancelled && self.method == oCall.method && self.path == oCall.path && [cleanedArgs isEqualToDictionary:cleanedOArgs]);
