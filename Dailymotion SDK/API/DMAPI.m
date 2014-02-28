@@ -181,89 +181,8 @@ static NSString *const kDMVersion = @"2.0";
     return [NSArray arrayWithArray:[resultSet allObjects]];
 }
 
-// merge set if one of the obj contained in the sets is in another set of elements
-- (NSArray *) mergeArrayOfSets:(NSArray *)elements {
-    if ([elements count] < 2) return elements;
-    // makes all sets mutable
-    NSMutableArray *srcArray = [NSMutableArray arrayWithCapacity:[elements count]];
-    for (NSSet *s in elements) {
-        [srcArray addObject:[NSMutableSet setWithSet:s]];
-    }
-    
-    // add first obj to resArray
-    NSMutableArray *resArray = [NSMutableArray array];
-    NSSet *oneSet = [srcArray lastObject];
-    [resArray addObject:oneSet];
-    [srcArray removeObject:oneSet];
-    
-    NSMutableArray *remainSets = [NSMutableArray array];
-    // iterate over srcArray test if one elements from s is in resArray
-    for (NSMutableSet *outSet in srcArray) {
-        BOOL found = NO;
-        for (NSMutableSet *testSet in resArray) {
-            if ([outSet intersectsSet:testSet]) {
-                [outSet addObject:testSet];
-                found = YES;
-                break;
-            }
-        }
-        if (!found) {
-            for (NSMutableSet *testSet in remainSets) {
-                if ([outSet intersectsSet:testSet]) {
-                    [outSet addObject:testSet];
-                    found = YES;
-                    break;
-                }
-            }
-        }
-        //otherwise add to remainsArray
-        if (!found) {
-            [remainSets addObject:outSet];
-        }
-        
-    };
-    [resArray addObjectsFromArray:remainSets];
-    return resArray;
-}
-
-
-// return an array of NSSet mergeable calls, same endpoints differents fields
-- (NSArray *) mergeableCalls:(NSArray *)callsPermuted{
-    NSMutableArray *tmpArray = [NSMutableArray arrayWithCapacity:2];
-    for (NSSet *calls in [self permuteArrayOfSets:callsPermuted]) {
-        DMAPICall *call0 = [calls allObjects][0];
-        DMAPICall *call1 = [calls allObjects][1];
-        if ([call0 isMergeableWith:call1]) {
-            [tmpArray addObject:calls];
-        }
-    }
-    // don't try to merge again if unnecessary
-    if ([tmpArray count] < 2) return tmpArray;
-    
-    // try to merge intersect calls
-    return [self mergeArrayOfSets:tmpArray];
-}
-
 - (void)performCalls:(NSArray *)calls {
     NSMutableArray *callRequestBodies = [[NSMutableArray alloc] init];
-    
-    NSArray *mergeableCalls = [self mergeableCalls:calls];
-    if ([mergeableCalls count] > 0) {
-        NSLog(@"MERGEABLE ------------------------------------------- %d set\n%@", [mergeableCalls count], mergeableCalls);
-        // remove call from call list
-        NSMutableArray *callsMergedArray = [NSMutableArray arrayWithArray:calls];
-        for (NSSet *mergedCallSet in mergeableCalls) {
-            DMAPIMergedCall *mergedCall = [[DMAPIMergedCall alloc] init];
-            
-            for (DMAPICall *call in mergedCallSet) {
-                [mergedCall addCall:call];
-                [call cancel];
-                [callsMergedArray removeObject:call];
-            }
-            [callsMergedArray addObject:mergedCall];
-        }
-        calls = [NSArray arrayWithArray:callsMergedArray];
-    }
     
     for (DMAPICall *call in calls) {
         NSMutableDictionary *callRequestBody = [NSMutableDictionary dictionary];
@@ -278,8 +197,6 @@ static NSString *const kDMVersion = @"2.0";
         [callRequestBodies addObject:callRequestBody];
     }
     
-    
-
     DMOAuthRequestOperation *request;
     request = [self.oauth performRequestWithURL:self.APIBaseURL
                                          method:@"POST"

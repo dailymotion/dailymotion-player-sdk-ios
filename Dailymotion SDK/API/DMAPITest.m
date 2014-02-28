@@ -81,6 +81,51 @@
     WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been aggregated into a single HTTP request");
 }
 
+- (void)testMergedCall {
+    INIT(3)
+    
+    DMAPI *api = self.api;
+    DMAPICall *call0 = [api get:@"/videos" args:@{@"fields" : @"title"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+        DONE
+    }];
+    DMAPICall *call1 = [api get:@"/videos" args:@{@"fields" : @"owner_screenname"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+    }];
+    DMAPICall *call2 = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+        NSLog(@"result %@", result);
+    }];
+    
+    STAssertTrue([call2.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
+    DMAPIMergedCall *parent = (DMAPIMergedCall *)call2.parent;
+    STAssertTrue([parent.calls containsObject:call0], @"Call0 is merged into the parent");
+    STAssertTrue([parent.calls containsObject:call1], @"Call1 is merged into the parent");
+    STAssertTrue([parent.calls containsObject:call2], @"Call2 is merged into the parent");
+
+    STAssertEquals([parent.calls count], 3U, @"The merged call cointains 3 real calls");
+    WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
+}
+
+- (void)testMergedCallPlusMulticall {
+    INIT(3)
+    
+    DMAPI *api = self.api;
+    [api get:@"/videos" args:@{@"fields" : @"title"} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+        DONE
+    }];
+    [api get:@"/echo" args:@{@"message" : @"test"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+    }];
+    DMAPICall *call = [api get:@"/videos" args:@{@"fields" : @"owner_id"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+    }];
+    STAssertTrue([call.parent isKindOfClass:[DMAPIMergedCall class]], @"This call has been merged into a DMAPIMergedCall");
+    DMAPIMergedCall *parent = (DMAPIMergedCall *)call.parent;
+    STAssertEquals([parent.calls count], 2U, @"The merged call cointains 3 real calls");
+    
+    WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
+}
+
 - (void)testMultiCallIntermix {
     INIT(2)
 

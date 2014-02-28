@@ -7,41 +7,93 @@
 //
 
 #import "DMAPIMergedCall.h"
+#import "DMQueryString.h"
 
 @interface DMAPIMergedCall ()
-@property(nonatomic, strong) NSMutableArray *calls;
 @property (nonatomic, copy) NSString *method;
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSDictionary *args;
+@property (nonatomic, copy) NSString *callId;
+@property (nonatomic, assign, readwrite) BOOL isCancelled;
 @end
 
 @implementation DMAPIMergedCall
 
-- (id)init
+- (id)initWithCall:(DMAPICall *)call
 {
     self = [super init];
     if (self) {
         _calls = [NSMutableArray arrayWithCapacity:2];
+        [_calls addObject:call];
+        self.path = call.path;
+        self.method = call.method;
+        self.args = call.args;
+        self.callId = [NSString stringWithFormat:@"M%@", call.callId];
     }
     return self;
 }
 
 - (void) addCall:(DMAPICall *)call {
-    if ([self.calls count] > 0) {
+    @synchronized (self) {
         if (![self isMergeableWith:call] ) return;
         
-        //merge args["fields"] if needed
-        if (![self.args objectForKey:@"fields"]) {
-            
-        } else {
-            //self.args[@"fields"] = call.args[@"field"];
+        //merge args[@"fields"]
+        NSMutableDictionary *newFields = [self.args[@"fields"] mutableCopy];
+        NSEnumerator* e = [call.args[@"field"] keyEnumerator];
+        id k = nil;
+        while((k = [e nextObject]) != nil) {
+            id v = call.args[@"field"][k];
+            [newFields setObject:v forKey:k];
         }
         
-    } else {
-        self.path = call.path;
-        self.method = call.method;
-        self.args = call.args;
+        NSMutableDictionary *mArgs = [self.args mutableCopy];
+        [mArgs setObject:newFields forKey:@"fields"];
+        self.args = [NSDictionary dictionaryWithDictionary:mArgs];
+        
+        [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
+        [self.calls addObject:call];
+        call.parent = self;
     }
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"DMAPICallS MERGED(%@): %@ %@?%@", self.callId, self.method, self.path, [self.args stringAsQueryString]];
+}
+
+-(DMAPICallResultBlock) callback {
+    DMAPICallResultBlock block = ^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        for (DMAPICall *call in self.calls) {
+            if (![call isCancelled]) {
+                call.callback(result, cacheInfo, error);
+            }
+        }
+    };
+    return block;
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"isCancelled"]){
+        BOOL isTotallyCanceled = YES;
+        [self removeObserver:object forKeyPath:@"isCancelled"];
+        [self.calls removeObject:object];
+        for (DMAPICall *call in self.calls) {
+            if (!call.isCancelled) {
+                isTotallyCanceled = NO;
+            }
+            if (isTotallyCanceled) {
+                self.isCancelled = YES;
+            }
+        }
+    }
+}
+
+- (void)cancel {
+    for (DMAPICall *call in self.calls) {
+        [call cancel];
+    }
+    self.isCancelled = YES;
 }
 
 @end
