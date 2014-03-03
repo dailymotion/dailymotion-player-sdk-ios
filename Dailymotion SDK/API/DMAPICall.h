@@ -21,11 +21,11 @@ typedef void (^DMAPICallResultBlock)(id result, DMAPICacheInfo *cacheInfo, NSErr
 @property (nonatomic, strong, readonly) DMAPICallResultBlock callback;
 @property (nonatomic, assign, readonly) BOOL isCancelled;
 
-@property (nonatomic, strong) DMAPICall *parent;
+@property (nonatomic, weak) DMAPICall *parent;
 
 // is this call mergeable with oCall
 // mergeable stands for same requests with differents or same fields
-- (BOOL)isMergeableWith:(DMAPICall *)oCall;
+- (BOOL)isMergeableWith:(DMAPICall *)call;
 
 - (void)cancel;
 

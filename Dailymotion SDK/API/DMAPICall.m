@@ -40,13 +40,13 @@
 }
 
 // return true if oCall is asking for exactly the same things but args["fields"]
-- (BOOL)isMergeableWith:(DMAPICall *)oCall {
+- (BOOL)isMergeableWith:(DMAPICall *)call {
     NSMutableDictionary *cleanedArgs = [NSMutableDictionary dictionaryWithDictionary:self.args];
     [cleanedArgs removeObjectForKey:@"fields"];
 
-    NSMutableDictionary *cleanedOArgs = [NSMutableDictionary dictionaryWithDictionary:oCall.args];
+    NSMutableDictionary *cleanedOArgs = [NSMutableDictionary dictionaryWithDictionary:call.args];
     [cleanedOArgs removeObjectForKey:@"fields"];
-    return (!self.isCancelled && !oCall.isCancelled && self.method == oCall.method && self.path == oCall.path && [cleanedArgs isEqualToDictionary:cleanedOArgs]);
+    return (!self.isCancelled && !call.isCancelled && [self.method isEqualToString:call.method] && [self.path isEqualToString:call.path] && [cleanedArgs isEqualToDictionary:cleanedOArgs]);
 }
 
 @end
