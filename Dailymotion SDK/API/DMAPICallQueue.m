@@ -51,11 +51,9 @@
 
 #pragma mark - Queue
 
-
 // return a call from the queue that can be mergeable with the arg call it could return an already merged call or nil
 - (DMAPICall *)callMergeableWith:(DMAPICall *)call {
-    for (NSString *key in self.callQueue) {
-        DMAPICall *queuedCall = self.callQueue[key];
+    for (DMAPICall *queuedCall in [self callsWithNoHandler]) {
         if ([queuedCall isMergeableWith:call]) {
             return queuedCall;
         }
