@@ -79,7 +79,6 @@
             [self.calls removeObject:object];
         }
 
-        NSLog(@"DMAPIMergeCall calls: %@", self.calls);
         if ([self.calls count] == 0) {
             self.isCancelled = YES;
             return;
@@ -98,6 +97,7 @@
     }
 }
 
+// Calling cancel on sub calls
 - (void)cancel {
     for (DMAPICall *call in self.calls) {
         [call cancel];
