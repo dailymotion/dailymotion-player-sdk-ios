@@ -28,7 +28,6 @@
         self.path = call.path;
         self.method = call.method;
         self.args = call.args;
-        call.parent = self;
         self.callId = [NSString stringWithFormat:@"M%@", call.callId];
     }
     return self;
@@ -47,7 +46,6 @@
         self.args = [NSDictionary dictionaryWithDictionary:mArgs];
         [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
         [self.calls addObject:call];
-        call.parent = self;
     }
 }
 
