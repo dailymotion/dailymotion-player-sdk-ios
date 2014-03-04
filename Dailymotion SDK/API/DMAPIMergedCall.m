@@ -74,11 +74,7 @@
 
         BOOL isTotallyCanceled = YES;
         [object removeObserver:self forKeyPath:@"isCancelled"];
-
-        @synchronized (self) {
-            [self.calls removeObject:object];
-        }
-
+        
         if ([self.calls count] == 0) {
             self.isCancelled = YES;
             return;
@@ -103,6 +99,10 @@
         [call cancel];
     }
     self.isCancelled = YES;
+}
+
+- (void)dealloc {
+    [self cancel];
 }
 
 @end
