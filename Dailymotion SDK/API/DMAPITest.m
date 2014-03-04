@@ -81,6 +81,43 @@
     WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been aggregated into a single HTTP request");
 }
 
+- (void)testMergedCall {
+    INIT(3)
+
+    DMAPI *api = self.api;
+    [api get:@"/videos" args:@{@"fields" : @[@"owner_screenname"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+        DONE
+    }];
+    [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+    }];
+    [api get:@"/videos" args:@{@"fields" : @[@"country"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        STAssertTrue([result[@"list"][0] objectForKey:@"owner_screenname"], @"Contains response with owner_screenname");
+        STAssertTrue([result[@"list"][0] objectForKey:@"title"], @"Contains response with title");
+        STAssertTrue([result[@"list"][0] objectForKey:@"country"], @"Contains response with country");
+        DONE
+    }];
+
+    WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
+}
+
+- (void)testMergedCallPlusMulticall {
+    INIT(3)
+
+    DMAPI *api = self.api;
+    [api get:@"/videos" args:@{@"fields" : @[@"title"]} callback:^(NSDictionary *result, DMAPICacheInfo *cache, NSError *error) {
+        DONE
+    }];
+    [api get:@"/echo" args:@{@"message" : @"test"} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+    }];
+    [api get:@"/videos" args:@{@"fields" : @[@"owner_screenname"]} callback:^(id result, DMAPICacheInfo *cacheInfo, NSError *error) {
+        DONE
+    }];
+
+    WAIT STAssertEquals(networkRequestCount, 1U, @"All 3 API calls has been merge into a single HTTP request");
+}
+
 - (void)testMultiCallIntermix {
     INIT(2)
 

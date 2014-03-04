@@ -18,7 +18,6 @@
 @property (nonatomic, strong, readwrite) DMAPICacheInfo *cacheInfo;
 @property (nonatomic, strong, readwrite) DMAPICallResultBlock callback;
 @property (nonatomic, assign, readwrite) BOOL isCancelled;
-
 @end
 
 
@@ -38,6 +37,16 @@
 
 - (void)cancel {
     self.isCancelled = YES;
+}
+
+// return true if oCall is asking for exactly the same things but args["fields"]
+- (BOOL)isMergeableWith:(DMAPICall *)call {
+    NSMutableDictionary *cleanedArgs = [NSMutableDictionary dictionaryWithDictionary:self.args];
+    [cleanedArgs removeObjectForKey:@"fields"];
+
+    NSMutableDictionary *cleanedOArgs = [NSMutableDictionary dictionaryWithDictionary:call.args];
+    [cleanedOArgs removeObjectForKey:@"fields"];
+    return (!self.isCancelled && !call.isCancelled && [self.method isEqualToString:call.method] && [self.path isEqualToString:call.path] && [cleanedArgs isEqualToDictionary:cleanedOArgs]);
 }
 
 @end

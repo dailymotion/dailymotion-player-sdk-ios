@@ -96,6 +96,8 @@
 		53E8F6B8158F5EA2000A5BF3 /* DMItemOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E8F6B6158F5EA2000A5BF3 /* DMItemOperation.m */; };
 		53F0816B15827C43000E56C4 /* DMNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 53F0816915827C43000E56C4 /* DMNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53F0816C15827C43000E56C4 /* DMNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F0816A15827C43000E56C4 /* DMNetworking.m */; };
+		5D731EF918BC38C600E5A64B /* DMAPIMergedCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D731EF718BC38C600E5A64B /* DMAPIMergedCall.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5D731EFA18BC38C600E5A64B /* DMAPIMergedCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D731EF818BC38C600E5A64B /* DMAPIMergedCall.m */; };
 		AA747D9F0F9514B9006C5449 /* iOS_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -201,6 +203,8 @@
 		53E8F6B6158F5EA2000A5BF3 /* DMItemOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMItemOperation.m; sourceTree = "<group>"; };
 		53F0816915827C43000E56C4 /* DMNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMNetworking.h; sourceTree = "<group>"; };
 		53F0816A15827C43000E56C4 /* DMNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMNetworking.m; sourceTree = "<group>"; };
+		5D731EF718BC38C600E5A64B /* DMAPIMergedCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMAPIMergedCall.h; sourceTree = "<group>"; };
+		5D731EF818BC38C600E5A64B /* DMAPIMergedCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMAPIMergedCall.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Prefix.pch; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libDailymotionSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDailymotionSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -324,6 +328,8 @@
 				531A631E1586175700EB269B /* DMAPIError.m */,
 				531A632C15862E2E00EB269B /* DMAPICallQueue.h */,
 				531A632D15862E2E00EB269B /* DMAPICallQueue.m */,
+				5D731EF718BC38C600E5A64B /* DMAPIMergedCall.h */,
+				5D731EF818BC38C600E5A64B /* DMAPIMergedCall.m */,
 				53002EAD15878AF70060AC98 /* DMAPICall.h */,
 				53002EAE15878AF70060AC98 /* DMAPICall.m */,
 				5394A30715AC96F100BE76FF /* DMAPITransfer.h */,
@@ -468,6 +474,7 @@
 				531A632E15862E2E00EB269B /* DMAPICallQueue.h in Headers */,
 				5397428615872ED000ABF402 /* DMOAuthRequestOperation.h in Headers */,
 				53002EAA15876C860060AC98 /* DMNetRequestOperation.h in Headers */,
+				5D731EF918BC38C600E5A64B /* DMAPIMergedCall.h in Headers */,
 				53002EAF15878AF70060AC98 /* DMAPICall.h in Headers */,
 				531580C21589F81200F25C7D /* DMReachability.h in Headers */,
 				531580CD158A269A00F25C7D /* DMItem.h in Headers */,
@@ -665,6 +672,7 @@
 				5397428715872ED000ABF402 /* DMOAuthRequestOperation.m in Sources */,
 				53002EAB15876C860060AC98 /* DMNetRequestOperation.m in Sources */,
 				53002EB015878AF70060AC98 /* DMAPICall.m in Sources */,
+				5D731EFA18BC38C600E5A64B /* DMAPIMergedCall.m in Sources */,
 				531580C31589F81200F25C7D /* DMReachability.m in Sources */,
 				531580CE158A269A00F25C7D /* DMItem.m in Sources */,
 				531580D2158A473800F25C7D /* DMAPICacheInfo.m in Sources */,

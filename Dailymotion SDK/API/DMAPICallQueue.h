@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "DMAPICall.h"
+#import "DMAPIMergedCall.h"
 
 @class DMAPI;
 

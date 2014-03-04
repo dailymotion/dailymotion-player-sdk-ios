@@ -51,6 +51,16 @@
 
 #pragma mark - Queue
 
+// return a call from the queue that can be mergeable with the arg call it could return an already merged call or nil
+- (DMAPICall *)callMergeableWith:(DMAPICall *)call {
+    for (DMAPICall *queuedCall in [self callsWithNoHandler]) {
+        if ([queuedCall isMergeableWith:call]) {
+            return queuedCall;
+        }
+    }
+    return nil;
+}
+
 - (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback {
     @synchronized (self) {
         NSString *callId = [NSString stringWithFormat:@"%d", self.callNextId++];
@@ -67,17 +77,54 @@
             call.callback = ^(id result, DMAPICacheInfo *cache, NSError *error) { /* noop */ };
         }
 
-        self.callQueue[callId] = call;
-        self.callHandlers[callId] = [NSNull null];
+        // Do we have a call that can be merged with this new call ?
+        DMAPICall *mergeableCall = [self callMergeableWith:call];
+        if (mergeableCall) {
 
-        [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
+            // if the mergeable call is not already a DMAPIMergedCall create it with the past call
+            if (![mergeableCall isKindOfClass:[DMAPIMergedCall class]]) {
+                DMAPIMergedCall *mergedCall = [[DMAPIMergedCall alloc] initWithCall:mergeableCall];
 
-        self.count = [self.callQueue.allValues count];
+                // remove the mergeableCall from callQueue
+                [self.callQueue removeObjectForKey:mergeableCall.callId];
+                [self.callHandlers removeObjectForKey:mergeableCall.callId];
+                [mergeableCall removeObserver:self forKeyPath:@"isCancelled"];
+
+                // enqueue the mergedCall in callQueue
+                callId = mergedCall.callId;
+                self.callQueue[callId] = mergedCall;
+                self.callHandlers[callId] = [NSNull null];
+                [mergedCall addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
+                mergeableCall = mergedCall;
+            }
+
+            // add the new call to the aldready existing mergeableCall
+            // it's already enqueued
+            [(DMAPIMergedCall *)mergeableCall addCall:call];
+
+        } else {
+            self.callQueue[callId] = call;
+            self.callHandlers[callId] = [NSNull null];
+            [call addObserver:self forKeyPath:@"isCancelled" options:0 context:NULL];
+
+            self.count = [self.callQueue.allValues count];
+        }
         return call;
     }
 }
 
 - (DMAPICall *)callWithId:(NSString *)callId {
+    // lookup in merged calls
+    if (!self.callQueue[callId]) {
+        for (NSString *k in [self.callQueue allKeys]) {
+            if ([self.callQueue[k] isKindOfClass:[DMAPIMergedCall class]]) {
+                DMAPIMergedCall *mergedCall = self.callQueue[k];
+                for (DMAPICall *call in mergedCall.calls) {
+                    if ([call.callId isEqualToString:callId]) return call;
+                }
+            }
+        }
+    }
     return self.callQueue[callId];
 }
 
