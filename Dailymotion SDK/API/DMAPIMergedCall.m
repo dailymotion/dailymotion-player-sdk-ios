@@ -69,22 +69,17 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqualToString:@"isCancelled"] && [object isKindOfClass:[DMAPICall class]] && [(DMAPICall *)object isCancelled]) {
         if (object == self) return;
-
-        BOOL isTotallyCanceled = YES;
+        
+        BOOL isTotallyCancelled = YES;
         [object removeObserver:self forKeyPath:@"isCancelled"];
         
-        if ([self.calls count] == 0) {
-            self.isCancelled = YES;
-            return;
-        }
-
         for (DMAPICall *call in self.calls) {
             if (!call.isCancelled) {
-                isTotallyCanceled = NO;
+                isTotallyCancelled = NO;
             }
-            if (isTotallyCanceled) {
-                self.isCancelled = YES;
-            }
+        }
+        if (isTotallyCancelled) {
+            self.isCancelled = YES;
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
