@@ -8,6 +8,7 @@
 
 #import "DMPlayerViewController.h"
 #import "DMAlert.h"
+#import "DMAPI.h"
 
 @interface DMPlayerViewController ()
 
@@ -99,7 +100,7 @@
         }
     }
 
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location", self.webBaseURLString, video];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@", self.webBaseURLString, video, [[DMAPI sharedAPI] version]];
     for (NSString *param in [self.params keyEnumerator]) {
         id value = self.params[param];
         if ([value isKindOfClass:NSString.class]) {
@@ -117,6 +118,11 @@
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+  
+    BOOL isFrame = ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];
+  
+    if (isFrame) return YES;
+  
     if ([request.URL.scheme isEqualToString:@"dmevent"]) {
         NSString *eventName = nil;
         NSMutableDictionary *data = [NSMutableDictionary dictionary];
