@@ -8,6 +8,7 @@
 
 #import "DMPlayerViewController.h"
 #import "DMAlert.h"
+#import "DMAPI.h"
 
 @interface DMPlayerViewController ()
 
@@ -99,7 +100,7 @@
         }
     }
 
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&null_fix=1", self.webBaseURLString, video];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@", self.webBaseURLString, video, [[DMAPI sharedAPI] version]];
     for (NSString *param in [self.params keyEnumerator]) {
         id value = self.params[param];
         if ([value isKindOfClass:NSString.class]) {
@@ -111,8 +112,6 @@
     NSString *appName = NSBundle.mainBundle.bundleIdentifier;
     [url appendFormat:@"&app=%@", [appName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 
-    // TEST only
-    url = [@"http://stage-15.dailymotion.com/embed/video/x1zvv3f?DMNOCAPPING=1&ads_params=LR_PUBLISHER_ID=1331" mutableCopy];
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
 
     self.view = webview;
