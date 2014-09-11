@@ -23,6 +23,9 @@
 
 @implementation DMNetRequestOperation
 
+@synthesize executing = _executing;
+@synthesize finished = _finished;
+
 - (id)initWithRequest:(NSURLRequest *)request {
     self = [super init];
     if (self) {

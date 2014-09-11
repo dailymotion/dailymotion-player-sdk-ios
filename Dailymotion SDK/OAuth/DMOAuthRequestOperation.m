@@ -25,6 +25,9 @@
 
 @implementation DMOAuthRequestOperation
 
+@synthesize executing = _executing;
+@synthesize finished = _finished;
+
 - (id)initWithURL:(NSURL *)URL method:(NSString *)method headers:(NSDictionary *)headers payload:(id)payload networkQueue:(DMNetworking *)networkQueue completionHandler:(void (^)(NSURLResponse *response, NSData *data, NSError *error))handler {
     self = [super init];
     if (self) {
