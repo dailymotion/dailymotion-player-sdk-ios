@@ -82,7 +82,7 @@
         }
     }
     else if (result != errSecItemNotFound) {
-        NSLog(@"Keychain access error: %ld", result);
+        NSLog(@"Keychain access error: %d", (int)result);
     }
 
     return nil;
@@ -115,7 +115,7 @@
         // No previous item found; add the new one.
         OSStatus result = SecItemAdd((__bridge CFDictionaryRef)[self secItemDictionaryForIdentifier:keychainIdentifier], NULL);
         if (result != noErr) {
-            NSLog(@"Keychain write error: %ld", result);
+            NSLog(@"Keychain write error: %d", (int)result);
         }
         return result == noErr;
     }
@@ -128,7 +128,7 @@
         return YES;
     }
     else {
-        NSLog(@"Keychain delete error: %ld", result);
+        NSLog(@"Keychain delete error: %d", (int)result);
         return NO;
     }
 }

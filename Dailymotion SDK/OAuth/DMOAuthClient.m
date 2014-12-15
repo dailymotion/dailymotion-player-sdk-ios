@@ -350,7 +350,7 @@ static char callbackKey;
             }
 
             // Compute a uniq hash key for the current grant type setup
-            const char *str = [[NSString stringWithFormat:@"type=%d&key=%@&secret=%@&scope=%@", type, apiKey, apiSecret, scope] UTF8String];
+            const char *str = [[NSString stringWithFormat:@"type=%ld&key=%@&secret=%@&scope=%@", type, apiKey, apiSecret, scope] UTF8String];
             unsigned char r[CC_MD5_DIGEST_LENGTH];
             CC_MD5(str, (CC_LONG)strlen(str), r);
 

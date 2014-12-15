@@ -22,10 +22,15 @@ static DMItemOperation *fakeOperation() {
 @end
 
 
-@interface DMItemLocalCollection ()
+@interface DMItemCollection ()
 
 @property (nonatomic, readwrite, assign) NSUInteger currentEstimatedTotalItemsCount;
 @property (nonatomic, readwrite, assign) NSInteger itemsCount;
+
+@end
+
+@interface DMItemLocalCollection ()
+
 @property (nonatomic, strong) NSMutableOrderedSet *privateItems;
 
 @end

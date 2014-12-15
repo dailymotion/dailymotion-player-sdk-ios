@@ -202,7 +202,7 @@ static NSString *const kDMVersion = @"2.0.2";
     if (connectionError) {
         NSError *error = [DMAPIError errorWithMessage:connectionError.localizedDescription
                                                domain:DailymotionTransportErrorDomain
-                                                 type:[NSNumber numberWithInt:connectionError.code]
+                                                 type:@(connectionError.code)
                                              response:response
                                                  data:responseData];
         [self raiseErrorToCalls:calls error:error];
@@ -264,7 +264,7 @@ static NSString *const kDMVersion = @"2.0.2";
             return;
         }
         else if (httpResponse.statusCode != 200) {
-            NSError *error = [DMAPIError errorWithMessage:[NSString stringWithFormat:@"Unknown error: %d.", httpResponse.statusCode]
+            NSError *error = [DMAPIError errorWithMessage:[NSString stringWithFormat:@"Unknown error: %ld.", (long)httpResponse.statusCode]
                                                    domain:DailymotionApiErrorDomain
                                                      type:nil
                                                  response:response
@@ -578,8 +578,8 @@ static NSString *const kDMVersion = @"2.0.2";
     NSDictionary *headers = @
     {
             @"Content-Type" : @"application/octet-stream",
-            @"Content-Length" : [NSString stringWithFormat:@"%d", range.length],
-            @"X-Content-Range" : [NSString stringWithFormat:@"bytes %d-%d/%d", range.location, range.location + range.length - 1, uploadOperation.totalBytesExpectedToTransfer],
+            @"Content-Length" : [NSString stringWithFormat:@"%lu", (unsigned long)range.length],
+            @"X-Content-Range" : [NSString stringWithFormat:@"bytes %lu-%lu/%ld", (unsigned long)range.location, range.location + range.length - 1, (long)uploadOperation.totalBytesExpectedToTransfer],
             @"Session-Id" : uploadOperation.sessionId,
             @"Content-Disposition" : [NSString stringWithFormat:@"attachment; filename=\"%@\"", uploadOperation.localURL.path.lastPathComponent]
     };
@@ -597,7 +597,7 @@ static NSString *const kDMVersion = @"2.0.2";
                                               if (uploadOperation.completionHandler) {
                                                   NSError *error = [DMAPIError errorWithMessage:connectionError.localizedDescription
                                                                                          domain:DailymotionTransportErrorDomain
-                                                                                           type:[NSNumber numberWithInt:connectionError.code]
+                                                                                           type:@(connectionError.code)
                                                                                        response:response
                                                                                            data:responseData];
 
@@ -607,7 +607,7 @@ static NSString *const kDMVersion = @"2.0.2";
                                           else if (statusCode == 201) {
                                               NSString *rangeHeader = ((NSHTTPURLResponse *)response).allHeaderFields[@"Range"];
                                               NSScanner *rangeScanner = [NSScanner scannerWithString:rangeHeader];
-                                              NSInteger start = -1, end = -1, total = -1;
+                                              int start = -1, end = -1, total = -1;
                                               if (!([rangeScanner scanInt:&start] &&
                                                       [rangeScanner scanString:@"-" intoString:NULL] && [rangeScanner scanInt:&end] &&
                                                       [rangeScanner scanString:@"/" intoString:NULL] && [rangeScanner scanInt:&total])) {
@@ -627,7 +627,7 @@ static NSString *const kDMVersion = @"2.0.2";
                                                           NSLog(@"WARN: Upload server changed the expected bytes to transfer");
                                                       }
                                                       if (uploadOperation.totalBytesTransfered + range.length != (NSUInteger)end + 1) {
-                                                          NSLog(@"WARN: Upload server returned an unexpected range %d + %d != %d + 1", uploadOperation.totalBytesTransfered, range.length, end);
+                                                          NSLog(@"WARN: Upload server returned an unexpected range %ld + %lu != %d + 1", (long)uploadOperation.totalBytesTransfered, (unsigned long)range.length, end);
                                                       }
                                                       uploadOperation.totalBytesTransfered = end + 1;
                                                   }

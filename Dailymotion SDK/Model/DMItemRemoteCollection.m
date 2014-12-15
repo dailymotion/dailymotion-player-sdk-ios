@@ -221,7 +221,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
         // Handle situation when several requests with exactly same page/pageSize configuration are performed
         // in parallele, ensure we only execute the request once and calls all callbacks at once once completed
         @synchronized (self.runningRequests) {
-            NSString *requestKey = [NSString stringWithFormat:@"%d:%d", page, itemsPerPage];
+            NSString *requestKey = [NSString stringWithFormat:@"%lu:%lu", (unsigned long)page, (unsigned long)itemsPerPage];
             NSMutableDictionary *requestInfo = self.runningRequests[requestKey];
             __block void (^bcallback)(NSArray *, BOOL, NSInteger, BOOL, NSError *) = callback;
             __weak DMItemOperation *boperation = operation;
@@ -289,8 +289,8 @@ static NSString *const DMEndOfList = @"DMEndOfList";
 
 - (DMAPICall *)loadItemsWithFields:(NSArray *)fields forPage:(NSUInteger)page withPageSize:(NSUInteger)itemsPerPage do:(void (^)(NSArray *items, BOOL more, NSInteger total, BOOL stalled, NSError *error))callback {
     NSMutableDictionary *params = self.params ? self.params.mutableCopy : NSMutableDictionary.dictionary;
-    params[@"page"] = [NSNumber numberWithInt:page];
-    params[@"limit"] = [NSNumber numberWithInt:itemsPerPage];
+    params[@"page"] = @(page);
+    params[@"limit"] = @(itemsPerPage);
 
     NSMutableSet *fieldsSet = [NSMutableSet setWithArray:fields];
     [fieldsSet addObject:@"id"]; // Enforce id retrival
@@ -325,7 +325,7 @@ static NSString *const DMEndOfList = @"DMEndOfList";
             }
             sself.cacheInfo = cacheInfo;
 
-            NSUInteger idx = (page - 1) * itemsPerPage;
+            NSInteger idx = (page - 1) * itemsPerPage;
             for (NSDictionary *itemData in list) {
                 DMItem *item = [sself itemWithId:itemData[@"id"] atIndex:idx++];
                 [item loadInfo:itemData withCacheInfo:cacheInfo];
@@ -362,18 +362,18 @@ static NSString *const DMEndOfList = @"DMEndOfList";
                 }
             }
 
-            NSUInteger maxEstimatedItemsCount = sself.pageSize * 100;
+            NSInteger maxEstimatedItemsCount = sself.pageSize * 100;
             if (sself.total == -1) {
                 // If server didn't returned an estimated total and we don't know the current list boundary,
                 // set the estimated total to current cache size + one page. It won't be accurate for the
                 // majority of the case, but this value isn't to be shown to the end user, only to help building
                 // the UI.
-                NSUInteger fakedTotal = MIN([sself.listCache count] + sself.pageSize, maxEstimatedItemsCount);
-                if (sself.currentEstimatedTotalItemsCount != fakedTotal) {
+                NSInteger fakedTotal = MIN([sself.listCache count] + sself.pageSize, (NSUInteger)maxEstimatedItemsCount);
+                if (sself.currentEstimatedTotalItemsCount != (NSUInteger)fakedTotal) {
                     sself.currentEstimatedTotalItemsCount = fakedTotal;
                 }
             }
-            else if (sself.currentEstimatedTotalItemsCount != MIN((NSUInteger)sself.total, maxEstimatedItemsCount)) {
+            else if (sself.currentEstimatedTotalItemsCount != (NSUInteger)MIN(sself.total, maxEstimatedItemsCount)) {
                 sself.currentEstimatedTotalItemsCount = MIN(sself.total, maxEstimatedItemsCount);
             }
             sself.itemsCount = sself.total;

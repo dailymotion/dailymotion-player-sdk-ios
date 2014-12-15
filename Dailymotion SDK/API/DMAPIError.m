@@ -28,7 +28,7 @@ NSString *const DailymotionApiErrorDomain = @"DailymotionApiErrorDomain";
         userInfo[NSLocalizedDescriptionKey] = message;
     }
     if (response) {
-        userInfo[@"status-code"] = [NSNumber numberWithInt:httpResponse.statusCode];
+        userInfo[@"status-code"] = @(httpResponse.statusCode);
 
         if (httpResponse.allHeaderFields[@"Content-Type"]) {
             userInfo[@"content-type"] = httpResponse.allHeaderFields[@"Content-Type"];

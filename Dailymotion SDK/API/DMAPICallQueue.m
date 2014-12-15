@@ -63,7 +63,7 @@
 
 - (DMAPICall *)addCallWithPath:(NSString *)path method:(NSString *)method args:(NSDictionary *)args cacheInfo:(DMAPICacheInfo *)cacheInfo callback:(DMAPICallResultBlock)callback {
     @synchronized (self) {
-        NSString *callId = [NSString stringWithFormat:@"%d", self.callNextId++];
+        NSString *callId = [NSString stringWithFormat:@"%lu", (unsigned long)self.callNextId++];
         DMAPICall *call = [[DMAPICall alloc] init];
         call.callId = callId;
         call.path = path;
