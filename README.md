@@ -1,42 +1,42 @@
 #Dailymotion Objective-C SDK
 
-
-This repository contains the official open source Objective-C SDK that allows you to access the Dailymotion API from your Mac OS X or iOS application.
+This repository contains the official open source Objective-C SDK that allows you to embed Dailymotion Videos in your iOS application.
 
 See documentation at http://www.dailymotion.com/doc/api/sdk-objc.html
 
-NOTE: This is the version 2.0 of the Dailymotion SDK. This version raises the minimum iOS deployement version to 5.0. If you need iOS 3+ support, please see https://github.com/dailymotion/dailymotion-sdk-objc/tree/1.8.
-
-##Useful Resources
-
-- Dailymotion SDK API Reference: http://dailymotion.github.com/dailymotion-sdk-objc/html/index.html
-- Dailymotion API Reference: http://www.dailymotion.com/doc/api/reference.html
-- Dailymotion API Explorer: http://www.dailymotion.com/doc/api/explorer
-
 ##Installation
 
-###Copy DailymotionSDK.framework in your project
+###CocoaPods
 
-- Download the last version of the framework from https://github.com/dailymotion/dailymotion-sdk-objc/downloads.
-- Drag and drop the framework on your xcode project navigator and check the "Copy items into destination group's folder (if needed)" checkbox.
+Coming soon...
 
-###Add build target dependencies
+###Manually
 
-- In you application project app's target settings, find the "Build Phases" section and open the "Link Binary With Libraries" block.
-- Click the "+" button again and select the ``Security.framework``
-- Click the "+" button again and select the ``SystemConfiguration.framework``
+Just drag and drop the `dailymotion-player-objc` folder into your project.
 
-###Add Linker Flag
+##Usage
 
-- Open the "Build Settings" tab, in the "Linking" section, locate the "Other Linker Flags" setting and add the "-ObjC" flag:
+Check out the repository and open `dailymotion-sdk-objc.xcodeproj` for a working example of how to embed the Dailymotion Player into your app.
 
-###Import headers in your source files
-
-In the source files where you need to use the library, use #import ``<DailymotionSDK/DailymotionSDK.h>``::
-
-    #import <DailymotionSDK/DailymotionSDK.h>
+Also look at the `init` methods of `DMPlayerViewController` for ways to embed the Dailymotion Player without using storyboards.
 
 ###Feedback
 
-We are relying on the [GitHub issues tracker][issues] linked from above for feedback. File bugs or
-other issues http://github.com/dailymotion/dailymotion-sdk-objc/issues
+We are relying on the [GitHub issues tracker](issues) for feedback. File bugs or other issues http://github.com/dailymotion/dailymotion-sdk-objc/issues
+
+###TODO List
+
+Here is what is coming in the next months:
+
+- Player SDK for Mac OS X
+- New API SDK for iOS and Mac OS X
+
+###Need the API SDK?
+
+NOTE: This is the version 2.9.0 of the Dailymotion SDK. This version no longer supports the API SDK.
+
+Check out released tag 2.0.2 for the latest API SDK version: https://github.com/dailymotion/dailymotion-sdk-objc/releases/tag/2.0.2.
+
+If you need iOS 3+ support, please check out https://github.com/dailymotion/dailymotion-sdk-objc/tree/1.8.
+
+**Warning:** This is not maintained anymore and will be totally replaced in the coming future. Be sure to check this page again to know when the new version of the API SDK will be available.

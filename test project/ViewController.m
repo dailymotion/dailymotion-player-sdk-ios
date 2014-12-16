@@ -19,7 +19,7 @@
   if ([segue.identifier isEqualToString:@"EmbedPlayerSegue"]) {
     DMPlayerViewController *playerViewController = segue.destinationViewController;
     playerViewController.delegate = self;
-    [playerViewController load:@"x4v4jp"];
+    [playerViewController loadVideo:@"x4v4jp" withParams:@{@"webkit-playsinline":@(YES)}];
   }
 }
 

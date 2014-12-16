@@ -144,6 +144,15 @@
 - (void)load:(NSString *)videoId;
 
 /**
+ * Load another video in the player by specifying its id and updating the associated parameters
+ *
+ * @param videoId The id of the video to load.
+ * @param params A dictionary containing initalization parameters. See http://www.dailymotion.com/doc/api/player.html#parameters
+ *               for a list of supported parameters.
+ */
+- (void)loadVideo:(NSString *)videoId withParams:(NSDictionary *)params;
+
+/**
  * @name Calling Raw API Methods
  */
 
