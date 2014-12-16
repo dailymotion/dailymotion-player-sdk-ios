@@ -14,8 +14,8 @@
 		87C50B561A3FB199000B0CAB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87C50B4E1A3FB199000B0CAB /* Images.xcassets */; };
 		87C50B581A3FB199000B0CAB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B501A3FB199000B0CAB /* main.m */; };
 		87C50B591A3FB199000B0CAB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B521A3FB199000B0CAB /* ViewController.m */; };
-		87C50B5E1A3FB221000B0CAB /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B5D1A3FB221000B0CAB /* DMPlayerViewController.m */; };
-		87C50B5F1A3FB221000B0CAB /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B5D1A3FB221000B0CAB /* DMPlayerViewController.m */; };
+		87EA41B81A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */; };
+		87EA41B91A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,8 +42,8 @@
 		87C50B501A3FB199000B0CAB /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		87C50B511A3FB199000B0CAB /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		87C50B521A3FB199000B0CAB /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		87C50B5C1A3FB21A000B0CAB /* DMPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMPlayerViewController.h; sourceTree = "<group>"; };
-		87C50B5D1A3FB221000B0CAB /* DMPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMPlayerViewController.m; sourceTree = "<group>"; };
+		87EA41B61A40D7E8006F33F6 /* DMPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMPlayerViewController.h; sourceTree = "<group>"; };
+		87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMPlayerViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				87C50B471A3FB199000B0CAB /* test project */,
-				87C50B5B1A3FB206000B0CAB /* dailymotion-sdk-objc */,
+				87EA41B51A40D7E8006F33F6 /* dailymotion-player-objc */,
 				87C50B3A1A3FB10A000B0CAB /* dailymotion-sdk-objcTests */,
 				87C50B1F1A3FB10A000B0CAB /* Products */,
 			);
@@ -124,14 +124,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		87C50B5B1A3FB206000B0CAB /* dailymotion-sdk-objc */ = {
+		87EA41B51A40D7E8006F33F6 /* dailymotion-player-objc */ = {
 			isa = PBXGroup;
 			children = (
-				87C50B5C1A3FB21A000B0CAB /* DMPlayerViewController.h */,
-				87C50B5D1A3FB221000B0CAB /* DMPlayerViewController.m */,
+				87EA41B61A40D7E8006F33F6 /* DMPlayerViewController.h */,
+				87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */,
 			);
-			path = "dailymotion-sdk-objc";
-			sourceTree = SOURCE_ROOT;
+			path = "dailymotion-player-objc";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -233,7 +233,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87C50B5E1A3FB221000B0CAB /* DMPlayerViewController.m in Sources */,
+				87EA41B81A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */,
 				87C50B591A3FB199000B0CAB /* ViewController.m in Sources */,
 				87C50B581A3FB199000B0CAB /* main.m in Sources */,
 				87C50B531A3FB199000B0CAB /* AppDelegate.m in Sources */,
@@ -244,7 +244,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87C50B5F1A3FB221000B0CAB /* DMPlayerViewController.m in Sources */,
+				87EA41B91A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */,
 				87C50B3E1A3FB10A000B0CAB /* dailymotion_sdk_objcTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
