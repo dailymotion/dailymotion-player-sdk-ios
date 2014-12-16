@@ -145,20 +145,29 @@ NSUInteger totalRequestCount;
 }
 
 - (NSString *)deviceIdentifier {
-    static NSString *deviceIdentifier;
-    static BOOL deviceIdentifierInited;
-
-    if (!deviceIdentifierInited) {
-        if (![UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)]) {
-            deviceIdentifierInited = YES;
-        }
-        if (UIDevice.currentDevice.identifierForVendor) {
-            deviceIdentifier = UIDevice.currentDevice.identifierForVendor.UUIDString;
-            deviceIdentifierInited = YES;
-        }
+  static NSString *deviceIdentifier;
+  static BOOL deviceIdentifierInited;
+  
+  if (!deviceIdentifierInited) {
+    if (![UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)]) {
+      deviceIdentifierInited = YES;
     }
-
-    return deviceIdentifier;
+    if (UIDevice.currentDevice.identifierForVendor) {
+      deviceIdentifier = UIDevice.currentDevice.identifierForVendor.UUIDString;
+      deviceIdentifierInited = YES;
+    }
+  }
+  
+  if (!deviceIdentifierInited) {
+    //iOS 6 and up
+    if ([UIDevice.currentDevice respondsToSelector:@selector(identifierForVendor)]) {
+      deviceIdentifier = [UIDevice currentDevice].identifierForVendor.UUIDString;
+    }
+    
+    deviceIdentifierInited = YES;
+  }
+  
+  return deviceIdentifier;
 }
 
 - (NSString *)userAgent {
