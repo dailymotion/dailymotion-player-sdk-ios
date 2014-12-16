@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		87C50B3E1A3FB10A000B0CAB /* dailymotion_sdk_objcTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B3D1A3FB10A000B0CAB /* dailymotion_sdk_objcTests.m */; };
 		87C50B531A3FB199000B0CAB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B491A3FB199000B0CAB /* AppDelegate.m */; };
 		87C50B541A3FB199000B0CAB /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87C50B4A1A3FB199000B0CAB /* LaunchScreen.xib */; };
 		87C50B551A3FB199000B0CAB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87C50B4C1A3FB199000B0CAB /* Main.storyboard */; };
@@ -15,24 +14,10 @@
 		87C50B581A3FB199000B0CAB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B501A3FB199000B0CAB /* main.m */; };
 		87C50B591A3FB199000B0CAB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B521A3FB199000B0CAB /* ViewController.m */; };
 		87EA41B81A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */; };
-		87EA41B91A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		87C50B381A3FB10A000B0CAB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 87C50B161A3FB10A000B0CAB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 87C50B1D1A3FB10A000B0CAB;
-			remoteInfo = "dailymotion-sdk-objc";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		87C50B1E1A3FB10A000B0CAB /* dailymotion-sdk-objc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "dailymotion-sdk-objc.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		87C50B371A3FB10A000B0CAB /* dailymotion-sdk-objcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "dailymotion-sdk-objcTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		87C50B3C1A3FB10A000B0CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		87C50B3D1A3FB10A000B0CAB /* dailymotion_sdk_objcTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = dailymotion_sdk_objcTests.m; sourceTree = "<group>"; };
 		87C50B481A3FB199000B0CAB /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		87C50B491A3FB199000B0CAB /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		87C50B4B1A3FB199000B0CAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -54,13 +39,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		87C50B341A3FB10A000B0CAB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -69,7 +47,7 @@
 			children = (
 				87C50B471A3FB199000B0CAB /* test project */,
 				87EA41B51A40D7E8006F33F6 /* dailymotion-player-objc */,
-				87C50B3A1A3FB10A000B0CAB /* dailymotion-sdk-objcTests */,
+				87EA41BA1A40D838006F33F6 /* dailymotion-sdk-objc */,
 				87C50B1F1A3FB10A000B0CAB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,26 +56,8 @@
 			isa = PBXGroup;
 			children = (
 				87C50B1E1A3FB10A000B0CAB /* dailymotion-sdk-objc.app */,
-				87C50B371A3FB10A000B0CAB /* dailymotion-sdk-objcTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		87C50B3A1A3FB10A000B0CAB /* dailymotion-sdk-objcTests */ = {
-			isa = PBXGroup;
-			children = (
-				87C50B3D1A3FB10A000B0CAB /* dailymotion_sdk_objcTests.m */,
-				87C50B3B1A3FB10A000B0CAB /* Supporting Files */,
-			);
-			path = "dailymotion-sdk-objcTests";
-			sourceTree = "<group>";
-		};
-		87C50B3B1A3FB10A000B0CAB /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				87C50B3C1A3FB10A000B0CAB /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		87C50B471A3FB199000B0CAB /* test project */ = {
@@ -133,6 +93,13 @@
 			path = "dailymotion-player-objc";
 			sourceTree = "<group>";
 		};
+		87EA41BA1A40D838006F33F6 /* dailymotion-sdk-objc */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "dailymotion-sdk-objc";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -153,24 +120,6 @@
 			productReference = 87C50B1E1A3FB10A000B0CAB /* dailymotion-sdk-objc.app */;
 			productType = "com.apple.product-type.application";
 		};
-		87C50B361A3FB10A000B0CAB /* dailymotion-sdk-objcTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 87C50B441A3FB10A000B0CAB /* Build configuration list for PBXNativeTarget "dailymotion-sdk-objcTests" */;
-			buildPhases = (
-				87C50B331A3FB10A000B0CAB /* Sources */,
-				87C50B341A3FB10A000B0CAB /* Frameworks */,
-				87C50B351A3FB10A000B0CAB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				87C50B391A3FB10A000B0CAB /* PBXTargetDependency */,
-			);
-			name = "dailymotion-sdk-objcTests";
-			productName = "dailymotion-sdk-objcTests";
-			productReference = 87C50B371A3FB10A000B0CAB /* dailymotion-sdk-objcTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -182,10 +131,6 @@
 				TargetAttributes = {
 					87C50B1D1A3FB10A000B0CAB = {
 						CreatedOnToolsVersion = 6.1.1;
-					};
-					87C50B361A3FB10A000B0CAB = {
-						CreatedOnToolsVersion = 6.1.1;
-						TestTargetID = 87C50B1D1A3FB10A000B0CAB;
 					};
 				};
 			};
@@ -203,7 +148,6 @@
 			projectRoot = "";
 			targets = (
 				87C50B1D1A3FB10A000B0CAB /* dailymotion-sdk-objc */,
-				87C50B361A3FB10A000B0CAB /* dailymotion-sdk-objcTests */,
 			);
 		};
 /* End PBXProject section */
@@ -216,13 +160,6 @@
 				87C50B561A3FB199000B0CAB /* Images.xcassets in Resources */,
 				87C50B541A3FB199000B0CAB /* LaunchScreen.xib in Resources */,
 				87C50B551A3FB199000B0CAB /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		87C50B351A3FB10A000B0CAB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,24 +177,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		87C50B331A3FB10A000B0CAB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				87EA41B91A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */,
-				87C50B3E1A3FB10A000B0CAB /* dailymotion_sdk_objcTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		87C50B391A3FB10A000B0CAB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 87C50B1D1A3FB10A000B0CAB /* dailymotion-sdk-objc */;
-			targetProxy = 87C50B381A3FB10A000B0CAB /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		87C50B4A1A3FB199000B0CAB /* LaunchScreen.xib */ = {
@@ -375,40 +295,6 @@
 			};
 			name = Release;
 		};
-		87C50B451A3FB10A000B0CAB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "dailymotion-sdk-objcTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dailymotion-sdk-objc.app/dailymotion-sdk-objc";
-			};
-			name = Debug;
-		};
-		87C50B461A3FB10A000B0CAB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "dailymotion-sdk-objcTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dailymotion-sdk-objc.app/dailymotion-sdk-objc";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -426,15 +312,6 @@
 			buildConfigurations = (
 				87C50B421A3FB10A000B0CAB /* Debug */,
 				87C50B431A3FB10A000B0CAB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		87C50B441A3FB10A000B0CAB /* Build configuration list for PBXNativeTarget "dailymotion-sdk-objcTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				87C50B451A3FB10A000B0CAB /* Debug */,
-				87C50B461A3FB10A000B0CAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
