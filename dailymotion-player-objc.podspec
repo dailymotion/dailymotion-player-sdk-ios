@@ -20,6 +20,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/dailymotion/dailymotion-sdk-objc.git", :tag => "2.9.0" }
 
   s.source_files  = 'dailymotion-player-objc/*.{h,m}'
+  
+  s.requires_arc = true
 
 end
 
