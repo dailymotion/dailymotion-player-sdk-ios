@@ -262,6 +262,11 @@ static NSString *const DMAPIVersion = @"2.9.0";
     }
 }
 
+- (void)loadVideo:(NSString *)videoId withParams:(NSDictionary *)params {
+  self.params = params;
+  [self load:videoId];
+}
+
 
 - (void)api:(NSString *)method arg:(NSString *)arg {
     if (!self.inited) return;
