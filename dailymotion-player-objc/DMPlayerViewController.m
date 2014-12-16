@@ -131,8 +131,6 @@ static NSString *const DMAPIVersion = @"2.9.0";
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-  NSLog(@"REQUEST URL: %@", request.URL);
-  NSLog(@"REQUEST HEADERS: %@", request.allHTTPHeaderFields);
     BOOL isFrame = ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];
   
     if (isFrame) return YES;

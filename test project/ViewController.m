@@ -11,16 +11,16 @@
 #import "DMPlayerViewController.h"
 
 @interface ViewController () <DMPlayerDelegate>
-
 @end
 
 @implementation ViewController
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  DMPlayerViewController *playerViewController = [[DMPlayerViewController alloc] initWithVideo:@"x4v4jp" params:nil];
-  playerViewController.delegate = self;
-  [self presentViewController:playerViewController animated:YES completion:nil];
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+  if ([segue.identifier isEqualToString:@"EmbedPlayerSegue"]) {
+    DMPlayerViewController *playerViewController = segue.destinationViewController;
+    playerViewController.delegate = self;
+    [playerViewController load:@"x4v4jp"];
+  }
 }
 
 #pragma mark DMPlayerDelegate
