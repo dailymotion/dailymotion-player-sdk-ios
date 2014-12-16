@@ -25,7 +25,7 @@
 
 #define kDMHardMaxCallsPerRequest 10
 
-static NSString *const kDMVersion = @"2.0.1";
+static NSString *const kDMVersion = @"2.0.2";
 
 @interface DMAPITransfer (Private)
 
