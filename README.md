@@ -8,7 +8,11 @@ See documentation at http://www.dailymotion.com/doc/api/sdk-objc.html
 
 ###CocoaPods
 
-Coming soon...
+Just add the following line to your `Podfile` (See [Cocoapods.org](http://www.cocoapods.org) for more information)
+
+```
+pod 'dailymotion-player-objc', :git => 'https://github.com/dailymotion/dailymotion-sdk-objc.git'
+```
 
 ###Manually
 
