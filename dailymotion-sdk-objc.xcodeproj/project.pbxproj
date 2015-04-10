@@ -45,9 +45,8 @@
 		87C50B151A3FB10A000B0CAB = {
 			isa = PBXGroup;
 			children = (
-				87C50B471A3FB199000B0CAB /* test project */,
+				87C50B471A3FB199000B0CAB /* test-project */,
 				87EA41B51A40D7E8006F33F6 /* dailymotion-player-objc */,
-				87EA41BA1A40D838006F33F6 /* dailymotion-sdk-objc */,
 				87C50B1F1A3FB10A000B0CAB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,7 +59,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		87C50B471A3FB199000B0CAB /* test project */ = {
+		87C50B471A3FB199000B0CAB /* test-project */ = {
 			isa = PBXGroup;
 			children = (
 				87C50B481A3FB199000B0CAB /* AppDelegate.h */,
@@ -71,7 +70,7 @@
 				87C50B4E1A3FB199000B0CAB /* Images.xcassets */,
 				87C50B5A1A3FB1AC000B0CAB /* Supporting Files */,
 			);
-			path = "test project";
+			path = "test-project";
 			sourceTree = "<group>";
 		};
 		87C50B5A1A3FB1AC000B0CAB /* Supporting Files */ = {
@@ -91,13 +90,6 @@
 				87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */,
 			);
 			path = "dailymotion-player-objc";
-			sourceTree = "<group>";
-		};
-		87EA41BA1A40D838006F33F6 /* dailymotion-sdk-objc */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "dailymotion-sdk-objc";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -279,7 +271,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = "$(SRCROOT)/test project/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/test-project/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -289,7 +281,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = "$(SRCROOT)/test project/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/test-project/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
