@@ -11,7 +11,7 @@ See documentation at http://www.dailymotion.com/doc/api/sdk-objc.html
 Just add the following line to your `Podfile` (See [Cocoapods.org](http://www.cocoapods.org) for more information)
 
 ```
-pod 'dailymotion-player-objc', :git => 'https://github.com/dailymotion/dailymotion-sdk-objc.git'
+pod 'dailymotion-player-objc'
 ```
 
 ###Manually
@@ -37,7 +37,7 @@ Here is what is coming in the next months:
 
 ###Need the API SDK?
 
-NOTE: This is the version 2.9.0 of the Dailymotion SDK. This version no longer supports the API SDK.
+NOTE: This is the version 2.9.0 and higher of the Dailymotion SDK. This version no longer supports the API SDK.
 
 Check out released tag 2.0.2 for the latest API SDK version: https://github.com/dailymotion/dailymotion-sdk-objc/releases/tag/2.0.2.
 
