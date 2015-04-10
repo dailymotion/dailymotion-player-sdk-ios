@@ -1,10 +1,7 @@
-//
 //  DailymotionPlayerController.m
-//  iOS
 //
 //  Created by Olivier Poitrey on 26/09/11.
 //  Copyright 2011 Dailymotion. All rights reserved.
-//
 
 #import "DMPlayerViewController.h"
 
@@ -46,6 +43,7 @@ static NSString *const DMAPIVersion = @"2.9.0";
   _paused = true;
   _fullscreen = false;
   _webBaseURLString = @"http://www.dailymotion.com";
+  _autoOpenExternalURLs = false;
 }
 
 - (void)awakeFromNib {
@@ -54,24 +52,21 @@ static NSString *const DMAPIVersion = @"2.9.0";
 }
 
 - (id)init {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
       [self setup];
     }
     return self;
 }
 
 - (id)initWithParams:(NSDictionary *)params {
-    self = [self init];
-    if (self) {
+    if (self = [self init]) {
         _params = params;
     }
     return self;
 }
 
 - (id)initWithVideo:(NSString *)video params:(NSDictionary *)params {
-    self = [self initWithParams:params];
-    if (self) {
+    if (self = [self initWithParams:params]) {
         [self load:video];
     }
     return self;
@@ -288,15 +283,20 @@ static NSString *const DMAPIVersion = @"2.9.0";
 
 #pragma mark - Open In Safari
 - (void)openURLInSafari:(NSURL *)URL {
-  self.safariURL = URL;
-  NSString *safariAlertTitle = [NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil), [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"]];
-  NSString *safariAlertMessage = [NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil), URL.host];
-  UIAlertView *safariAlertView = [[UIAlertView alloc] initWithTitle:safariAlertTitle
-                                                            message:safariAlertMessage
-                                                           delegate:self
-                                                  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-                                                  otherButtonTitles:NSLocalizedString(@"Open", nil), nil];
-  [safariAlertView show];
+  if (self.autoOpenExternalURLs) {
+    [[UIApplication sharedApplication] openURL:URL];
+  }
+  else {
+    self.safariURL = URL;
+    NSString *safariAlertTitle = [NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil), [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"]];
+    NSString *safariAlertMessage = [NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil), URL.host];
+    UIAlertView *safariAlertView = [[UIAlertView alloc] initWithTitle:safariAlertTitle
+                                                              message:safariAlertMessage
+                                                             delegate:self
+                                                    cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                                                    otherButtonTitles:NSLocalizedString(@"Open", nil), nil];
+    [safariAlertView show];
+  }
 }
 
 #pragma mark UIAlertViewDelegate
