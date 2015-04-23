@@ -5,7 +5,7 @@
 
 #import "DMPlayerViewController.h"
 
-static NSString *const DMAPIVersion = @"2.9.0";
+static NSString *const DMAPIVersion = @"2.9.1";
 
 @interface DMPlayerViewController () <UIAlertViewDelegate>
 
