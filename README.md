@@ -1,8 +1,10 @@
-#Dailymotion Objective-C SDK
+#Dailymotion Player SDK for iOS
 
 This repository contains the official open source Objective-C SDK that allows you to embed Dailymotion Videos in your iOS application.
 
-See documentation at http://www.dailymotion.com/doc/api/sdk-objc.html
+See documentation at [http://www.dailymotion.com/doc/api/sdk-objc.html](http://www.dailymotion.com/doc/api/sdk-objc.html).
+
+For a full documentation of the Player API, see [https://developer.dailymotion.com/player](https://developer.dailymotion.com/player#player-parameters)
 
 ##Installation
 

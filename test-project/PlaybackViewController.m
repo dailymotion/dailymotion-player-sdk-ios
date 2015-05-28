@@ -6,14 +6,18 @@
 //  Copyright (c) 2014 Dailymotion. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "PlaybackViewController.h"
 
 #import "DMPlayerViewController.h"
 
-@interface ViewController () <DMPlayerDelegate>
+@interface PlaybackViewController () <DMPlayerDelegate>
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *playerWidthLayoutConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *playerHeightLayoutConstraint;
+
 @end
 
-@implementation ViewController
+@implementation PlaybackViewController
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"EmbedPlayerSegue"]) {
@@ -25,7 +29,13 @@
     playerViewController.autoOpenExternalURLs = true;
     
     // Load the video using its ID and some parameters (if any)
-    [playerViewController loadVideo:@"x4v4jp" withParams:@{@"webkit-playsinline":@(YES)}];
+    playerViewController.webBaseURLString = self.baseURL;
+    [playerViewController loadVideo:self.videoID withParams:self.additionalParameters];
+    
+    self.playerWidthLayoutConstraint.constant = self.playerSize.width;
+    self.playerHeightLayoutConstraint.constant = self.playerSize.height;
+    
+    [self.view setNeedsUpdateConstraints];
   }
 }
 

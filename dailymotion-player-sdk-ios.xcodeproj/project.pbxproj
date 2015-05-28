@@ -7,17 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		87517C5B1B1683AD00BB5A9C /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87517C5A1B1683AD00BB5A9C /* RootViewController.m */; };
 		87C50B531A3FB199000B0CAB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B491A3FB199000B0CAB /* AppDelegate.m */; };
 		87C50B541A3FB199000B0CAB /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87C50B4A1A3FB199000B0CAB /* LaunchScreen.xib */; };
 		87C50B551A3FB199000B0CAB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 87C50B4C1A3FB199000B0CAB /* Main.storyboard */; };
 		87C50B561A3FB199000B0CAB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 87C50B4E1A3FB199000B0CAB /* Images.xcassets */; };
 		87C50B581A3FB199000B0CAB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B501A3FB199000B0CAB /* main.m */; };
-		87C50B591A3FB199000B0CAB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B521A3FB199000B0CAB /* ViewController.m */; };
+		87C50B591A3FB199000B0CAB /* PlaybackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C50B521A3FB199000B0CAB /* PlaybackViewController.m */; };
 		87EA41B81A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		87C50B1E1A3FB10A000B0CAB /* dailymotion-sdk-objc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "dailymotion-sdk-objc.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		87517C591B1683AD00BB5A9C /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		87517C5A1B1683AD00BB5A9C /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		87C50B1E1A3FB10A000B0CAB /* dailymotion-player-sdk-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "dailymotion-player-sdk-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87C50B481A3FB199000B0CAB /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		87C50B491A3FB199000B0CAB /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		87C50B4B1A3FB199000B0CAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -25,8 +28,8 @@
 		87C50B4E1A3FB199000B0CAB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		87C50B4F1A3FB199000B0CAB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87C50B501A3FB199000B0CAB /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		87C50B511A3FB199000B0CAB /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		87C50B521A3FB199000B0CAB /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		87C50B511A3FB199000B0CAB /* PlaybackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackViewController.h; sourceTree = "<group>"; };
+		87C50B521A3FB199000B0CAB /* PlaybackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackViewController.m; sourceTree = "<group>"; };
 		87EA41B61A40D7E8006F33F6 /* DMPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMPlayerViewController.h; sourceTree = "<group>"; };
 		87EA41B71A40D7E8006F33F6 /* DMPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMPlayerViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,7 +57,7 @@
 		87C50B1F1A3FB10A000B0CAB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				87C50B1E1A3FB10A000B0CAB /* dailymotion-sdk-objc.app */,
+				87C50B1E1A3FB10A000B0CAB /* dailymotion-player-sdk-ios.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -65,8 +68,10 @@
 				87C50B481A3FB199000B0CAB /* AppDelegate.h */,
 				87C50B491A3FB199000B0CAB /* AppDelegate.m */,
 				87C50B4C1A3FB199000B0CAB /* Main.storyboard */,
-				87C50B511A3FB199000B0CAB /* ViewController.h */,
-				87C50B521A3FB199000B0CAB /* ViewController.m */,
+				87517C591B1683AD00BB5A9C /* RootViewController.h */,
+				87517C5A1B1683AD00BB5A9C /* RootViewController.m */,
+				87C50B511A3FB199000B0CAB /* PlaybackViewController.h */,
+				87C50B521A3FB199000B0CAB /* PlaybackViewController.m */,
 				87C50B4E1A3FB199000B0CAB /* Images.xcassets */,
 				87C50B5A1A3FB1AC000B0CAB /* Supporting Files */,
 			);
@@ -95,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		87C50B1D1A3FB10A000B0CAB /* dailymotion-sdk-objc */ = {
+		87C50B1D1A3FB10A000B0CAB /* dailymotion-player-sdk-ios */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 87C50B411A3FB10A000B0CAB /* Build configuration list for PBXNativeTarget "dailymotion-sdk-objc" */;
+			buildConfigurationList = 87C50B411A3FB10A000B0CAB /* Build configuration list for PBXNativeTarget "dailymotion-player-sdk-ios" */;
 			buildPhases = (
 				87C50B1A1A3FB10A000B0CAB /* Sources */,
 				87C50B1B1A3FB10A000B0CAB /* Frameworks */,
@@ -107,9 +112,9 @@
 			);
 			dependencies = (
 			);
-			name = "dailymotion-sdk-objc";
+			name = "dailymotion-player-sdk-ios";
 			productName = "dailymotion-sdk-objc";
-			productReference = 87C50B1E1A3FB10A000B0CAB /* dailymotion-sdk-objc.app */;
+			productReference = 87C50B1E1A3FB10A000B0CAB /* dailymotion-player-sdk-ios.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -126,7 +131,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 87C50B191A3FB10A000B0CAB /* Build configuration list for PBXProject "dailymotion-sdk-objc" */;
+			buildConfigurationList = 87C50B191A3FB10A000B0CAB /* Build configuration list for PBXProject "dailymotion-player-sdk-ios" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -139,7 +144,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				87C50B1D1A3FB10A000B0CAB /* dailymotion-sdk-objc */,
+				87C50B1D1A3FB10A000B0CAB /* dailymotion-player-sdk-ios */,
 			);
 		};
 /* End PBXProject section */
@@ -163,9 +168,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				87EA41B81A40D7E8006F33F6 /* DMPlayerViewController.m in Sources */,
-				87C50B591A3FB199000B0CAB /* ViewController.m in Sources */,
+				87C50B591A3FB199000B0CAB /* PlaybackViewController.m in Sources */,
 				87C50B581A3FB199000B0CAB /* main.m in Sources */,
 				87C50B531A3FB199000B0CAB /* AppDelegate.m in Sources */,
+				87517C5B1B1683AD00BB5A9C /* RootViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +197,53 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		87411BFC1B17DA2200A4F109 /* In House */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "In House";
+		};
+		87411BFD1B17DA2200A4F109 /* In House */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Dailymotion Enterprise";
+				INFOPLIST_FILE = "$(SRCROOT)/test-project/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "dailymotion-player-sdk-ios";
+				PROVISIONING_PROFILE = "3a1bf2b4-d964-4ec0-8d77-796988162300";
+			};
+			name = "In House";
+		};
 		87C50B3F1A3FB10A000B0CAB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,7 +326,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/test-project/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "dailymotion-player-sdk-ios";
 			};
 			name = Debug;
 		};
@@ -283,27 +336,29 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/test-project/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "dailymotion-player-sdk-ios";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		87C50B191A3FB10A000B0CAB /* Build configuration list for PBXProject "dailymotion-sdk-objc" */ = {
+		87C50B191A3FB10A000B0CAB /* Build configuration list for PBXProject "dailymotion-player-sdk-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				87C50B3F1A3FB10A000B0CAB /* Debug */,
 				87C50B401A3FB10A000B0CAB /* Release */,
+				87411BFC1B17DA2200A4F109 /* In House */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		87C50B411A3FB10A000B0CAB /* Build configuration list for PBXNativeTarget "dailymotion-sdk-objc" */ = {
+		87C50B411A3FB10A000B0CAB /* Build configuration list for PBXNativeTarget "dailymotion-player-sdk-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				87C50B421A3FB10A000B0CAB /* Debug */,
 				87C50B431A3FB10A000B0CAB /* Release */,
+				87411BFD1B17DA2200A4F109 /* In House */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
