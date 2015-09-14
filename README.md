@@ -78,10 +78,10 @@ Here is what is coming in the next months:
 
 ###Need the API SDK?
 
-NOTE: This is the version 2.9.0 and higher of the Dailymotion SDK. This version no longer supports the API SDK.
+NOTE: This is version 2.9.0 and higher of the Dailymotion SDK. This version no longer supports the API SDK.
 
 Check out released tag 2.0.2 for the latest API SDK version: https://github.com/dailymotion/dailymotion-sdk-objc/releases/tag/2.0.2.
 
 If you need iOS 3+ support, please check out https://github.com/dailymotion/dailymotion-sdk-objc/tree/1.8.
 
-**Warning:** This is not maintained anymore and will be totally replaced in the coming future. Be sure to check this page again to know when the new version of the API SDK will be available.
+**Warning:** **This library is up-to-date and maintained if you want to use the Dailymotion Player on your native iOS apps**. However, the API SDK is not maintained anymore and will be totally replaced in the coming future. Be sure to check this page again to know when the new version of the API SDK will be available.
