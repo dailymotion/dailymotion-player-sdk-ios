@@ -26,6 +26,45 @@ Check out the repository and open `dailymotion-sdk-objc.xcodeproj` for a working
 
 Also look at the `init` methods of `DMPlayerViewController` for ways to embed the Dailymotion Player without using storyboards.
 
+###About App Transport Security (iOS 9+)
+
+Starting with iOS9, Apple added a new [App Transport Security](https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/index.html) policy.
+As Dailymotion player uses an `UIWebView` to embed his video player, you'll need to define a few ATS exceptions in your `Info.plist` for the video player to work properly.
+
+#### Option 1: Disabling ATS
+
+If your application already rely on several non-https services, or if you allow your users to load arbitrary web sites, you might want to completely disable ATS.
+You can do it by adding the following to your app's `Info.plist` :
+
+``` xml
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSAllowsArbitraryLoads</key>
+  <true/>
+</dict>
+```
+
+#### Option 2: White-listing dailymotion.com
+
+If you cannot afford to disable ATS, you'll probably want to add `dailymotion.com` to the ATS exception list instead.
+You can do it by adding the following to your app's `Info.plist` :
+
+``` xml
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSExceptionDomains</key>
+  <dict>
+    <key>dailymotion.com</key>
+    <dict>
+      <key>NSIncludesSubdomains</key>
+      <true/>
+      <key>NSExceptionAllowsInsecureHTTPLoads</key>
+      <true/>
+    </dict>
+  </dict>
+</dict>
+```
+
 ###Feedback
 
 We are relying on the [GitHub issues tracker](issues) for feedback. File bugs or other issues http://github.com/dailymotion/dailymotion-sdk-objc/issues
