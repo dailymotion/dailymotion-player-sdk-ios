@@ -26,11 +26,11 @@
     
     // Set its delegate and other parameters (if any)
     playerViewController.delegate = self;
-    playerViewController.autoOpenExternalURLs = true;
+//    playerViewController.autoOpenExternalURLs = true;
     
     // Load the video using its ID and some parameters (if any)
     playerViewController.webBaseURLString = self.baseURL;
-    [playerViewController loadVideo:self.videoID withParams:self.additionalParameters];
+    [playerViewController loadVideo:@"k6p7DomdYjX1xvdHNaO" withParams:@{@"webkit-playsinline": @0, @"logo": @0, @"info": @0}];
     
     self.playerWidthLayoutConstraint.constant = self.playerSize.width;
     self.playerHeightLayoutConstraint.constant = self.playerSize.height;

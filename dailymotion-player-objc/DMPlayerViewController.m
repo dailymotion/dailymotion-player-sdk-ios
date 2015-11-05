@@ -1,13 +1,16 @@
+//
 //  DailymotionPlayerController.m
+//  iOS
 //
 //  Created by Olivier Poitrey on 26/09/11.
 //  Copyright 2011 Dailymotion. All rights reserved.
+//
 
 #import "DMPlayerViewController.h"
+//#import "DMAlert.h"
+//#import "DMAPI.h"
 
-static NSString *const DMAPIVersion = @"2.9.2";
-
-@interface DMPlayerViewController () <UIAlertViewDelegate>
+@interface DMPlayerViewController ()
 
 @property (nonatomic, readwrite) BOOL autoplay;
 @property (nonatomic, readwrite) float bufferedTime;
@@ -28,45 +31,38 @@ static NSString *const DMAPIVersion = @"2.9.2";
 
 @implementation DMPlayerViewController
 
-- (void)setup {
-  _params = @{};
-  
-  _autoplay = [self.params[@"autoplay"] boolValue];
-  _currentTime = 0;
-  _bufferedTime = 0;
-  _duration = NAN;
-  _seeking = false;
-  _error = nil;
-  _ended = false;
-  _muted = false;
-  _volume = 1;
-  _paused = true;
-  _fullscreen = false;
-  _webBaseURLString = @"http://www.dailymotion.com";
-  _autoOpenExternalURLs = false;
-}
-
-- (void)awakeFromNib {
-  [super awakeFromNib];
-  [self setup];
-}
-
 - (id)init {
-    if (self = [super init]) {
-      [self setup];
+    self = [super init];
+    if (self) {
+        _params = @{};
+
+        _autoplay = [self.params[@"autoplay"] boolValue];
+        _currentTime = 0;
+        _bufferedTime = 0;
+        _duration = NAN;
+        _seeking = false;
+        _error = nil;
+        _ended = false;
+        _muted = false;
+        _volume = 1;
+        _paused = true;
+        _fullscreen = false;
+        _webBaseURLString = @"http://www.dailymotion.com";
     }
     return self;
 }
 
 - (id)initWithParams:(NSDictionary *)params {
-    if (self = [self init]) {
+    self = [self init];
+    if (self) {
         _params = params;
     }
     return self;
 }
 
 - (id)initWithVideo:(NSString *)video params:(NSDictionary *)params {
-    if (self = [self initWithParams:params]) {
+    self = [self initWithParams:params];
+    if (self) {
         [self load:video];
     }
     return self;
@@ -108,7 +104,7 @@ static NSString *const DMAPIVersion = @"2.9.2";
         }
     }
 
-    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@", self.webBaseURLString, video, DMAPIVersion];
+    NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@", self.webBaseURLString, video, @"2.0.2"];
     for (NSString *param in [self.params keyEnumerator]) {
         id value = self.params[param];
         if ([value isKindOfClass:NSString.class]) {
@@ -126,6 +122,7 @@ static NSString *const DMAPIVersion = @"2.9.2";
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+  
     BOOL isFrame = ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];
   
     if (isFrame) return YES;
@@ -218,7 +215,7 @@ static NSString *const DMAPIVersion = @"2.9.2";
     }
     else {
       [self openURLInSafari:request.URL];
-      return NO;
+        return NO;
     }
 }
 
@@ -283,7 +280,7 @@ static NSString *const DMAPIVersion = @"2.9.2";
 
 #pragma mark - Open In Safari
 - (void)openURLInSafari:(NSURL *)URL {
-  if (self.autoOpenExternalURLs) {
+  if (NO) {
     [[UIApplication sharedApplication] openURL:URL];
   }
   else {
