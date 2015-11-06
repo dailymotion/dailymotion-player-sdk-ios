@@ -44,6 +44,8 @@
   // Grab the "apiready" event to trigger an autoplay
   if ([eventName isEqualToString:@"apiready"]) {
     [player play];
+  } else if ([eventName isEqualToString:@"playing"]) {
+    [player setFullscreen:YES];
   }
 }
 
