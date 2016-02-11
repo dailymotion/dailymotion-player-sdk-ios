@@ -10,7 +10,7 @@ For a full documentation of the Player API, see [https://developer.dailymotion.c
 
 ###CocoaPods
 
-Just add the following line to your `Podfile` (See [Cocoapods.org](http://www.cocoapods.org) for more information)
+Just add the following line to your `Podfile` (See [CocoaPods.org](http://www.cocoapods.org) for more information)
 
 ```
 pod 'dailymotion-player-objc'
