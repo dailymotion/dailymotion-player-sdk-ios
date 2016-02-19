@@ -29,31 +29,31 @@ static NSString *const DMAPIVersion = @"2.9.2";
 @implementation DMPlayerViewController
 
 - (void)setup {
-  _params = @{};
-  
-  _autoplay = [self.params[@"autoplay"] boolValue];
-  _currentTime = 0;
-  _bufferedTime = 0;
-  _duration = NAN;
-  _seeking = false;
-  _error = nil;
-  _ended = false;
-  _muted = false;
-  _volume = 1;
-  _paused = true;
-  _fullscreen = false;
-  _webBaseURLString = @"http://www.dailymotion.com";
-  _autoOpenExternalURLs = false;
+    _params = @{};
+    
+    _autoplay = [self.params[@"autoplay"] boolValue];
+    _currentTime = 0;
+    _bufferedTime = 0;
+    _duration = NAN;
+    _seeking = false;
+    _error = nil;
+    _ended = false;
+    _muted = false;
+    _volume = 1;
+    _paused = true;
+    _fullscreen = false;
+    _webBaseURLString = @"http://www.dailymotion.com";
+    _autoOpenExternalURLs = false;
 }
 
 - (void)awakeFromNib {
-  [super awakeFromNib];
-  [self setup];
+    [super awakeFromNib];
+    [self setup];
 }
 
 - (id)init {
     if (self = [super init]) {
-      [self setup];
+        [self setup];
     }
     return self;
 }
@@ -79,27 +79,27 @@ static NSString *const DMAPIVersion = @"2.9.2";
 - (void)initPlayerWithVideo:(NSString *)video {
     if (self.inited) return;
     self.inited = YES;
-
+    
     UIWebView *webview = [[UIWebView alloc] init];
     webview.delegate = self;
-
+    
     // Remote white default background
     webview.opaque = NO;
     webview.backgroundColor = [UIColor clearColor];
-
+    
     // Allows autoplay (iOS 4+)
     if ([webview respondsToSelector:@selector(setMediaPlaybackRequiresUserAction:)]) {
         webview.mediaPlaybackRequiresUserAction = NO;
     }
-
+    
     if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)] && self.params[@"webkit-playsinline"]) {
         webview.allowsInlineMediaPlayback = YES;
     }
-
+    
     // Autoresize by default
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-
+    
+    
     // Hack: prevent vertical bouncing
     for (id subview in webview.subviews) {
         if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
@@ -107,7 +107,7 @@ static NSString *const DMAPIVersion = @"2.9.2";
             ((UIScrollView *)subview).scrollEnabled = NO;
         }
     }
-
+    
     NSMutableString *url = [NSMutableString stringWithFormat:@"%@/embed/video/%@?api=location&objc_sdk_version=%@", self.webBaseURLString, video, DMAPIVersion];
     for (NSString *param in [self.params keyEnumerator]) {
         id value = self.params[param];
@@ -116,24 +116,29 @@ static NSString *const DMAPIVersion = @"2.9.2";
         }
         [url appendFormat:@"&%@=%@", param, value];
     }
-
+    
     NSString *appName = NSBundle.mainBundle.bundleIdentifier;
     [url appendFormat:@"&app=%@", [appName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-
+    
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
-
+    
     self.view = webview;
+}
+
+- (void)dealloc {
+    [(UIWebView *)self.view setDelegate:nil];
+    [(UIWebView *)self.view stopLoading];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     BOOL isFrame = ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];
-  
+    
     if (isFrame) return YES;
-  
+    
     if ([request.URL.scheme isEqualToString:@"dmevent"]) {
         NSString *eventName = nil;
         NSMutableDictionary *data = [NSMutableDictionary dictionary];
-
+        
         // Use reverse order so that the first occurrence of a key replaces those subsequent.
         for (NSString *component in [[request.URL.query componentsSeparatedByString:@"&"] reverseObjectEnumerator]) {
             if ([component length] == 0) continue;
@@ -141,21 +146,21 @@ static NSString *const DMAPIVersion = @"2.9.2";
             if (pos == NSNotFound) pos = component.length - 1;
             NSString *key = [component substringToIndex:pos];
             NSString *val = [component substringFromIndex:pos + 1];
-
+            
             val = [[val stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
-                    stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-
+                   stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+            
             if ([key isEqualToString:@"event"]) {
                 eventName = val;
             }
             else {
                 // stringByReplacingPercentEscapesUsingEncoding may return nil on malformed UTF8 sequence
                 if (!val) val = @"";
-
+                
                 data[key] = val;
             }
         }
-
+        
         if (eventName.length) {
             if ([eventName isEqualToString:@"timeupdate"]) {
                 [self willChangeValueForKey:@"currentTime"];
@@ -195,30 +200,30 @@ static NSString *const DMAPIVersion = @"2.9.2";
             }
             else if ([eventName isEqualToString:@"error"]) {
                 NSDictionary *userInfo =
-                        @{
-                                @"code" : @([data[@"code"] intValue]) ?: @0,
-                                @"title" : data[@"title"] ?: @"",
-                                @"message" : data[@"message"] ?: @"",
-                                NSLocalizedDescriptionKey : data[@"message"] ?: @"",
-                        };
+                @{
+                  @"code" : @([data[@"code"] intValue]) ?: @0,
+                  @"title" : data[@"title"] ?: @"",
+                  @"message" : data[@"message"] ?: @"",
+                  NSLocalizedDescriptionKey : data[@"message"] ?: @"",
+                  };
                 self.error = [NSError errorWithDomain:@"DailymotionPlayer"
                                                  code:[data[@"code"] integerValue]
                                              userInfo:userInfo];
             }
-
+            
             if ([self.delegate respondsToSelector:@selector(dailymotionPlayer:didReceiveEvent:)]) {
                 [self.delegate dailymotionPlayer:self didReceiveEvent:eventName];
             }
         }
-
+        
         return NO;
     }
     else if ([request.URL.path hasPrefix:@"/embed/video/"]) {
         return YES;
     }
     else {
-      [self openURLInSafari:request.URL];
-      return NO;
+        [self openURLInSafari:request.URL];
+        return NO;
     }
 }
 
@@ -258,8 +263,8 @@ static NSString *const DMAPIVersion = @"2.9.2";
 }
 
 - (void)loadVideo:(NSString *)videoId withParams:(NSDictionary *)params {
-  self.params = params;
-  [self load:videoId];
+    self.params = params;
+    [self load:videoId];
 }
 
 
@@ -283,28 +288,28 @@ static NSString *const DMAPIVersion = @"2.9.2";
 
 #pragma mark - Open In Safari
 - (void)openURLInSafari:(NSURL *)URL {
-  if (self.autoOpenExternalURLs) {
-    [[UIApplication sharedApplication] openURL:URL];
-  }
-  else {
-    self.safariURL = URL;
-    NSString *safariAlertTitle = [NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil), [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"]];
-    NSString *safariAlertMessage = [NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil), URL.host];
-    UIAlertView *safariAlertView = [[UIAlertView alloc] initWithTitle:safariAlertTitle
-                                                              message:safariAlertMessage
-                                                             delegate:self
-                                                    cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-                                                    otherButtonTitles:NSLocalizedString(@"Open", nil), nil];
-    [safariAlertView show];
-  }
+    if (self.autoOpenExternalURLs) {
+        [[UIApplication sharedApplication] openURL:URL];
+    }
+    else {
+        self.safariURL = URL;
+        NSString *safariAlertTitle = [NSString stringWithFormat:NSLocalizedString(@"You are about to leave %@", nil), [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"]];
+        NSString *safariAlertMessage = [NSString stringWithFormat:NSLocalizedString(@"Do you want to open %@ in Safari?", nil), URL.host];
+        UIAlertView *safariAlertView = [[UIAlertView alloc] initWithTitle:safariAlertTitle
+                                                                  message:safariAlertMessage
+                                                                 delegate:self
+                                                        cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                                                        otherButtonTitles:NSLocalizedString(@"Open", nil), nil];
+        [safariAlertView show];
+    }
 }
 
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-  if (buttonIndex != alertView.cancelButtonIndex) {
-    [[UIApplication sharedApplication] openURL:self.safariURL];
-  }
-  self.safariURL = nil;
+    if (buttonIndex != alertView.cancelButtonIndex) {
+        [[UIApplication sharedApplication] openURL:self.safariURL];
+    }
+    self.safariURL = nil;
 }
 
 
