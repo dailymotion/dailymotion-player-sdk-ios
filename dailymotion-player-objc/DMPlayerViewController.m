@@ -28,6 +28,12 @@ static NSString *const DMAPIVersion = @"2.9.2";
 
 @implementation DMPlayerViewController
 
+- (void)dealloc {
+  UIWebView *webView = (UIWebView *)self.view;
+  webView.delegate = nil;
+  [webView stopLoading];
+}
+
 - (void)setup {
   _params = @{};
   
