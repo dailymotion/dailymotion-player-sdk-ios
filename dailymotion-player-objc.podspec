@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "dailymotion-player-objc"
-  s.version      = "2.9.1"
+  s.version      = "2.9.3"
   s.summary      = "Dailymotion Objective-C client API"
 
   s.description  = <<-DESC
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, '7.0'
 
-  s.source       = { :git => "https://github.com/dailymotion/dailymotion-sdk-objc.git", :tag => "2.9.1" }
+  s.source       = { :git => "https://github.com/dailymotion/dailymotion-sdk-objc.git", :tag => "2.9.3" }
 
   s.source_files  = 'dailymotion-player-objc/*.{h,m}'
   
