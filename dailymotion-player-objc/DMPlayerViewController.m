@@ -250,6 +250,10 @@ static NSString *const DMAPIVersion = @"2.9.3";
     [self api:@"pause"];
 }
 
+- (void)notifyFullscreenChange {
+    [self api:@"notifyFullscreenChanged"];
+}
+
 - (void)load:(NSString *)aVideo {
     if (!aVideo) {
         NSLog(@"Called DMPlayerViewController load: with a nil video id");

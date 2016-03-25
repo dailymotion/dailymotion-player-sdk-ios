@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="6AR-SE-EV1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="6AR-SE-EV1">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <scenes>
         <!--Player Test Settings-->
@@ -28,29 +28,29 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="http://www.dailymotion.com" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uNM-MP-tl3">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="http://www.dailymotion.com" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uNM-MP-tl3">
                                 <rect key="frame" x="95" y="80" width="495" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Base URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2da-KY-aBk">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Base URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2da-KY-aBk">
                                 <rect key="frame" x="10" y="84" width="78" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="GK_PV5=1&amp;webkit-playsinline=1" borderStyle="roundedRect" placeholder="param1=A&amp;param2=B&amp;param3=C&amp;param4=D&amp;param5=E&amp;param6=F" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bZB-Iv-0W1">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="fullscreen-action=trigger_event&amp;autoplay=1" borderStyle="roundedRect" placeholder="param1=A&amp;param2=B&amp;param3=C&amp;param4=D&amp;param5=E&amp;param6=F" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bZB-Iv-0W1">
                                 <rect key="frame" x="105" y="161" width="485" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Parameters" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oWh-zU-eHN">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Parameters" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oWh-zU-eHN">
                                 <rect key="frame" x="10" y="165" width="88" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i7A-wG-RcN">
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i7A-wG-RcN">
                                 <rect key="frame" x="151" y="206" width="298" height="30"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Height" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4oU-of-czJ">
@@ -59,7 +59,7 @@
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="380" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gLD-B8-RUY">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="380" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gLD-B8-RUY">
                                         <rect key="frame" x="118" y="0.0" width="45" height="30"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
@@ -70,7 +70,7 @@
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="225" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dw8-sK-C7S">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="225" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dw8-sK-C7S">
                                         <rect key="frame" x="243" y="0.0" width="45" height="30"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
@@ -108,7 +108,7 @@
                             <constraint firstItem="2da-KY-aBk" firstAttribute="leading" secondItem="pqw-il-c1p" secondAttribute="leading" constant="10" id="Y0e-H6-xw1"/>
                             <constraint firstItem="oWh-zU-eHN" firstAttribute="leading" secondItem="lon-sb-W8m" secondAttribute="leading" id="agM-ED-RYW"/>
                             <constraint firstItem="rKT-cf-QFK" firstAttribute="trailing" secondItem="bZB-Iv-0W1" secondAttribute="trailing" id="eex-JV-Hrf"/>
-                            <constraint firstItem="bZB-Iv-0W1" firstAttribute="centerY" secondItem="oWh-zU-eHN" secondAttribute="centerY" constant="0.75" id="hJe-MD-9Hu"/>
+                            <constraint firstItem="bZB-Iv-0W1" firstAttribute="centerY" secondItem="oWh-zU-eHN" secondAttribute="centerY" constant="1" id="hJe-MD-9Hu"/>
                             <constraint firstItem="oWh-zU-eHN" firstAttribute="top" secondItem="lon-sb-W8m" secondAttribute="bottom" constant="20" id="kXQ-kg-zU7"/>
                             <constraint firstItem="bZB-Iv-0W1" firstAttribute="leading" secondItem="oWh-zU-eHN" secondAttribute="trailing" constant="7.5" id="lNV-Yf-fpc"/>
                             <constraint firstItem="rKT-cf-QFK" firstAttribute="leading" secondItem="lon-sb-W8m" secondAttribute="trailing" constant="7.5" id="mvv-Wr-7oZ"/>
