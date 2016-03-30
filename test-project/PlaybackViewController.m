@@ -33,6 +33,10 @@
     [playerViewController loadVideo:self.videoID withParams:self.additionalParameters];
 
     self.initialPlayerSize = self.playerSize;
+    // Starting in fullscreen?
+    if ([self.additionalParameters[@"fullscreen-state"] isEqualToString:@"fullscreen"]) {
+        self.playerSize = self.view.frame.size;
+    }
     self.playerWidthLayoutConstraint.constant = self.playerSize.width;
     self.playerHeightLayoutConstraint.constant = self.playerSize.height;
 

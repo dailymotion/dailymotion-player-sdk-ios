@@ -105,6 +105,10 @@ static NSString *const DMAPIVersion = @"2.9.3";
         webview.allowsInlineMediaPlayback = YES;
     }
 
+    if ([self.params[@"fullscreen-state"] isEqualToString:@"fullscreen"]) {
+        _fullscreen = YES;
+    }
+
     // Autoresize by default
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
