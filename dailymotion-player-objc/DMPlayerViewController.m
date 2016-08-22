@@ -15,6 +15,7 @@ static NSString *const DMAPIVersion = @"2.9.3";
 @property (nonatomic, readwrite) BOOL seeking;
 @property (nonatomic, readwrite) BOOL paused;
 @property (nonatomic, readwrite) BOOL ended;
+@property (nonatomic, readwrite) BOOL started;
 @property (nonatomic, readwrite) NSError *error;
 @property (nonatomic, assign) BOOL inited;
 @property (nonatomic, strong) NSDictionary *params;
@@ -35,21 +36,23 @@ static NSString *const DMAPIVersion = @"2.9.3";
 }
 
 - (void)setup {
+  // See https://developer.dailymotion.com/player#player-parameters for available parameters
   _params = @{};
-  
+
   _autoplay = [self.params[@"autoplay"] boolValue];
   _currentTime = 0;
   _bufferedTime = 0;
   _duration = NAN;
-  _seeking = false;
+  _seeking = NO;
   _error = nil;
-  _ended = false;
-  _muted = false;
+  _started = NO;
+  _ended = NO;
+  _muted = NO;
   _volume = 1;
   _paused = true;
-  _fullscreen = false;
+  _fullscreen = NO;
   _webBaseURLString = @"http://www.dailymotion.com";
-  _autoOpenExternalURLs = false;
+  _autoOpenExternalURLs = NO;
 }
 
 - (void)awakeFromNib {
@@ -100,6 +103,10 @@ static NSString *const DMAPIVersion = @"2.9.3";
 
     if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)] && self.params[@"webkit-playsinline"]) {
         webview.allowsInlineMediaPlayback = YES;
+    }
+
+    if ([self.params[@"fullscreen-state"] isEqualToString:@"fullscreen"]) {
+        _fullscreen = YES;
     }
 
     // Autoresize by default
@@ -185,10 +192,13 @@ static NSString *const DMAPIVersion = @"2.9.3";
             else if ([eventName isEqualToString:@"play"] || [eventName isEqualToString:@"playing"]) {
                 self.paused = NO;
             }
-            else if ([eventName isEqualToString:@"ended"]) {
+            else if ([eventName isEqualToString:@"start"]) {
+                self.started = YES;
+            }
+            else if ([eventName isEqualToString:@"end"]) {
                 self.ended = YES;
             }
-            else if ([eventName isEqualToString:@"ended"] || [eventName isEqualToString:@"pause"]) {
+            else if ([eventName isEqualToString:@"end"] || [eventName isEqualToString:@"pause"]) {
                 self.paused = YES;
             }
             else if ([eventName isEqualToString:@"seeking"]) {
@@ -250,6 +260,10 @@ static NSString *const DMAPIVersion = @"2.9.3";
     [self api:@"pause"];
 }
 
+- (void)notifyFullscreenChange {
+    [self api:@"notifyFullscreenChanged"];
+}
+
 - (void)load:(NSString *)aVideo {
     if (!aVideo) {
         NSLog(@"Called DMPlayerViewController load: with a nil video id");
@@ -272,6 +286,12 @@ static NSString *const DMAPIVersion = @"2.9.3";
 - (void)api:(NSString *)method arg:(NSString *)arg {
     if (!self.inited) return;
     if (!method) return;
+
+    NSString *warnMessage = [self APIReadyWarnMessageForMethod:method];
+    if (!self.started && warnMessage) {
+        NSLog(@"%@", warnMessage);
+    }
+
     UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];
     NSString *jsArg = arg ? [NSString stringWithFormat:@"\"%@\"", [arg stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]] : @"null";
@@ -280,6 +300,28 @@ static NSString *const DMAPIVersion = @"2.9.3";
 
 - (void)api:(NSString *)method {
     [self api:method arg:nil];
+}
+
+- (NSString *) APIReadyWarnMessageForMethod:(NSString *)method {
+
+    NSString * param = @{
+      @"play"         : @"autoplay",
+      @"toggle-play"  : @"autoplay",
+      @"seek"         : @"start",
+      @"quality"      : @"quality",
+      @"muted"        : @"muted",
+      @"toggle-muted" : @"muted"
+    }[method];
+
+    if (param) {
+        return [NSString stringWithFormat:@"Warning [DMPlayerViewController]: \n"
+                    "\tCalling `%@` method right after `apiready` event is not recommended.\n"
+                    "\tAre you sure you don\'t want to use the `%@` parameter instead?\n"
+                    "\tFor more information, see: https://developer.dailymotion.com/player#player-parameters", method, param];
+    }
+    else {
+        return nil;
+    }
 }
 
 

@@ -14,6 +14,7 @@
 @property(strong, nonatomic) NSString *videoID;
 @property(strong, nonatomic) NSDictionary *additionalParameters;
 @property(assign, nonatomic) CGSize playerSize;
+@property(assign, nonatomic) CGSize initialPlayerSize;
 
 @end
 

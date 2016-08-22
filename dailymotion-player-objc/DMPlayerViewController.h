@@ -91,6 +91,10 @@
 // Pause the video playback.
 - (void)pause;
 
+/* When player is initialized with fullscreen-action='trigger_event' parameter, 
+ this method is used to notify the application has successfly achieved the fullscreen transition. */
+- (void)notifyFullscreenChange;
+
 /* Load another video in the player by specifying its id.
  @param videoId The id of the video to load. */
 - (void)load:(NSString *)videoId;
