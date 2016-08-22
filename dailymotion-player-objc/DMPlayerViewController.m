@@ -101,7 +101,7 @@ static NSString *const DMAPIVersion = @"2.9.3";
         webview.mediaPlaybackRequiresUserAction = NO;
     }
 
-    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)] && self.params[@"webkit-playsinline"]) {
+    if ([webview respondsToSelector:@selector(setAllowsInlineMediaPlayback:)]) {
         webview.allowsInlineMediaPlayback = YES;
     }
 
