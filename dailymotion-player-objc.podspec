@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "dailymotion-player-objc"
-  s.version      = "2.9.3"
+  s.version      = "2.9.4"
   s.summary      = "Dailymotion Objective-C client API"
 
   s.description  = <<-DESC
@@ -22,6 +22,8 @@ Pod::Spec.new do |s|
   s.source_files  = 'dailymotion-player-objc/*.{h,m}'
   
   s.requires_arc = true
+  
+  s.deprecated_in_favor_of = 'DailymotionPlayerSDK'
 
 end
 
