@@ -9,6 +9,8 @@ static NSString *const DMAPIVersion = @"2.9.3";
 
 @interface DMPlayerViewController () <UIAlertViewDelegate>
 
+@property (nonatomic) UIWebView *webView;
+
 @property (nonatomic, readwrite) BOOL autoplay;
 @property (nonatomic, readwrite) float bufferedTime;
 @property (nonatomic, readwrite) float duration;
@@ -30,9 +32,22 @@ static NSString *const DMAPIVersion = @"2.9.3";
 @implementation DMPlayerViewController
 
 - (void)dealloc {
-  UIWebView *webView = (UIWebView *)self.view;
-  webView.delegate = nil;
-  [webView stopLoading];
+    self.webView = nil;
+}
+
+- (void)setWebView:(UIWebView *)webView {
+    if (_webView) {
+        _webView.delegate = nil;
+        [_webView removeFromSuperview];
+        [_webView stopLoading];
+    }
+    _webView = webView;
+    if (webView) {
+        webView.delegate = self;
+        webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        webView.frame = self.view.bounds;
+        [self.view addSubview:webView];
+    }
 }
 
 - (void)setup {
@@ -109,10 +124,6 @@ static NSString *const DMAPIVersion = @"2.9.3";
         _fullscreen = YES;
     }
 
-    // Autoresize by default
-    webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-
     // Hack: prevent vertical bouncing
     for (id subview in webview.subviews) {
         if ([[subview class] isSubclassOfClass:[UIScrollView class]]) {
@@ -135,7 +146,7 @@ static NSString *const DMAPIVersion = @"2.9.3";
 
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
 
-    self.view = webview;
+    self.webView = webview;
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -292,10 +303,9 @@ static NSString *const DMAPIVersion = @"2.9.3";
         NSLog(@"%@", warnMessage);
     }
 
-    UIWebView *webview = (UIWebView *)self.view;
     NSString *jsMethod = [NSString stringWithFormat:@"\"%@\"", method];
     NSString *jsArg = arg ? [NSString stringWithFormat:@"\"%@\"", [arg stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]] : @"null";
-    [webview stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"player.api(%@, %@)", jsMethod, jsArg]];
+    [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"player.api(%@, %@)", jsMethod, jsArg]];
 }
 
 - (void)api:(NSString *)method {
