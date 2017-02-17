@@ -1,3 +1,5 @@
+#This library is deprecated in favour of [the Swift version](https://github.com/dailymotion/dailymotion-swift-player-sdk-ios).
+
 #Dailymotion Player SDK for iOS
 
 This repository contains the official open source Objective-C SDK that allows you to embed Dailymotion Videos in your iOS application.
