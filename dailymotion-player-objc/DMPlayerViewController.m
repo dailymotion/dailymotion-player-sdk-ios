@@ -32,16 +32,20 @@ static NSString *const DMAPIVersion = @"2.9.3";
 @implementation DMPlayerViewController
 
 - (void)dealloc {
-    self.webView = nil;
+    [self removeWebView];
 }
 
-- (void)setWebView:(UIWebView *)webView {
+- (void)removeWebView {
     if (_webView) {
         _webView.delegate = nil;
         [_webView removeFromSuperview];
         [_webView stopLoading];
     }
-    _webView = webView;
+}
+
+- (void)updateWebView:(UIWebView *)webView {
+    [self removeWebView];
+    self.webView = webView;
     if (webView) {
         webView.delegate = self;
         webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -146,7 +150,7 @@ static NSString *const DMAPIVersion = @"2.9.3";
 
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
 
-    self.webView = webview;
+    [self updateWebView:webview];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
