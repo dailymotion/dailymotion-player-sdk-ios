@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "dailymotion-player-objc"
-  s.version      = "2.9.5"
+  s.version      = "2.9.6"
   s.summary      = "Dailymotion Objective-C client API"
 
   s.description  = <<-DESC
