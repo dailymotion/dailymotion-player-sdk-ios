@@ -71,13 +71,6 @@ You can do it by adding the following to your app's `Info.plist` :
 
 We are relying on the [GitHub issues tracker](issues) for feedback. File bugs or other issues http://github.com/dailymotion/dailymotion-sdk-objc/issues
 
-###TODO List
-
-Here is what is coming in the next months:
-
-- Player SDK for Mac OS X
-- New API SDK for iOS and Mac OS X
-
 ### Need the API SDK?
 
 NOTE: This is version 2.9.0 and higher of the Dailymotion SDK. This version no longer supports the API SDK.
