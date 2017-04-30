@@ -1,6 +1,6 @@
-#This library is deprecated in favour of [the Swift version](https://github.com/dailymotion/dailymotion-swift-player-sdk-ios).
+# This library is deprecated in favour of [the Swift version](https://github.com/dailymotion/dailymotion-swift-player-sdk-ios).
 
-#Dailymotion Player SDK for iOS
+# Dailymotion Player SDK for iOS
 
 This repository contains the official open source Objective-C SDK that allows you to embed Dailymotion Videos in your iOS application.
 
@@ -8,9 +8,9 @@ See documentation at [http://www.dailymotion.com/doc/api/sdk-objc.html](http://w
 
 For a full documentation of the Player API, see [https://developer.dailymotion.com/player](https://developer.dailymotion.com/player#player-parameters)
 
-##Installation
+## Installation
 
-###CocoaPods
+### CocoaPods
 
 Just add the following line to your `Podfile` (See [CocoaPods.org](http://www.cocoapods.org) for more information)
 
@@ -18,17 +18,17 @@ Just add the following line to your `Podfile` (See [CocoaPods.org](http://www.co
 pod 'dailymotion-player-objc'
 ```
 
-###Manually
+### Manually
 
 Just drag and drop the `dailymotion-player-objc` folder into your project.
 
-##Usage
+## Usage
 
 Check out the repository and open `dailymotion-sdk-objc.xcodeproj` for a working example of how to embed the Dailymotion Player into your app.
 
 Also look at the `init` methods of `DMPlayerViewController` for ways to embed the Dailymotion Player without using storyboards.
 
-###About App Transport Security (iOS 9+)
+### About App Transport Security (iOS 9+)
 
 Starting with iOS9, Apple added a new [App Transport Security](https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/index.html) policy.
 As Dailymotion player uses an `UIWebView` to embed his video player, you'll need to define a few ATS exceptions in your `Info.plist` for the video player to work properly.
@@ -67,7 +67,7 @@ You can do it by adding the following to your app's `Info.plist` :
 </dict>
 ```
 
-###Feedback
+### Feedback
 
 We are relying on the [GitHub issues tracker](issues) for feedback. File bugs or other issues http://github.com/dailymotion/dailymotion-sdk-objc/issues
 
@@ -78,7 +78,7 @@ Here is what is coming in the next months:
 - Player SDK for Mac OS X
 - New API SDK for iOS and Mac OS X
 
-###Need the API SDK?
+### Need the API SDK?
 
 NOTE: This is version 2.9.0 and higher of the Dailymotion SDK. This version no longer supports the API SDK.
 
